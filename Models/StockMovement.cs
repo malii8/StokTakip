@@ -46,6 +46,6 @@ namespace StokTakip.Models
         [StringLength(500)]
         public string? Notes { get; set; }
 
-        public DateTime MovementDate { get; set; } = DateTime.Now;
+        public DateTime MovementDate { get; set; } = new DateTime(2025, 1, 1);
     }
 }

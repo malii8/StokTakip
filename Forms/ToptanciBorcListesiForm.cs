@@ -2,13 +2,19 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using StokTakip.Data;
+using StokTakip.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace StokTakip.Forms
 {
     public partial class ToptanciBorcListesiForm : Form
     {
-        public ToptanciBorcListesiForm()
+        private readonly StokTakipDbContext _context;
+
+        public ToptanciBorcListesiForm(StokTakipDbContext context)
         {
+            _context = context;
             InitializeComponent();
             LoadBorcListesi();
             SetupEventHandlers();
@@ -49,18 +55,38 @@ namespace StokTakip.Forms
 
         private void LoadBorcListesi()
         {
-            // Sample data - in real application, this would come from database
             dgvBorcListesi.Rows.Clear();
 
-            dgvBorcListesi.Rows.Add("1", "ATS FİLTRE İSTANBUL", "0,00", "0212 123 45 67", "Kadıköy", "Borç Yok");
-            dgvBorcListesi.Rows.Add("2", "LEVENT TİCARET", "114,70", "0212 987 65 43", "Şişli", "Borçlu");
-            dgvBorcListesi.Rows.Add("3", "MERKEZ OTOMOTİV", "250,00", "0216 555 44 33", "Üsküdar", "Borçlu");
-            dgvBorcListesi.Rows.Add("4", "YILDIZ YEDEK PARÇA", "0,00", "0212 777 88 99", "Beşiktaş", "Borç Yok");
-            dgvBorcListesi.Rows.Add("5", "ANADOLU TİCARET", "89,50", "0216 444 33 22", "Kadıköy", "Borçlu");
-            dgvBorcListesi.Rows.Add("6", "DOĞU OTOMOTİV", "-50,00", "0212 666 77 88", "Fatih", "Alacaklı");
+            try
+            {
+                var wholesalers = _context.Wholesalers.Where(w => w.IsActive).OrderBy(w => w.Name).ToList();
 
-            // Apply color coding
-            ApplyRowColors();
+                foreach (var wholesaler in wholesalers)
+                {
+                    dgvBorcListesi.Rows.Add(
+                        wholesaler.Id,
+                        wholesaler.Name,
+                        wholesaler.Debt.ToString("F2"),
+                        wholesaler.BusinessPhone ?? wholesaler.MobilePhone ?? "",
+                        wholesaler.TaxOffice ?? "",
+                        GetDebtStatus(wholesaler.Debt) // Helper method for status
+                    );
+                }
+
+                ApplyRowColors();
+                UpdateTotals();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Toptancı borç listesi yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private string GetDebtStatus(decimal debt)
+        {
+            if (debt > 0) return "Borçlu";
+            if (debt < 0) return "Alacaklı";
+            return "Borç Yok";
         }
 
         private void ApplyRowColors()
@@ -103,7 +129,7 @@ namespace StokTakip.Forms
 
             foreach (DataGridViewRow row in dgvBorcListesi.Rows)
             {
-                if (row.IsNewRow) continue;
+                if (row.IsNewRow || !row.Visible) continue; // Only count visible rows
 
                 if (decimal.TryParse(row.Cells["colBorcMiktari"].Value?.ToString(), out decimal miktar))
                 {

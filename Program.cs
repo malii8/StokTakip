@@ -48,6 +48,34 @@ namespace StokTakip
             services.AddTransient<MusterilerForm>();
             services.AddTransient<KasaForm>();
             services.AddTransient<RaporlarForm>();
+            services.AddTransient<UrunGirisForm>();
+            services.AddTransient<FiyatGorForm>();
+            services.AddTransient<MusteriIadeForm>();
+            services.AddTransient<AlisFaturasiForm>();
+            services.AddTransient<AsgariStokAltiForm>();
+            services.AddTransient<EskiFislerForm>();
+            services.AddTransient<FisDetayiForm>();
+            services.AddTransient<FiyatDegistirmeForm>();
+            services.AddTransient<GelirGiderForm>();
+            services.AddTransient<HesabaBorcEkleForm>();
+            services.AddTransient<MusteriBilgileriDuzenleForm>();
+            services.AddTransient<MusteriBorcListesiForm>();
+            services.AddTransient<MusteriBulForm>();
+            services.AddTransient<MusteriEkleForm>();
+            services.AddTransient<SilinecekUrunlerForm>();
+            services.AddTransient<TahsilatYapForm>();
+            services.AddTransient<ToptanciBorcListesiForm>();
+            services.AddTransient<ToptanciBorcunaEklemeForm>();
+            services.AddTransient<ToptanciHesapDetayiForm>();
+            services.AddTransient<ToptanciyaOdemeYapForm>();
+            services.AddTransient<ToptanciyaUrunIadeForm>();
+            services.AddTransient<ToptanciYeniKayitForm>();
+            services.AddTransient<UrunAramaForm>();
+            services.AddTransient<UrunAyrintisiForm>();
+            services.AddTransient<UrunDuzenleForm>();
+            services.AddTransient<UrunGruplariForm>();
+            services.AddTransient<UrunYeniKayitForm>();
+            services.AddTransient<VeresiyeDefteri>();
         }
 
         private static string GetConnectionString()
@@ -62,10 +90,10 @@ namespace StokTakip
             {
                 using var scope = serviceProvider.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<StokTakipDbContext>();
-                
+
                 // Ensure database is created
                 context.Database.EnsureCreated();
-                
+
                 // Run pending migrations
                 if (context.Database.GetPendingMigrations().Any())
                 {
@@ -74,7 +102,7 @@ namespace StokTakip
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Veritabanı bağlantısı kurulamadı: {ex.Message}", "Hata", 
+                MessageBox.Show($"Veritabanı bağlantısı kurulamadı: {ex.Message}", "Hata",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

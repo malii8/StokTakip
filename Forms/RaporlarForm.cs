@@ -1,18 +1,23 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using StokTakip.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace StokTakip.Forms
 {
     public partial class RaporlarForm : Form
     {
-        public RaporlarForm()
+        private readonly StokTakipDbContext _context;
+
+        public RaporlarForm(StokTakipDbContext context)
         {
+            _context = context;
             InitializeComponent();
             InitializeDateRanges();
             InitializeComboBoxes();
             SetupEventHandlers();
-            LoadSampleData(); // Move this to last
+            LoadReportData(); // Changed from LoadSampleData
         }
 
         private void InitializeDateRanges()
@@ -35,11 +40,18 @@ namespace StokTakip.Forms
             // Ürün Grubu dropdown
             cmbUrunGrubu.Items.Clear();
             cmbUrunGrubu.Items.Add("Tümü");
-            cmbUrunGrubu.Items.Add("BİSKÜVİ");
-            cmbUrunGrubu.Items.Add("FİLTRE");
-            cmbUrunGrubu.Items.Add("SALÇA");
-            cmbUrunGrubu.Items.Add("YAĞ");
-            cmbUrunGrubu.Items.Add("DETERJAN");
+            try
+            {
+                var groups = _context.ProductGroups.OrderBy(g => g.Name).ToList();
+                foreach (var group in groups)
+                {
+                    cmbUrunGrubu.Items.Add(group.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ürün grupları yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             cmbUrunGrubu.SelectedIndex = 0;
         }
 
@@ -69,45 +81,53 @@ namespace StokTakip.Forms
             cmbUrunGrubu.SelectedIndexChanged += FilterData;
         }
 
-        private void LoadSampleData()
+        private void LoadReportData()
         {
-            // Sample transaction data
             dgvRaporlar.Rows.Clear();
 
-            string[] sampleTransactions = {
-                "1|Satış|14.07.2025|10:30|8690511010128|ABC ÇAMAŞIR SUYU|70,00|90,00|2|0|180,00|Perakende|Admin",
-                "2|Giriş|14.07.2025|09:15|000002|OE 688 PASSAT YAĞ|100,00|150,00|5|0|500,00|Alış|Admin",
-                "3|Satış|13.07.2025|16:45|8690504034506|ÜLKER ALBENİ|7,00|10,00|10|0|100,00|Toptan|Kasiyer1",
-                "4|İade|13.07.2025|14:20|8690876010016|YUDUM SIVI YAĞ|55,00|75,00|1|0|75,00|Müşteri İade|Admin",
-                "5|Satış|12.07.2025|11:30|8690575012519|TAMEK SALÇA|45,00|60,00|3|0|180,00|Perakende|Kasiyer2"
-            };
-
-            foreach (string transaction in sampleTransactions)
+            try
             {
-                string[] parts = transaction.Split('|');
-                if (parts.Length >= 13) // Ensure we have enough parts
-                {
-                    dgvRaporlar.Rows.Add(
-                        parts[0],  // S.No
-                        parts[1],  // Hareket Türü
-                        parts[2],  // Tarih
-                        parts[3],  // Saat
-                        parts[4],  // Barkod No
-                        parts[5],  // Ürün Adı
-                        parts[6],  // Alış Fiyatı
-                        parts[7],  // Satış Fiyatı
-                        parts[8],  // Miktar
-                        parts[9],  // KDV
-                        parts[10], // Toplam Tutar
-                        parts[11], // Cari Hesap Adı
-                        parts[12], // İşlem Yapan
-                        "Aktif",   // Durum
-                        parts[10] // Kar (using Toplam Tutar for now)
-                    );
-                }
-            }
+                // Example: Load SalesReceipts
+                var salesReceipts = _context.SalesReceipts
+                    .Include(sr => sr.Customer)
+                    .Include(sr => sr.Details)
+                        .ThenInclude(srd => srd.Product)
+                            .ThenInclude(p => p.ProductGroup)
+                    .Where(sr => sr.ReceiptDate >= dtpBaslangic.Value.Date && sr.ReceiptDate <= dtpBitis.Value.Date)
+                    .ToList();
 
-            UpdateSummaryLabels();
+                foreach (var receipt in salesReceipts)
+                {
+                    foreach (var detail in receipt.Details)
+                    {
+                        dgvRaporlar.Rows.Add(
+                            receipt.Id, // S.No
+                            "Satış", // Hareket Türü
+                            receipt.ReceiptDate.ToShortDateString(), // Tarih
+                            receipt.ReceiptDate.ToShortTimeString(), // Saat
+                            detail.Product?.BarcodeNo ?? "", // Barkod No
+                            detail.Product?.Name ?? "", // Ürün Adı
+                            detail.Product?.PurchasePrice.ToString("F2") ?? "0.00", // Alış Fiyatı
+                            detail.UnitPrice.ToString("F2"), // Satış Fiyatı
+                            detail.Quantity, // Miktar
+                            detail.VatRate.ToString("F0"), // KDV
+                            detail.Total.ToString("F2"), // Toplam Tutar
+                            receipt.Customer?.Name ?? "Perakende", // Cari Hesap Adı
+                            "Admin", // İşlem Yapan (Placeholder)
+                            "Aktif", // Durum
+                            (detail.Total - (detail.Quantity * (detail.Product?.PurchasePrice ?? 0))).ToString("F2") // Kar
+                        );
+                    }
+                }
+
+                // TODO: Add loading for StockMovement, CashMovement, CustomerDebtMovement, WholesalerDebtMovement
+
+                UpdateSummaryLabels();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Rapor verileri yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void UpdateSummaryLabels()

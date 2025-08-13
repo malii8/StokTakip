@@ -1,16 +1,25 @@
 using System;
 using System.Windows.Forms;
+using Microsoft.Extensions.DependencyInjection;
+using StokTakip.Data;
+using StokTakip.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace StokTakip.Forms
 {
     public partial class EskiFislerForm : Form
     {
-        public EskiFislerForm()
+        private readonly StokTakipDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
+
+        public EskiFislerForm(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
+            _context = context;
+            _serviceProvider = serviceProvider;
             InitializeComponent();
-            LoadSampleData();
-            SetupEventHandlers();
             InitializeForm();
+            SetupEventHandlers();
+            LoadSalesReceipts(); // Load data from DB
         }
 
         private void InitializeForm()
@@ -42,24 +51,35 @@ namespace StokTakip.Forms
             txtMusteriAdi.TextChanged += Filter_Changed;
         }
 
-        private void LoadSampleData()
+        private void LoadSalesReceipts()
         {
-            // Sample sales receipt data
             dgvEskiFisler.Rows.Clear();
 
-            // Add sample historical receipts
-            dgvEskiFisler.Rows.Add("20250709171534", "09.07.2025", "17:15:34", "Kredi Kartı", "", "0,00", "İptal");
-            dgvEskiFisler.Rows.Add("20250709165432", "09.07.2025", "16:54:32", "Nakit", "Ahmet Yılmaz", "75,50", "Tamamlandı");
-            dgvEskiFisler.Rows.Add("20250709153210", "09.07.2025", "15:32:10", "Veresiye", "Mehmet Demir", "125,00", "Tamamlandı");
-            dgvEskiFisler.Rows.Add("20250709142108", "09.07.2025", "14:21:08", "Kredi Kartı", "", "89,25", "Tamamlandı");
-            dgvEskiFisler.Rows.Add("20250709131045", "09.07.2025", "13:10:45", "Nakit", "Fatma Özkan", "45,75", "Tamamlandı");
-            dgvEskiFisler.Rows.Add("20250708175530", "08.07.2025", "17:55:30", "Havale", "Ayşe Kara", "199,90", "Tamamlandı");
-            dgvEskiFisler.Rows.Add("20250708162145", "08.07.2025", "16:21:45", "Nakit", "", "33,50", "Tamamlandı");
-            dgvEskiFisler.Rows.Add("20250708145015", "08.07.2025", "14:50:15", "Kredi Kartı", "", "67,80", "Tamamlandı");
-            dgvEskiFisler.Rows.Add("20250708133022", "08.07.2025", "13:30:22", "Veresiye", "Ali Şahin", "156,25", "Tamamlandı");
-            dgvEskiFisler.Rows.Add("20250708121530", "08.07.2025", "12:15:30", "Nakit", "", "92,40", "Tamamlandı");
+            try
+            {
+                var salesReceipts = _context.SalesReceipts
+                    .Include(sr => sr.Customer)
+                    .OrderByDescending(sr => sr.ReceiptDate)
+                    .ToList();
 
-            UpdateSummary();
+                foreach (var receipt in salesReceipts)
+                {
+                    dgvEskiFisler.Rows.Add(
+                        receipt.ReceiptNumber, // Fiş No
+                        receipt.ReceiptDate.ToShortDateString(), // Tarih
+                        receipt.ReceiptDate.ToShortTimeString(), // Saat
+                        receipt.PaymentType, // Corrected to PaymentType
+                        receipt.Customer?.Name ?? "Perakende", // Müşteri Adı
+                        receipt.Total.ToString("F2"), // Corrected to Total
+                        receipt.Status // Durum
+                    );
+                }
+                UpdateSummary();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Eski fişler yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void UpdateSummary()
@@ -97,45 +117,50 @@ namespace StokTakip.Forms
             string musteriFilter = txtMusteriAdi.Text.Trim().ToLower();
             string odemeFilter = cmbOdemeTuru.SelectedItem?.ToString() ?? "";
 
-            foreach (DataGridViewRow row in dgvEskiFisler.Rows)
-            {
-                if (row.IsNewRow) continue;
+            // Re-load data from DB based on filters, or filter existing data in grid
+            // For simplicity, let's re-load from DB for now. For large datasets, client-side filtering might be better.
+            dgvEskiFisler.Rows.Clear();
 
-                bool visible = true;
+            try
+            {
+                var query = _context.SalesReceipts.Include(sr => sr.Customer).AsQueryable();
 
                 // Date filter
-                if (DateTime.TryParse(row.Cells["colTarih"].Value?.ToString(), out DateTime fisTarihi))
-                {
-                    if (fisTarihi < baslangic || fisTarihi > bitis)
-                    {
-                        visible = false;
-                    }
-                }
+                query = query.Where(sr => sr.ReceiptDate >= baslangic && sr.ReceiptDate <= bitis);
 
                 // Customer filter
-                if (visible && !string.IsNullOrEmpty(musteriFilter))
+                if (!string.IsNullOrEmpty(musteriFilter))
                 {
-                    string musteriAdi = row.Cells["colMusteriAdi"].Value?.ToString()?.ToLower() ?? "";
-                    if (!musteriAdi.Contains(musteriFilter))
-                    {
-                        visible = false;
-                    }
+                    query = query.Where(sr => (sr.Customer != null && sr.Customer.Name.ToLower().Contains(musteriFilter)) ||
+                                                (sr.Customer == null && "perakende".Contains(musteriFilter)));
                 }
 
                 // Payment type filter
-                if (visible && !string.IsNullOrEmpty(odemeFilter) && odemeFilter != "Tümü")
+                if (!string.IsNullOrEmpty(odemeFilter) && odemeFilter != "Tümü")
                 {
-                    string odemeTuru = row.Cells["colOdemeTuru"].Value?.ToString() ?? "";
-                    if (odemeTuru != odemeFilter)
-                    {
-                        visible = false;
-                    }
+                    query = query.Where(sr => sr.PaymentType == odemeFilter); // Corrected to PaymentType
                 }
 
-                row.Visible = visible;
-            }
+                var filteredReceipts = query.OrderByDescending(sr => sr.ReceiptDate).ToList();
 
-            UpdateSummary();
+                foreach (var receipt in filteredReceipts)
+                {
+                    dgvEskiFisler.Rows.Add(
+                        receipt.ReceiptNumber, // Fiş No
+                        receipt.ReceiptDate.ToShortDateString(), // Tarih
+                        receipt.ReceiptDate.ToShortTimeString(), // Saat
+                        receipt.PaymentType, // Corrected to PaymentType
+                        receipt.Customer?.Name ?? "Perakende", // Müşteri Adı
+                        receipt.Total.ToString("F2"), // Corrected to Total
+                        receipt.Status // Durum
+                    );
+                }
+                UpdateSummary();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fişler filtrelenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void DateFilter_Changed(object? sender, EventArgs e)
@@ -159,16 +184,20 @@ namespace StokTakip.Forms
             {
                 DataGridViewRow selectedRow = dgvEskiFisler.SelectedRows[0];
                 string fisNo = selectedRow.Cells["colFisNo"].Value?.ToString() ?? "";
-                string tarih = selectedRow.Cells["colTarih"].Value?.ToString() ?? "";
-                string saat = selectedRow.Cells["colSaat"].Value?.ToString() ?? "";
-                string odemeTuru = selectedRow.Cells["colOdemeTuru"].Value?.ToString() ?? "";
-                string musteriAdi = selectedRow.Cells["colMusteriAdi"].Value?.ToString() ?? "";
-                string tutar = selectedRow.Cells["colTutar"].Value?.ToString() ?? "";
-                string durum = selectedRow.Cells["colDurum"].Value?.ToString() ?? "";
 
-                using (var detayForm = new FisDetayiForm(fisNo, tarih, saat, odemeTuru, musteriAdi, tutar, durum))
+                var salesReceipt = _context.SalesReceipts.FirstOrDefault(sr => sr.ReceiptNumber == fisNo);
+
+                if (salesReceipt != null)
                 {
-                    detayForm.ShowDialog();
+                    using (var detayForm = _serviceProvider.GetRequiredService<FisDetayiForm>())
+                    {
+                        detayForm.SetSalesReceipt(salesReceipt);
+                        detayForm.ShowDialog();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Seçilen fiş bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
@@ -183,24 +212,35 @@ namespace StokTakip.Forms
             {
                 DataGridViewRow selectedRow = dgvEskiFisler.SelectedRows[0];
                 string fisNo = selectedRow.Cells["colFisNo"].Value?.ToString() ?? "";
-                string durum = selectedRow.Cells["colDurum"].Value?.ToString() ?? "";
 
-                if (durum == "İptal")
+                var salesReceipt = _context.SalesReceipts.FirstOrDefault(sr => sr.ReceiptNumber == fisNo);
+
+                if (salesReceipt != null)
                 {
-                    MessageBox.Show("Bu fiş zaten iptal edilmiş.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    if (salesReceipt.Status == "İptal")
+                    {
+                        MessageBox.Show("Bu fiş zaten iptal edilmiş.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    DialogResult result = MessageBox.Show($"Fiş No: {fisNo}\n\nBu fişi iptal etmek istediğinizden emin misiniz?",
+                        "Fiş İptal", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        salesReceipt.Status = "İptal";
+                        _context.SaveChanges();
+
+                        selectedRow.Cells["colDurum"].Value = "İptal";
+                        selectedRow.DefaultCellStyle.BackColor = System.Drawing.Color.LightCoral;
+
+                        UpdateSummary();
+                        MessageBox.Show("Fiş başarıyla iptal edildi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
-
-                DialogResult result = MessageBox.Show($"Fiş No: {fisNo}\n\nBu fişi iptal etmek istediğinizden emin misiniz?",
-                    "Fiş İptal", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                if (result == DialogResult.Yes)
+                else
                 {
-                    selectedRow.Cells["colDurum"].Value = "İptal";
-                    selectedRow.DefaultCellStyle.BackColor = System.Drawing.Color.LightCoral;
-
-                    UpdateSummary();
-                    MessageBox.Show("Fiş başarıyla iptal edildi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Seçilen fiş bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else

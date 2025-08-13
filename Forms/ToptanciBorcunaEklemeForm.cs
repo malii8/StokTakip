@@ -1,5 +1,7 @@
 using System;
 using System.Windows.Forms;
+using StokTakip.Models;
+using StokTakip.Data;
 
 namespace StokTakip.Forms
 {
@@ -8,31 +10,51 @@ namespace StokTakip.Forms
         public decimal EklenecekTutar { get; private set; }
         public string Aciklama { get; private set; } = string.Empty;
 
-        private string toptanciAdi;
-        private decimal toplamBorc;
+        private Wholesaler? _wholesaler;
+        private readonly StokTakipDbContext _context;
 
-        public ToptanciBorcunaEklemeForm(string toptanciAdi, decimal toplamBorc)
+        public ToptanciBorcunaEklemeForm(StokTakipDbContext context)
         {
+            _context = context;
             InitializeComponent();
-            this.toptanciAdi = toptanciAdi;
-            this.toplamBorc = toplamBorc;
             InitializeForm();
+        }
+
+        public void SetWholesaler(Wholesaler wholesaler)
+        {
+            _wholesaler = wholesaler;
+            txtToptanciAdi.Text = _wholesaler.Name;
+            txtToplamBorc.Text = $"{_wholesaler.Debt:F2} TL";
         }
 
         private void InitializeForm()
         {
-            txtToptanciAdi.Text = toptanciAdi;
-            txtToplamBorc.Text = $"{toplamBorc:F2} TL";
             dtpTarih.Value = DateTime.Now;
             dtpSaat.Value = DateTime.Now;
         }
 
         private void BtnOnayla_Click(object? sender, EventArgs e)
         {
-            if (ValidateInput())
+            if (ValidateInput() && _wholesaler != null)
             {
                 EklenecekTutar = Convert.ToDecimal(txtEklenecekTutar.Text);
                 Aciklama = txtAciklama.Text;
+
+                // Update wholesaler debt
+                _wholesaler.Debt += EklenecekTutar;
+
+                // Record wholesaler debt movement
+                var debtMovement = new WholesalerDebtMovement
+                {
+                    WholesalerId = _wholesaler.Id,
+                    Amount = EklenecekTutar,
+                    MovementType = "Borç Ekleme",
+                    MovementDate = dtpTarih.Value.Date + dtpSaat.Value.TimeOfDay,
+                    Description = Aciklama
+                };
+                _context.WholesalerDebtMovements.Add(debtMovement);
+
+                _context.SaveChanges();
 
                 DialogResult = DialogResult.OK;
                 Close();

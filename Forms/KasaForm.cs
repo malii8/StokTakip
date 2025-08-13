@@ -2,15 +2,24 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using Microsoft.Extensions.DependencyInjection;
+using StokTakip.Data;
+using StokTakip.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace StokTakip.Forms
 {
     public partial class KasaForm : Form
     {
-        public KasaForm()
+        private readonly StokTakipDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
+
+        public KasaForm(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
+            _context = context;
+            _serviceProvider = serviceProvider;
             InitializeComponent();
-            LoadSampleData();
+            LoadCashMovementData(); // Changed from LoadSampleData
             SetupEventHandlers();
             InitializeDateRanges();
             InitializeComboBoxes();
@@ -52,39 +61,36 @@ namespace StokTakip.Forms
             cmbIslemYapan.SelectedIndexChanged += FilterData;
         }
 
-        private void LoadSampleData()
+        private void LoadCashMovementData()
         {
             dgvKasaHareketleri.Rows.Clear();
 
-            string[] sampleTransactions = {
-                "14.07.2025|10:30|Gelir|NAKİT|250.00|Satış Geliri|Admin",
-                "14.07.2025|11:15|Gider|NAKİT|50.00|Elektrik Faturası|Admin",
-                "14.07.2025|12:30|Gelir|NAKİT|120.00|Müşteri Ödemesi|Kasiyer1",
-                "13.07.2025|09:45|Gider|NAKİT|30.00|Kırtasiye|Admin",
-                "13.07.2025|14:20|Gelir|NAKİT|300.00|Toptan Satış|Kasiyer2",
-                "13.07.2025|16:30|Gider|NAKİT|80.00|Temizlik Malzemesi|Admin",
-                "12.07.2025|10:00|Gelir|NAKİT|180.00|Perakende Satış|Kasiyer1",
-                "12.07.2025|15:45|Gider|NAKİT|25.00|Su Faturası|Admin"
-            };
-
-            foreach (string transaction in sampleTransactions)
+            try
             {
-                string[] parts = transaction.Split('|');
-                if (parts.Length >= 7)
+                var cashMovements = _context.CashMovements
+                    .Where(cm => cm.MovementDate >= dtpBaslangic.Value.Date && cm.MovementDate <= dtpBitis.Value.Date)
+                    .OrderByDescending(cm => cm.MovementDate)
+                    .ThenByDescending(cm => cm.Id)
+                    .ToList();
+
+                foreach (var movement in cashMovements)
                 {
                     dgvKasaHareketleri.Rows.Add(
-                        parts[0], // Tarih
-                        parts[1], // Saat
-                        parts[2], // Türü
-                        parts[3], // Gelir Gider Sebebi
-                        parts[4], // Tutarı
-                        parts[5], // Açıklama
-                        parts[6]  // Barkodu (İşlem Yapan)
+                        movement.MovementDate.ToShortDateString(), // Tarih
+                        movement.MovementDate.ToShortTimeString(), // Saat
+                        movement.MovementType, // Türü (Gelir/Gider)
+                        movement.Description, // Gelir Gider Sebebi (Açıklama)
+                        movement.Amount.ToString("F2"), // Tutarı
+                        movement.Notes, // Açıklama (Notlar)
+                        "Admin" // İşlem Yapan (Placeholder for now)
                     );
                 }
+                UpdateSummaryPanels();
             }
-
-            UpdateSummaryPanels();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Kasa hareketleri yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void UpdateSummaryPanels()
@@ -165,7 +171,7 @@ namespace StokTakip.Forms
 
         private void BtnSayfayiYenile_Click(object? sender, EventArgs e)
         {
-            LoadSampleData();
+            LoadCashMovementData();
             MessageBox.Show("Sayfa yenilendi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -176,22 +182,24 @@ namespace StokTakip.Forms
 
         private void BtnGiderGirisi_Click(object? sender, EventArgs e)
         {
-            using (var giderForm = new GelirGiderForm("Gider"))
+            using (var giderForm = _serviceProvider.GetRequiredService<GelirGiderForm>())
             {
+                giderForm.SetMovementType("Gider");
                 if (giderForm.ShowDialog() == DialogResult.OK)
                 {
-                    LoadSampleData(); // Refresh data
+                    LoadCashMovementData(); // Refresh data
                 }
             }
         }
 
         private void BtnGelirGirisi_Click(object? sender, EventArgs e)
         {
-            using (var gelirForm = new GelirGiderForm("Gelir"))
+            using (var gelirForm = _serviceProvider.GetRequiredService<GelirGiderForm>())
             {
+                gelirForm.SetMovementType("Gelir");
                 if (gelirForm.ShowDialog() == DialogResult.OK)
                 {
-                    LoadSampleData(); // Refresh data
+                    LoadCashMovementData(); // Refresh data
                 }
             }
         }

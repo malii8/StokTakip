@@ -1,28 +1,42 @@
 using System;
 using System.Windows.Forms;
+using StokTakip.Data;
+using StokTakip.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace StokTakip.Forms
 {
     public partial class FisDetayiForm : Form
     {
-        public FisDetayiForm(string fisNo, string tarih, string saat, string odemeTuru, string musteriAdi, string tutar, string durum)
+        private SalesReceipt? _salesReceipt;
+        private readonly StokTakipDbContext _context;
+
+        public FisDetayiForm(StokTakipDbContext context)
         {
+            _context = context;
             InitializeComponent();
-            LoadFisData(fisNo, tarih, saat, odemeTuru, musteriAdi, tutar, durum);
-            LoadSampleProductData();
         }
 
-        private void LoadFisData(string fisNo, string tarih, string saat, string odemeTuru, string musteriAdi, string tutar, string durum)
+        public void SetSalesReceipt(SalesReceipt salesReceipt)
         {
-            lblFisNoValue.Text = fisNo;
-            lblTarihValue.Text = $"{tarih} {saat}";
-            lblOdemeTuruValue.Text = odemeTuru;
-            lblMusteriAdiValue.Text = string.IsNullOrEmpty(musteriAdi) ? "Perakende Satış" : musteriAdi;
-            lblToplamTutarValue.Text = $"{tutar} TL";
-            lblDurumValue.Text = durum;
+            _salesReceipt = salesReceipt;
+            LoadFisData();
+            LoadProductData();
+        }
+
+        private void LoadFisData()
+        {
+            if (_salesReceipt == null) return;
+
+            lblFisNoValue.Text = _salesReceipt.ReceiptNumber;
+            lblTarihValue.Text = $"{_salesReceipt.ReceiptDate.ToShortDateString()} {_salesReceipt.ReceiptDate.ToShortTimeString()}";
+            lblOdemeTuruValue.Text = _salesReceipt.PaymentType;
+            lblMusteriAdiValue.Text = string.IsNullOrEmpty(_salesReceipt.Customer?.Name) ? "Perakende Satış" : _salesReceipt.Customer.Name;
+            lblToplamTutarValue.Text = $"{_salesReceipt.Total:F2} TL";
+            lblDurumValue.Text = _salesReceipt.Status;
 
             // Set status color
-            if (durum == "İptal")
+            if (_salesReceipt.Status == "İptal")
             {
                 lblDurumValue.ForeColor = System.Drawing.Color.Red;
             }
@@ -32,16 +46,35 @@ namespace StokTakip.Forms
             }
         }
 
-        private void LoadSampleProductData()
+        private void LoadProductData()
         {
-            // Sample product data for the receipt
             dgvUrunler.Rows.Clear();
 
-            dgvUrunler.Rows.Add("8690511010128", "ABC ÇAMAŞIR SUYU 4000 ML", "2", "15,50", "31,00");
-            dgvUrunler.Rows.Add("8690511010135", "XYZ DETERJANİ 2000 ML", "1", "22,25", "22,25");
-            dgvUrunler.Rows.Add("8690511010142", "BULAŞIK DETERJANİ 500 ML", "3", "8,75", "26,25");
+            if (_salesReceipt == null) return;
 
-            CalculateTotals();
+            try
+            {
+                var details = _context.SalesReceiptDetails
+                    .Include(srd => srd.Product)
+                    .Where(srd => srd.SalesReceiptId == _salesReceipt.Id)
+                    .ToList();
+
+                foreach (var detail in details)
+                {
+                    dgvUrunler.Rows.Add(
+                        detail.Product?.BarcodeNo ?? "",
+                        detail.Product?.Name ?? "",
+                        detail.Quantity.ToString(),
+                        detail.UnitPrice.ToString("F2"),
+                        detail.Total.ToString("F2")
+                    );
+                }
+                CalculateTotals();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ürün detayları yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void CalculateTotals()

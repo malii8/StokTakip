@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using StokTakip.Data;
 using StokTakip.Models;
 using System;
@@ -10,11 +11,13 @@ namespace StokTakip.Forms
     public partial class ToptanciKayitForm : Form
     {
         private readonly StokTakipDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ToptanciKayitForm(StokTakipDbContext context)
+        public ToptanciKayitForm(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
             InitializeComponent();
             _context = context;
+            _serviceProvider = serviceProvider;
             LoadWholesalerData();
             SetupEventHandlers();
             InitializeForm();
@@ -48,7 +51,7 @@ namespace StokTakip.Forms
             try
             {
                 dgvToptancilar.Rows.Clear();
-                
+
                 var wholesalers = _context.Wholesalers
                     .Where(w => w.IsActive)
                     .ToList();
@@ -66,7 +69,7 @@ namespace StokTakip.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Toptancı verileri yüklenirken hata oluştu: {ex.Message}", "Hata", 
+                MessageBox.Show($"Toptancı verileri yüklenirken hata oluştu: {ex.Message}", "Hata",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -103,57 +106,14 @@ namespace StokTakip.Forms
             }
         }
 
-        private void LoadToptanciDetails(DataGridViewRow row)
-        {
-            // Load selected wholesaler details into form fields
-            txtToptanciAdi.Text = row.Cells["colToptanciAdi"].Value?.ToString() ?? "";
-
-            // For demonstration, populate other fields with sample data
-            txtSirketYetkisi.Text = "Satış Müdürü";
-            txtEmail.Text = "info@example.com";
-            txtInternetAdresi.Text = "www.example.com";
-            txtVDaire.Text = "Kadıköy";
-            txtVNo.Text = "1234567890";
-            txtAdres.Text = "Örnek Adres, İstanbul";
-            txtIsTelefonu.Text = "0212 123 45 67";
-            txtGsmTelefonu.Text = "0555 123 45 67";
-            txtFax.Text = "0212 123 45 68";
-            txtOzelNotlar.Text = "Özel notlar...";
-        }
-
-        private void ClearFields()
-        {
-            txtToptanciAdi.Clear();
-            txtSirketYetkisi.Clear();
-            txtEmail.Clear();
-            txtInternetAdresi.Clear();
-            txtVDaire.Clear();
-            txtVNo.Clear();
-            txtAdres.Clear();
-            txtIsTelefonu.Clear();
-            txtGsmTelefonu.Clear();
-            txtFax.Clear();
-            txtOzelNotlar.Clear();
-        }
-
         private void BtnToptanciEkle_Click(object? sender, EventArgs e)
         {
-            using (var yeniKayitForm = new ToptanciYeniKayitForm(false))
+            using (var yeniKayitForm = _serviceProvider.GetRequiredService<ToptanciYeniKayitForm>()) // No wholesaler passed for new entry
             {
                 if (yeniKayitForm.ShowDialog() == DialogResult.OK)
                 {
-                    // Add new wholesaler to grid
-                    int newRowIndex = dgvToptancilar.Rows.Count + 1;
-                    dgvToptancilar.Rows.Add(newRowIndex.ToString(), yeniKayitForm.ToptanciAdi, yeniKayitForm.ToptanciyaOlanBorcunuz.ToString("F2"));
-
-                    UpdateTotalDebt();
+                    LoadWholesalerData(); // Refresh data
                     MessageBox.Show("Toptancı başarıyla eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                    // Select the newly added row
-                    if (dgvToptancilar.Rows.Count > 0)
-                    {
-                        dgvToptancilar.Rows[dgvToptancilar.Rows.Count - 1].Selected = true;
-                    }
                 }
             }
         }
@@ -163,20 +123,21 @@ namespace StokTakip.Forms
             if (dgvToptancilar.SelectedRows.Count > 0)
             {
                 DataGridViewRow selectedRow = dgvToptancilar.SelectedRows[0];
-                string toptanciAdi = selectedRow.Cells["colToptanciAdi"].Value?.ToString() ?? "";
-                decimal toplamBorc = decimal.TryParse(selectedRow.Cells["colBorc"].Value?.ToString(), out decimal borc) ? borc : 0;
+                int wholesalerId = Convert.ToInt32(selectedRow.Cells["colId"].Value);
+                var wholesaler = _context.Wholesalers.Find(wholesalerId);
 
-                using (var odemeForm = new ToptanciyaOdemeYapForm(toptanciAdi, toplamBorc))
+                if (wholesaler != null)
                 {
-                    if (odemeForm.ShowDialog() == DialogResult.OK)
+                    using (var odemeForm = _serviceProvider.GetRequiredService<ToptanciyaOdemeYapForm>())
                     {
-                        // Update debt amount after payment
-                        decimal yeniBorc = toplamBorc - odemeForm.OdemeTutari;
-                        selectedRow.Cells["colBorc"].Value = $"{yeniBorc:F2}";
-
-                        UpdateTotalDebt();
-                        MessageBox.Show($"Ödeme başarıyla gerçekleştirildi.\nÖdenen Tutar: {odemeForm.OdemeTutari:F2} TL\nÖdeme Şekli: {odemeForm.OdemeSekli}",
-                            "Ödeme Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        // Pass wholesaler to the form
+                        odemeForm.SetWholesaler(wholesaler);
+                        if (odemeForm.ShowDialog() == DialogResult.OK)
+                        {
+                            LoadWholesalerData(); // Refresh data
+                            MessageBox.Show($"Ödeme başarıyla gerçekleştirildi.",
+                                "Ödeme Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                 }
             }
@@ -191,20 +152,21 @@ namespace StokTakip.Forms
             if (dgvToptancilar.SelectedRows.Count > 0)
             {
                 DataGridViewRow selectedRow = dgvToptancilar.SelectedRows[0];
-                string toptanciAdi = selectedRow.Cells["colToptanciAdi"].Value?.ToString() ?? "";
-                decimal toplamBorc = decimal.TryParse(selectedRow.Cells["colBorc"].Value?.ToString(), out decimal borc) ? borc : 0;
+                int wholesalerId = Convert.ToInt32(selectedRow.Cells["colId"].Value);
+                var wholesaler = _context.Wholesalers.Find(wholesalerId);
 
-                using (var borcEklemeForm = new ToptanciBorcunaEklemeForm(toptanciAdi, toplamBorc))
+                if (wholesaler != null)
                 {
-                    if (borcEklemeForm.ShowDialog() == DialogResult.OK)
+                    using (var borcEklemeForm = _serviceProvider.GetRequiredService<ToptanciBorcunaEklemeForm>())
                     {
-                        // Update debt amount after adding debt
-                        decimal yeniBorc = toplamBorc + borcEklemeForm.EklenecekTutar;
-                        selectedRow.Cells["colBorc"].Value = $"{yeniBorc:F2}";
-
-                        UpdateTotalDebt();
-                        MessageBox.Show($"Borç ekleme başarıyla gerçekleştirildi.\nEklenen Tutar: {borcEklemeForm.EklenecekTutar:F2} TL\nAçıklama: {borcEklemeForm.Aciklama}",
-                            "Borç Ekleme Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        // Pass wholesaler to the form
+                        borcEklemeForm.SetWholesaler(wholesaler);
+                        if (borcEklemeForm.ShowDialog() == DialogResult.OK)
+                        {
+                            LoadWholesalerData(); // Refresh data
+                            MessageBox.Show($"Borç ekleme başarıyla gerçekleştirildi.",
+                                "Borç Ekleme Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                 }
             }
@@ -223,9 +185,17 @@ namespace StokTakip.Forms
 
                 if (result == DialogResult.Yes)
                 {
-                    dgvToptancilar.Rows.RemoveAt(dgvToptancilar.SelectedRows[0].Index);
-                    UpdateTotalDebt();
-                    ClearFields();
+                    int wholesalerId = Convert.ToInt32(dgvToptancilar.SelectedRows[0].Cells["colId"].Value);
+                    var wholesalerToDelete = _context.Wholesalers.Find(wholesalerId);
+
+                    if (wholesalerToDelete != null)
+                    {
+                        _context.Wholesalers.Remove(wholesalerToDelete);
+                        _context.SaveChanges();
+                        LoadWholesalerData(); // Refresh data
+                        ClearFields();
+                        MessageBox.Show("Toptancı başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
             else
@@ -239,24 +209,21 @@ namespace StokTakip.Forms
             if (dgvToptancilar.SelectedRows.Count > 0)
             {
                 DataGridViewRow selectedRow = dgvToptancilar.SelectedRows[0];
-                string toptanciAdi = selectedRow.Cells["colToptanciAdi"].Value?.ToString() ?? "";
-                decimal mevcutBorc = decimal.TryParse(selectedRow.Cells["colBorc"].Value?.ToString(), out decimal borc) ? borc : 0;
+                int wholesalerId = Convert.ToInt32(selectedRow.Cells["colId"].Value);
+                var wholesaler = _context.Wholesalers.Find(wholesalerId);
 
-                using (var iadeForm = new ToptanciyaUrunIadeForm(toptanciAdi, mevcutBorc))
+                if (wholesaler != null)
                 {
-                    if (iadeForm.ShowDialog() == DialogResult.OK)
+                    using (var iadeForm = _serviceProvider.GetRequiredService<ToptanciyaUrunIadeForm>())
                     {
-                        // Update debt amount after return (reduce debt)
-                        decimal yeniBorc = mevcutBorc - iadeForm.IadeTutari;
-                        selectedRow.Cells["colBorc"].Value = $"{yeniBorc:F2}";
-
-                        UpdateTotalDebt();
-                        MessageBox.Show($"Ürün iadesi başarıyla gerçekleştirildi.\n\n" +
-                            $"İade Edilen Ürün: {iadeForm.IadeEdilecekUrun}\n" +
-                            $"İade Miktarı: {iadeForm.IadeEdilecekMiktar} adet\n" +
-                            $"İade Tutarı: {iadeForm.IadeTutari:F2} TL\n" +
-                            $"Açıklama: {iadeForm.IadeAciklamasi}",
-                            "İade Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        // Pass wholesaler to the form
+                        iadeForm.SetWholesaler(wholesaler);
+                        if (iadeForm.ShowDialog() == DialogResult.OK)
+                        {
+                            LoadWholesalerData(); // Refresh data
+                            MessageBox.Show($"Ürün iadesi başarıyla gerçekleştirildi.",
+                                "İade Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                 }
             }
@@ -268,7 +235,7 @@ namespace StokTakip.Forms
 
         private void BtnToptanciBorcListesi_Click(object? sender, EventArgs e)
         {
-            using (var borcListesiForm = new ToptanciBorcListesiForm())
+            using (var borcListesiForm = _serviceProvider.GetRequiredService<ToptanciBorcListesiForm>())
             {
                 borcListesiForm.ShowDialog();
             }
@@ -279,12 +246,17 @@ namespace StokTakip.Forms
             if (dgvToptancilar.SelectedRows.Count > 0)
             {
                 DataGridViewRow selectedRow = dgvToptancilar.SelectedRows[0];
-                string toptanciAdi = selectedRow.Cells["colToptanciAdi"].Value?.ToString() ?? "";
-                decimal mevcutBorc = decimal.TryParse(selectedRow.Cells["colBorc"].Value?.ToString(), out decimal borc) ? borc : 0;
+                int wholesalerId = Convert.ToInt32(selectedRow.Cells["colId"].Value);
+                var wholesaler = _context.Wholesalers.Find(wholesalerId);
 
-                using (var hesapDetayForm = new ToptanciHesapDetayiForm(toptanciAdi, mevcutBorc))
+                if (wholesaler != null)
                 {
-                    hesapDetayForm.ShowDialog();
+                    using (var hesapDetayForm = _serviceProvider.GetRequiredService<ToptanciHesapDetayiForm>())
+                    {
+                        // Pass wholesaler to the form
+                        hesapDetayForm.SetWholesaler(wholesaler);
+                        hesapDetayForm.ShowDialog();
+                    }
                 }
             }
             else
@@ -298,38 +270,20 @@ namespace StokTakip.Forms
             if (dgvToptancilar.SelectedRows.Count > 0)
             {
                 DataGridViewRow selectedRow = dgvToptancilar.SelectedRows[0];
-                string mevcutToptanciAdi = selectedRow.Cells["colToptanciAdi"].Value?.ToString() ?? "";
-                decimal mevcutBorc = decimal.TryParse(selectedRow.Cells["colBorc"].Value?.ToString(), out decimal borc) ? borc : 0;
+                int wholesalerId = Convert.ToInt32(selectedRow.Cells["colId"].Value);
+                var wholesaler = _context.Wholesalers.Find(wholesalerId);
 
-                using (var duzenleForm = new ToptanciYeniKayitForm(true))
+                if (wholesaler != null)
                 {
-                    // Load existing data from form fields
-                    duzenleForm.LoadToptanciData(
-                        toptanciAdi: mevcutToptanciAdi,
-                        sirketYetkisi: txtSirketYetkisi.Text,
-                        email: txtEmail.Text,
-                        internetAdresi: txtInternetAdresi.Text,
-                        vDaire: txtVDaire.Text,
-                        vNo: txtVNo.Text,
-                        adres: txtAdres.Text,
-                        isTelefonu: txtIsTelefonu.Text,
-                        gsmTelefonu: txtGsmTelefonu.Text,
-                        fax: txtFax.Text,
-                        ozelNotlar: txtOzelNotlar.Text,
-                        toptanciyaOlanBorcunuz: mevcutBorc
-                    );
-
-                    if (duzenleForm.ShowDialog() == DialogResult.OK)
+                    using (var duzenleForm = _serviceProvider.GetRequiredService<ToptanciYeniKayitForm>())
                     {
-                        // Update grid with new data
-                        selectedRow.Cells["colToptanciAdi"].Value = duzenleForm.ToptanciAdi;
-                        selectedRow.Cells["colBorc"].Value = duzenleForm.ToptanciyaOlanBorcunuz.ToString("F2");
+                        duzenleForm.LoadToptanciData(wholesaler);
 
-                        // Update form fields
-                        LoadToptanciDetailsFromForm(duzenleForm);
-                        UpdateTotalDebt();
-
-                        MessageBox.Show("Toptancı bilgileri başarıyla güncellendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (duzenleForm.ShowDialog() == DialogResult.OK)
+                        {
+                            LoadWholesalerData(); // Refresh data
+                            MessageBox.Show("Toptancı bilgileri başarıyla güncellendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                 }
             }
@@ -339,19 +293,40 @@ namespace StokTakip.Forms
             }
         }
 
-        private void LoadToptanciDetailsFromForm(ToptanciYeniKayitForm form)
+        private void ClearFields()
         {
-            txtToptanciAdi.Text = form.ToptanciAdi;
-            txtSirketYetkisi.Text = form.SirketYetkisi;
-            txtEmail.Text = form.Email;
-            txtInternetAdresi.Text = form.InternetAdresi;
-            txtVDaire.Text = form.VDaire;
-            txtVNo.Text = form.VNo;
-            txtAdres.Text = form.Adres;
-            txtIsTelefonu.Text = form.IsTelefonu;
-            txtGsmTelefonu.Text = form.GsmTelefonu;
-            txtFax.Text = form.Fax;
-            txtOzelNotlar.Text = form.OzelNotlar;
+            txtToptanciAdi.Clear();
+            txtSirketYetkisi.Clear();
+            txtEmail.Clear();
+            txtInternetAdresi.Clear();
+            txtVDaire.Clear();
+            txtVNo.Clear();
+            txtAdres.Clear();
+            txtIsTelefonu.Clear();
+            txtGsmTelefonu.Clear();
+            txtFax.Clear();
+            txtOzelNotlar.Clear();
+        }
+
+        private void LoadToptanciDetails(DataGridViewRow row)
+        {
+            int wholesalerId = Convert.ToInt32(row.Cells["colId"].Value);
+            var wholesaler = _context.Wholesalers.Find(wholesalerId);
+
+            if (wholesaler != null)
+            {
+                txtToptanciAdi.Text = wholesaler.Name;
+                txtSirketYetkisi.Text = wholesaler.ContactPerson;
+                txtEmail.Text = wholesaler.Email;
+                txtInternetAdresi.Text = wholesaler.Website;
+                txtVDaire.Text = wholesaler.TaxOffice;
+                txtVNo.Text = wholesaler.TaxNumber;
+                txtAdres.Text = wholesaler.Address;
+                txtIsTelefonu.Text = wholesaler.BusinessPhone;
+                txtGsmTelefonu.Text = wholesaler.MobilePhone;
+                txtFax.Text = wholesaler.Fax;
+                txtOzelNotlar.Text = wholesaler.Notes;
+            }
         }
     }
 }

@@ -33,6 +33,6 @@ namespace StokTakip.Models
         [StringLength(50)]
         public string UserName { get; set; } = "Admin";
 
-        public DateTime MovementDate { get; set; } = DateTime.Now;
+        public DateTime MovementDate { get; set; } = new DateTime(2025, 1, 1);
     }
 }

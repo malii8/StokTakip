@@ -1,15 +1,22 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using StokTakip.Data;
+using Microsoft.EntityFrameworkCore;
+using StokTakip.Models;
 
 namespace StokTakip.Forms
 {
     public partial class AsgariStokAltiForm : Form
     {
-        public AsgariStokAltiForm()
+        private readonly StokTakipDbContext _context;
+
+        public AsgariStokAltiForm(StokTakipDbContext context)
         {
+            _context = context;
             InitializeComponent();
-            LoadSampleData();
+            LoadProductGroups(); // Load groups first
+            LoadLowStockProducts(); // Then load products
             SetupEventHandlers();
         }
 
@@ -21,48 +28,56 @@ namespace StokTakip.Forms
             btnExcelAktar.Click += BtnExcelAktar_Click;
         }
 
-        private void LoadSampleData()
+        private void LoadProductGroups()
         {
-            // Load product groups
             cmbUrunGrubu.Items.Clear();
             cmbUrunGrubu.Items.Add("Tümü");
-            cmbUrunGrubu.Items.Add("BİSKÜVİ");
-            cmbUrunGrubu.Items.Add("FİLTRE");
-            cmbUrunGrubu.Items.Add("SALÇA");
-            cmbUrunGrubu.Items.Add("YAĞ");
-            cmbUrunGrubu.Items.Add("DETERJAN");
+            try
+            {
+                var groups = _context.ProductGroups.OrderBy(g => g.Name).ToList();
+                foreach (var group in groups)
+                {
+                    cmbUrunGrubu.Items.Add(group.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ürün grupları yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             cmbUrunGrubu.SelectedIndex = 0;
+        }
 
-            // Sample data for products below minimum stock
+        private void LoadLowStockProducts()
+        {
             dgvAsgariStokAlti.Rows.Clear();
 
-            string[] lowStockProducts = {
-                "000002|OE 688 PASSAT YAĞ B7|30|0|Adet|100,00|150,00|FİLTRE",
-                "8690504034506|ÜLKER ALBENİ 35 GR|4|4|Adet|7,00|10,00|BİSKÜVİ",
-                "8690876010016|YUDUM 1 LT SIVI YAĞ|1|3|Adet|55,00|75,00|YAĞ",
-                "8690511010128|ABC ÇAMAŞIR SUYU 4000 ML|2|12|Adet|70,00|90,00|DETERJAN",
-                "8690575012519|TAMEK DOMATES SALÇASI 830 GR|1|7|Adet|45,00|60,00|SALÇA",
-                "8690123456789|COCA COLA 330 ML|0|5|Adet|3,50|5,00|İÇECEK",
-                "8690987654321|ÜLKER ÇOKOKREM 350 GR|2|8|Adet|18,00|25,00|KREMA",
-                "8690147258369|PINAR SÜT 1 LT|1|6|Adet|8,50|12,00|SÜT ÜRÜNLERİ"
-            };
-
-            foreach (string product in lowStockProducts)
+            try
             {
-                string[] parts = product.Split('|');
-                dgvAsgariStokAlti.Rows.Add(
-                    parts[0], // Barkod No
-                    parts[1], // Ürünün Adı
-                    parts[2], // Asgari Stok
-                    parts[3], // Mevcut Stok
-                    parts[4], // Ölçü Birimi
-                    parts[5], // Alış Fiyatı
-                    parts[6], // Satış Fiyatı
-                    parts[7]  // Ürün Grubu
-                );
-            }
+                var lowStockProducts = _context.Products
+                    .Include(p => p.ProductGroup)
+                    .Where(p => p.CurrentStock <= p.MinimumStock && p.IsActive)
+                    .ToList();
 
-            UpdateRecordCount();
+                foreach (var product in lowStockProducts)
+                {
+                    dgvAsgariStokAlti.Rows.Add(
+                        product.BarcodeNo, // Barkod No
+                        product.Name, // Ürünün Adı
+                        product.MinimumStock.ToString("F1"), // Asgari Stok
+                        product.CurrentStock.ToString("F1"), // Mevcut Stok
+                        product.Unit, // Ölçü Birimi
+                        product.PurchasePrice.ToString("F2"), // Alış Fiyatı
+                        product.SalePrice.ToString("F2"), // Satış Fiyatı
+                        product.ProductGroup?.Name ?? "BELİRTİLMEDİ"  // Ürün Grubu
+                    );
+                }
+
+                UpdateRecordCount();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Asgari stok altındaki ürünler yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void UpdateRecordCount()
@@ -78,63 +93,61 @@ namespace StokTakip.Forms
             lblListelenenKayitSayisi.Text = visibleRowCount.ToString();
         }
 
+        private void BtnYenile_Click(object? sender, EventArgs e)
+        {
+            LoadLowStockProducts();
+            txtUrunAra.Clear();
+            cmbUrunGrubu.SelectedIndex = 0;
+        }
+
         private void TxtUrunAra_TextChanged(object? sender, EventArgs e)
         {
-            string searchText = txtUrunAra.Text.ToUpper();
-
-            foreach (DataGridViewRow row in dgvAsgariStokAlti.Rows)
-            {
-                if (row.IsNewRow) continue;
-
-                string barkod = row.Cells["colBarkodNo"].Value?.ToString()?.ToUpper() ?? "";
-                string urunAdi = row.Cells["colUrunAdi"].Value?.ToString()?.ToUpper() ?? "";
-                string urunGrubu = row.Cells["colUrunGrubu"].Value?.ToString()?.ToUpper() ?? "";
-
-                bool visible = string.IsNullOrEmpty(searchText) ||
-                              barkod.Contains(searchText) ||
-                              urunAdi.Contains(searchText) ||
-                              urunGrubu.Contains(searchText);
-
-                row.Visible = visible && IsGroupFilterMatched(row);
-            }
-
-            UpdateRecordCount();
+            FilterData();
         }
 
         private void CmbUrunGrubu_SelectedIndexChanged(object? sender, EventArgs e)
         {
+            FilterData();
+        }
+
+        private void FilterData()
+        {
+            string searchText = txtUrunAra.Text.ToUpper();
+            string? selectedGroup = cmbUrunGrubu.SelectedItem?.ToString();
+
             foreach (DataGridViewRow row in dgvAsgariStokAlti.Rows)
             {
                 if (row.IsNewRow) continue;
-                row.Visible = IsGroupFilterMatched(row) && IsSearchFilterMatched(row);
+
+                bool visible = true;
+
+                // Filter by search text
+                if (!string.IsNullOrEmpty(searchText))
+                {
+                    string barkod = row.Cells["colBarkodNo"].Value?.ToString()?.ToUpper() ?? "";
+                    string urunAdi = row.Cells["colUrunAdi"].Value?.ToString()?.ToUpper() ?? "";
+                    string urunGrubu = row.Cells["colUrunGrubu"].Value?.ToString()?.ToUpper() ?? "";
+
+                    if (!(barkod.Contains(searchText) || urunAdi.Contains(searchText) || urunGrubu.Contains(searchText)))
+                    {
+                        visible = false;
+                    }
+                }
+
+                // Filter by product group
+                if (visible && selectedGroup != "Tümü" && !string.IsNullOrEmpty(selectedGroup))
+                {
+                    string rowGroup = row.Cells["colUrunGrubu"].Value?.ToString() ?? "";
+                    if (!rowGroup.ToUpper().Contains(selectedGroup.ToUpper()))
+                    {
+                        visible = false;
+                    }
+                }
+
+                row.Visible = visible;
             }
 
             UpdateRecordCount();
-        }
-
-        private bool IsGroupFilterMatched(DataGridViewRow row)
-        {
-            string? selectedGroup = cmbUrunGrubu.SelectedItem?.ToString();
-            if (string.IsNullOrEmpty(selectedGroup) || selectedGroup == "Tümü")
-                return true;
-
-            string rowGroup = row.Cells["colUrunGrubu"].Value?.ToString() ?? "";
-            return rowGroup.ToUpper().Contains(selectedGroup.ToUpper());
-        }
-
-        private bool IsSearchFilterMatched(DataGridViewRow row)
-        {
-            string searchText = txtUrunAra.Text.ToUpper();
-            if (string.IsNullOrEmpty(searchText))
-                return true;
-
-            string barkod = row.Cells["colBarkodNo"].Value?.ToString()?.ToUpper() ?? "";
-            string urunAdi = row.Cells["colUrunAdi"].Value?.ToString()?.ToUpper() ?? "";
-            string urunGrubu = row.Cells["colUrunGrubu"].Value?.ToString()?.ToUpper() ?? "";
-
-            return barkod.Contains(searchText) ||
-                   urunAdi.Contains(searchText) ||
-                   urunGrubu.Contains(searchText);
         }
 
         private void BtnYazdir_Click(object? sender, EventArgs e)

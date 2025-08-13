@@ -15,7 +15,7 @@ namespace StokTakip.Forms
             InitializeComponent();
             _serviceProvider = serviceProvider;
             _context = context;
-            
+
             btnUrunGiris.Click += new EventHandler(btnUrunGiris_Click);
             btnSatisİslem.Click += new EventHandler(btnSatisİslem_Click);
             btnFiyatGor.Click += new EventHandler(btnFiyatGor_Click);
@@ -27,7 +27,7 @@ namespace StokTakip.Forms
 
         private void btnUrunGiris_Click(object? sender, EventArgs e)
         {
-            UrunGirisForm urunGirisForm = new UrunGirisForm(_context);
+            var urunGirisForm = _serviceProvider.GetRequiredService<UrunGirisForm>();
             urunGirisForm.ShowDialog();
         }
 
@@ -39,7 +39,7 @@ namespace StokTakip.Forms
 
         private void btnFiyatGor_Click(object? sender, EventArgs e)
         {
-            FiyatGorForm fiyatGorForm = new FiyatGorForm(_context);
+            var fiyatGorForm = _serviceProvider.GetRequiredService<FiyatGorForm>();
             fiyatGorForm.ShowDialog();
         }
 
@@ -51,7 +51,7 @@ namespace StokTakip.Forms
 
         private void btnIadeİslemleri_Click(object? sender, EventArgs e)
         {
-            MusteriIadeForm musteriIadeForm = new MusteriIadeForm();
+            var musteriIadeForm = _serviceProvider.GetRequiredService<MusteriIadeForm>();
             musteriIadeForm.ShowDialog();
         }
 
@@ -75,7 +75,7 @@ namespace StokTakip.Forms
 
         private void btnToptancilar_Click(object? sender, EventArgs e)
         {
-            ToptanciKayitForm toptanciKayitForm = new ToptanciKayitForm(_context);
+            var toptanciKayitForm = _serviceProvider.GetRequiredService<ToptanciKayitForm>();
             toptanciKayitForm.ShowDialog();
         }
     }

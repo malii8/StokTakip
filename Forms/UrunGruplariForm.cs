@@ -1,14 +1,21 @@
 using System;
 using System.Windows.Forms;
+using StokTakip.Data;
+using StokTakip.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace StokTakip.Forms
 {
     public partial class UrunGruplariForm : Form
     {
-        public UrunGruplariForm()
+        private readonly StokTakipDbContext _context;
+
+        public UrunGruplariForm(StokTakipDbContext context)
         {
+            _context = context;
             InitializeComponent();
-            LoadSampleData();
+            LoadProductGroups(); // Load data from DB
             SetupEventHandlers();
         }
 
@@ -20,17 +27,32 @@ namespace StokTakip.Forms
             txtUrunGrubuAdi.TextChanged += TxtUrunGrubuAdi_TextChanged;
         }
 
-        private void LoadSampleData()
+        private void LoadProductGroups()
         {
-            // Load sample product groups
-            dgvUrunGruplari.Rows.Add("1", "BİSKÜVİ");
-            dgvUrunGruplari.Rows.Add("2", "FİLTRE");
-            dgvUrunGruplari.Rows.Add("3", "SALÇA");
-            dgvUrunGruplari.Rows.Add("4", "TEXT11");
-            dgvUrunGruplari.Rows.Add("5", "YAĞ");
+            dgvUrunGruplari.Rows.Clear();
+            try
+            {
+                var groups = _context.ProductGroups.OrderBy(g => g.Name).ToList();
+                foreach (var group in groups)
+                {
+                    dgvUrunGruplari.Rows.Add(
+                        group.Id,
+                        group.Name
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ürün grupları yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void TxtUrunGrubuAdi_TextChanged(object? sender, EventArgs e)
+        {
+            FilterGroups();
+        }
+
+        private void FilterGroups()
         {
             string searchText = txtUrunGrubuAdi.Text.ToLower();
 
@@ -52,12 +74,35 @@ namespace StokTakip.Forms
         {
             if (dgvUrunGruplari.SelectedRows.Count > 0)
             {
-                var result = MessageBox.Show("Seçili ürün grubunu silmek istediğinizden emin misiniz?",
-                    "Grup Sil", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                int groupId = Convert.ToInt32(dgvUrunGruplari.SelectedRows[0].Cells["colId"].Value);
+                var groupToDelete = _context.ProductGroups.Find(groupId);
 
-                if (result == DialogResult.Yes)
+                if (groupToDelete != null)
                 {
-                    dgvUrunGruplari.Rows.RemoveAt(dgvUrunGruplari.SelectedRows[0].Index);
+                    // Check if there are any products associated with this group
+                    if (_context.Products.Any(p => p.ProductGroupId == groupId))
+                    {
+                        MessageBox.Show("Bu ürün grubuna bağlı ürünler bulunmaktadır. Lütfen önce ürünleri başka bir gruba taşıyın veya silin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    var result = MessageBox.Show($"Seçili ürün grubunu ({groupToDelete.Name}) silmek istediğinizden emin misiniz?",
+                        "Grup Sil", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            _context.ProductGroups.Remove(groupToDelete);
+                            _context.SaveChanges();
+                            LoadProductGroups(); // Refresh data
+                            MessageBox.Show("Ürün grubu başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Ürün grubu silinirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
                 }
             }
             else
@@ -75,8 +120,32 @@ namespace StokTakip.Forms
 
             if (!string.IsNullOrWhiteSpace(newGroupName))
             {
-                int newIndex = dgvUrunGruplari.Rows.Count + 1;
-                dgvUrunGruplari.Rows.Add(newIndex.ToString(), newGroupName.ToUpper());
+                try
+                {
+                    // Check if group already exists
+                    if (_context.ProductGroups.Any(g => g.Name == newGroupName))
+                    {
+                        MessageBox.Show("Bu ürün grubu zaten mevcut!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    var newGroup = new ProductGroup
+                    {
+                        Name = newGroupName,
+                        Description = $"{newGroupName} ürün grubu",
+                        CreatedDate = DateTime.Now
+                    };
+
+                    _context.ProductGroups.Add(newGroup);
+                    _context.SaveChanges();
+
+                    LoadProductGroups(); // Refresh data
+                    MessageBox.Show("Ürün grubu başarıyla eklendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ürün grubu eklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
     }

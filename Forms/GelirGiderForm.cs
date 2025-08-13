@@ -1,21 +1,32 @@
 using System;
 using System.Windows.Forms;
+using StokTakip.Data;
+using StokTakip.Models;
 
 namespace StokTakip.Forms
 {
     public partial class GelirGiderForm : Form
     {
+        private readonly StokTakipDbContext _context;
+
         public string HareketTuru { get; set; } = string.Empty;
         public string Sebep { get; set; } = string.Empty;
         public decimal Tutar { get; set; }
         public string Aciklama { get; set; } = string.Empty;
         public string IslemYapan { get; set; } = string.Empty;
 
-        public GelirGiderForm(string islemTuru)
+        public GelirGiderForm(StokTakipDbContext context)
         {
+            _context = context;
             InitializeComponent();
-            this.Text = islemTuru == "Gelir" ? "Yeni Gelir Girişi" : "Yeni Gider Girişi";
-            this.HareketTuru = islemTuru;
+            // HareketTuru will be set by the calling form (e.g., KasaForm)
+            // LoadForm(); // Call LoadForm after HareketTuru is set
+        }
+
+        public void SetMovementType(string movementType)
+        {
+            HareketTuru = movementType;
+            this.Text = HareketTuru == "Gelir" ? "Yeni Gelir Girişi" : "Yeni Gider Girişi";
             LoadForm();
         }
 
@@ -24,19 +35,22 @@ namespace StokTakip.Forms
             // Initialize combo box items
             cmbSebep.Items.Clear();
 
+            // In a real application, these reasons might come from a lookup table in the database
             if (HareketTuru == "Gelir")
             {
                 cmbSebep.Items.AddRange(new string[] {
                     "Satış Geliri",
+                    "Müşteri Tahsilatı",
                     "Faiz Geliri",
                     "Kira Geliri",
                     "Diğer Gelir"
                 });
             }
-            else
+            else // Gider
             {
                 cmbSebep.Items.AddRange(new string[] {
-                    "Satın Alma",
+                    "Ürün Alışı",
+                    "Toptancı Ödemesi",
                     "Kira Gideri",
                     "Personel Gideri",
                     "Elektrik Gideri",
@@ -76,8 +90,30 @@ namespace StokTakip.Forms
                 Aciklama = txtAciklama.Text;
                 IslemYapan = cmbIslemYapan.Text;
 
-                this.DialogResult = DialogResult.OK;
-                this.Close();
+                try
+                {
+                    var cashMovement = new CashMovement
+                    {
+                        MovementType = HareketTuru,
+                        Amount = Tutar,
+                        MovementDate = dtpTarih.Value.Date + dtpSaat.Value.TimeOfDay,
+                        Description = Sebep,
+                        Notes = Aciklama,
+                        UserName = IslemYapan
+                    };
+
+                    _context.CashMovements.Add(cashMovement);
+                    _context.SaveChanges();
+
+                    MessageBox.Show($"{HareketTuru} başarıyla kaydedildi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"{HareketTuru} kaydedilirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

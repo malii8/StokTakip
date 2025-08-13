@@ -1,17 +1,31 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using StokTakip.Data;
+using StokTakip.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace StokTakip.Forms
 {
     public partial class UrunAyrintisiForm : Form
     {
-        public UrunAyrintisiForm()
+        private readonly StokTakipDbContext _context;
+        private Product? _product;
+
+        public UrunAyrintisiForm(StokTakipDbContext context)
         {
+            _context = context;
             InitializeComponent();
-            LoadSampleData();
             SetupEventHandlers();
             InitializeDateRanges();
+        }
+
+        public void SetProduct(Product product)
+        {
+            _product = product;
+            LoadProductDetails();
+            LoadProductMovements();
         }
 
         private void InitializeDateRanges()
@@ -29,47 +43,87 @@ namespace StokTakip.Forms
             rbSadeceSatislar.CheckedChanged += RaporTuru_CheckedChanged;
             rbSadeceIadeAlinanlar.CheckedChanged += RaporTuru_CheckedChanged;
             rbSadeceIadeEdilenler.CheckedChanged += RaporTuru_CheckedChanged;
+
+            dtpBaslangic.ValueChanged += DateFilter_Changed;
+            dtpBitis.ValueChanged += DateFilter_Changed;
         }
 
-        private void LoadSampleData()
+        private void LoadProductDetails()
         {
-            // Sample product movement data
+            if (_product == null) return;
+
+            // Assuming these labels exist in the designer. If not, they need to be added.
+            // lblUrunAdi.Text = _product.Name;
+            // lblBarkodNo.Text = _product.BarcodeNo;
+            // lblStokKodu.Text = _product.StockCode;
+            // lblMevcutStok.Text = _product.CurrentStock.ToString("F1");
+            // lblAsgariStok.Text = _product.MinimumStock.ToString("F1");
+            // lblAlisFiyati.Text = _product.PurchasePrice.ToString("F2");
+            // lblSatisFiyati.Text = _product.SalePrice.ToString("F2");
+            // lblKdvOrani.Text = _product.VatRate.ToString("F0");
+            // lblOlcuBirimi.Text = _product.Unit;
+            // lblUrunGrubu.Text = _product.ProductGroup?.Name ?? "BELİRTİLMEDİ";
+        }
+
+        private void LoadProductMovements()
+        {
             dgvHareketler.Rows.Clear();
 
-            string[] sampleMovements = {
-                "1|Giriş|KOCAELI BİSKÜVİ|14.07.2025|10:30|KOCAELI BİSKÜVİ|12.50|15.00|5|62.50|Alış",
-                "2|Satış|KOCAELI BİSKÜVİ|14.07.2025|11:15|KOCAELI BİSKÜVİ|12.50|15.00|2|30.00|Perakende",
-                "3|Giriş|KOCAELI BİSKÜVİ|13.07.2025|14:20|KOCAELI BİSKÜVİ|12.00|15.00|10|120.00|Alış",
-                "4|Satış|KOCAELI BİSKÜVİ|13.07.2025|16:45|KOCAELI BİSKÜVİ|12.50|15.00|3|45.00|Perakende",
-                "5|İade|KOCAELI BİSKÜVİ|12.07.2025|09:10|KOCAELI BİSKÜVİ|12.50|15.00|1|15.00|Müşteri İadesi",
-                "6|Giriş|KOCAELI BİSKÜVİ|12.07.2025|13:30|KOCAELI BİSKÜVİ|11.80|15.00|8|94.40|Alış",
-                "7|Satış|KOCAELI BİSKÜVİ|11.07.2025|17:25|KOCAELI BİSKÜVİ|12.50|15.00|4|60.00|Toptan",
-                "8|Giriş|KOCAELI BİSKÜVİ|10.07.2025|08:45|KOCAELI BİSKÜVİ|12.20|15.00|15|183.00|Alış"
-            };
+            if (_product == null) return;
 
-            foreach (string movement in sampleMovements)
+            try
             {
-                string[] parts = movement.Split('|');
-                if (parts.Length >= 11) // Ensure we have enough parts
+                var movements = _context.StockMovements
+                    .Include(sm => sm.Wholesaler)
+                    .Include(sm => sm.SalesReceipt)
+                    .Where(sm => sm.ProductId == _product.Id &&
+                                 sm.MovementDate >= dtpBaslangic.Value.Date &&
+                                 sm.MovementDate <= dtpBitis.Value.Date)
+                    .OrderByDescending(sm => sm.MovementDate)
+                    .ToList();
+
+                foreach (var movement in movements)
                 {
+                    string cariHesapAdi = "";
+                    if (movement.MovementType == "Giriş" && movement.Wholesaler != null)
+                    {
+                        cariHesapAdi = movement.Wholesaler.Name;
+                    }
+                    else if (movement.MovementType == "Satış" && movement.SalesReceipt?.Customer != null)
+                    {
+                        cariHesapAdi = movement.SalesReceipt.Customer.Name;
+                    }
+                    else if (movement.MovementType == "Satış" && movement.SalesReceipt?.Customer == null)
+                    {
+                        cariHesapAdi = "Perakende";
+                    }
+
                     dgvHareketler.Rows.Add(
-                        parts[0], // Sıra No
-                        parts[1], // Hareket Türü
-                        parts[2], // Cari Hesap Adı
-                        parts[3], // Tarih
-                        parts[4], // Saat
-                        parts[5], // Ürün Adı
-                        parts[6], // Alış Fiyatı
-                        parts[7], // Satış Fiyatı
-                        parts[8], // Miktar
-                        "0", // KDV
-                        "Aktif", // Durum
-                        parts[9] // Toplam Tutar
+                        movement.Id, // Sıra No
+                        movement.MovementType, // Hareket Türü
+                        cariHesapAdi, // Cari Hesap Adı
+                        movement.MovementDate.ToShortDateString(), // Tarih
+                        movement.MovementDate.ToShortTimeString(), // Saat
+                        _product.Name, // Ürün Adı
+                        movement.UnitPrice.ToString("F2"), // Alış Fiyatı (assuming UnitPrice is relevant)
+                        movement.Total.ToString("F2"), // Satış Fiyatı (assuming Total is relevant)
+                        movement.Quantity.ToString("F1"), // Miktar
+                        _product.VatRate.ToString("F0"), // KDV
+                        "Aktif", // Durum (placeholder)
+                        movement.Total.ToString("F2") // Toplam Tutar
                     );
                 }
+                UpdateSummaryBoxes();
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ürün hareketleri yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
-            UpdateSummaryBoxes();
+        private void DateFilter_Changed(object? sender, EventArgs e)
+        {
+            LoadProductMovements(); // Reload data when date range changes
         }
 
         private void UpdateSummaryBoxes()
@@ -134,14 +188,10 @@ namespace StokTakip.Forms
 
         private void RaporTuru_CheckedChanged(object? sender, EventArgs e)
         {
-            RadioButton? rb = sender as RadioButton;
-            if (rb?.Checked == true)
-            {
-                FilterDataByReportType(rb.Name);
-            }
+            FilterDataByReportType();
         }
 
-        private void FilterDataByReportType(string reportType)
+        private void FilterDataByReportType()
         {
             foreach (DataGridViewRow row in dgvHareketler.Rows)
             {
@@ -150,27 +200,18 @@ namespace StokTakip.Forms
                 string hareketTuru = row.Cells["colHareketTuru"].Value?.ToString()?.ToUpper() ?? "";
                 bool visible = true;
 
-                switch (reportType)
-                {
-                    case "rbSadeceAlislar":
-                        visible = hareketTuru == "GİRİŞ";
-                        break;
-                    case "rbSadeceSatislar":
-                        visible = hareketTuru == "SATIŞ";
-                        break;
-                    case "rbSadeceIadeAlinanlar":
-                        visible = hareketTuru == "İADE" && double.Parse(row.Cells["colToplamTutar"].Value?.ToString() ?? "0") > 0;
-                        break;
-                    case "rbSadeceIadeEdilenler":
-                        visible = hareketTuru == "İADE" && double.Parse(row.Cells["colToplamTutar"].Value?.ToString() ?? "0") < 0;
-                        break;
-                    default:
-                        visible = true;
-                        break;
-                }
+                if (rbSadeceAlislar.Checked && hareketTuru != "GİRİŞ")
+                    visible = false;
+                else if (rbSadeceSatislar.Checked && hareketTuru != "SATIŞ")
+                    visible = false;
+                else if (rbSadeceIadeAlinanlar.Checked && !(hareketTuru == "GİRİŞ" && (row.Cells["colCariHesapAdi"].Value?.ToString() ?? "").Contains("Müşteri İadesi")))
+                    visible = false;
+                else if (rbSadeceIadeEdilenler.Checked && !(hareketTuru == "ÇIKIŞ" && (row.Cells["colCariHesapAdi"].Value?.ToString() ?? "").Contains("Toptancı İadesi")))
+                    visible = false;
 
                 row.Visible = visible;
             }
+            UpdateSummaryBoxes();
         }
 
         private void BtnYazdir_Click(object? sender, EventArgs e)

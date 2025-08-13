@@ -153,68 +153,68 @@ namespace StokTakip.Data
 
             // Seed sample Products
             modelBuilder.Entity<Product>().HasData(
-                new Product 
-                { 
-                    Id = 1, 
-                    BarcodeNo = "8690511010128", 
-                    Name = "ABC ÇAMAŞIR SUYU 4000 ML", 
-                    StockCode = "ABC-4000", 
+                new Product
+                {
+                    Id = 1,
+                    BarcodeNo = "8690511010128",
+                    Name = "ABC ÇAMAŞIR SUYU 4000 ML",
+                    StockCode = "ABC-4000",
                     ProductGroupId = 5,
-                    PurchasePrice = 70.00m, 
-                    SalePrice = 90.00m, 
-                    CurrentStock = 12, 
+                    PurchasePrice = 70.00m,
+                    SalePrice = 90.00m,
+                    CurrentStock = 12,
                     MinimumStock = 2,
                     VatRate = 18
                 },
-                new Product 
-                { 
-                    Id = 2, 
-                    BarcodeNo = "8690504034506", 
-                    Name = "ÜLKER ALBENİ 35 GR", 
-                    StockCode = "ULK-ALB", 
+                new Product
+                {
+                    Id = 2,
+                    BarcodeNo = "8690504034506",
+                    Name = "ÜLKER ALBENİ 35 GR",
+                    StockCode = "ULK-ALB",
                     ProductGroupId = 1,
-                    PurchasePrice = 7.00m, 
-                    SalePrice = 10.00m, 
-                    CurrentStock = 4, 
+                    PurchasePrice = 7.00m,
+                    SalePrice = 10.00m,
+                    CurrentStock = 4,
                     MinimumStock = 4,
                     VatRate = 8
                 },
-                new Product 
-                { 
-                    Id = 3, 
-                    BarcodeNo = "8690876010016", 
-                    Name = "YUDUM 1 LT SIVI YAĞ", 
-                    StockCode = "YUD-1LT", 
+                new Product
+                {
+                    Id = 3,
+                    BarcodeNo = "8690876010016",
+                    Name = "YUDUM 1 LT SIVI YAĞ",
+                    StockCode = "YUD-1LT",
                     ProductGroupId = 4,
-                    PurchasePrice = 55.00m, 
-                    SalePrice = 75.00m, 
-                    CurrentStock = 3, 
+                    PurchasePrice = 55.00m,
+                    SalePrice = 75.00m,
+                    CurrentStock = 3,
                     MinimumStock = 1,
                     VatRate = 8
                 },
-                new Product 
-                { 
-                    Id = 4, 
-                    BarcodeNo = "8690575012519", 
-                    Name = "TAMEK DOMATES SALÇASI 830 GR", 
-                    StockCode = "TAM-830", 
+                new Product
+                {
+                    Id = 4,
+                    BarcodeNo = "8690575012519",
+                    Name = "TAMEK DOMATES SALÇASI 830 GR",
+                    StockCode = "TAM-830",
                     ProductGroupId = 3,
-                    PurchasePrice = 45.00m, 
-                    SalePrice = 60.00m, 
-                    CurrentStock = 7, 
+                    PurchasePrice = 45.00m,
+                    SalePrice = 60.00m,
+                    CurrentStock = 7,
                     MinimumStock = 1,
                     VatRate = 8
                 },
-                new Product 
-                { 
-                    Id = 5, 
-                    BarcodeNo = "000002", 
-                    Name = "OE 688 PASSAT YAĞ B7", 
-                    StockCode = "OE-688", 
+                new Product
+                {
+                    Id = 5,
+                    BarcodeNo = "000002",
+                    Name = "OE 688 PASSAT YAĞ B7",
+                    StockCode = "OE-688",
                     ProductGroupId = 2,
-                    PurchasePrice = 100.00m, 
-                    SalePrice = 150.00m, 
-                    CurrentStock = 0, 
+                    PurchasePrice = 100.00m,
+                    SalePrice = 150.00m,
+                    CurrentStock = 0,
                     MinimumStock = 30,
                     VatRate = 18
                 }
@@ -222,10 +222,10 @@ namespace StokTakip.Data
 
             // Seed sample Wholesalers
             modelBuilder.Entity<Wholesaler>().HasData(
-                new Wholesaler 
-                { 
-                    Id = 1, 
-                    Name = "ATS FİLTRE İSTANBUL", 
+                new Wholesaler
+                {
+                    Id = 1,
+                    Name = "ATS FİLTRE İSTANBUL",
                     ContactPerson = "Ahmet Yılmaz",
                     BusinessPhone = "0212 123 45 67",
                     Email = "info@atsfiltre.com",
@@ -234,10 +234,10 @@ namespace StokTakip.Data
                     TaxNumber = "1234567890",
                     Debt = 0.00m
                 },
-                new Wholesaler 
-                { 
-                    Id = 2, 
-                    Name = "LEVENT TİCARET", 
+                new Wholesaler
+                {
+                    Id = 2,
+                    Name = "LEVENT TİCARET",
                     ContactPerson = "Mehmet Kaya",
                     BusinessPhone = "0212 987 65 43",
                     Email = "info@leventticaret.com",

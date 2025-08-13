@@ -16,7 +16,7 @@ namespace StokTakip.Models
         [StringLength(500)]
         public string? Description { get; set; }
 
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = new DateTime(2025, 1, 1);
 
         // Navigation property
         public virtual ICollection<Product> Products { get; set; } = new List<Product>();

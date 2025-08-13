@@ -42,7 +42,7 @@ namespace StokTakip.Models
 
         public bool IsActive { get; set; } = true;
 
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = new DateTime(2025, 1, 1);
         public DateTime? UpdatedDate { get; set; }
 
         // Navigation properties

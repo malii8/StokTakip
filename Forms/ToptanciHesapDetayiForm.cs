@@ -1,23 +1,33 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using StokTakip.Models;
+using StokTakip.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace StokTakip.Forms
 {
     public partial class ToptanciHesapDetayiForm : Form
     {
-        private string toptanciAdi;
-        private decimal mevcutBorc;
+        private Wholesaler? _wholesaler;
+        private readonly StokTakipDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ToptanciHesapDetayiForm(string toptanciAdi, decimal mevcutBorc)
+        public ToptanciHesapDetayiForm(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
+            _context = context;
+            _serviceProvider = serviceProvider;
             InitializeComponent();
-            this.toptanciAdi = toptanciAdi;
-            this.mevcutBorc = mevcutBorc;
             InitializeForm();
+            SetupEventHandlers();
+        }
+
+        public void SetWholesaler(Wholesaler wholesaler)
+        {
+            _wholesaler = wholesaler;
             LoadToptanciBilgileri();
             LoadHesapHareketleri();
-            SetupEventHandlers();
         }
 
         private void InitializeForm()
@@ -55,26 +65,38 @@ namespace StokTakip.Forms
 
         private void LoadToptanciBilgileri()
         {
-            lblToptanciAdi.Text = toptanciAdi;
-            lblMevcutBorc.Text = $"{mevcutBorc:F2} TL";
+            if (_wholesaler == null) return;
 
-            // Sample wholesaler details - in real application, this would come from database
-            lblTelefon.Text = "0212 123 45 67";
-            lblAdres.Text = "Örnek Mahalle, Örnek Sokak No:123, İstanbul";
-            lblEmail.Text = "info@example.com";
-            lblVergiDairesi.Text = "Kadıköy Vergi Dairesi";
-            lblVergiNo.Text = "1234567890";
-            lblSonOdemeTarihi.Text = "10.07.2025";
-            lblSonIslemTarihi.Text = "12.07.2025";
+            lblToptanciAdi.Text = _wholesaler.Name;
+            lblMevcutBorc.Text = $"{_wholesaler.Debt:F2} TL";
+
+            lblTelefon.Text = _wholesaler.BusinessPhone;
+            lblAdres.Text = _wholesaler.Address;
+            lblEmail.Text = _wholesaler.Email;
+            lblVergiDairesi.Text = _wholesaler.TaxOffice;
+            lblVergiNo.Text = _wholesaler.TaxNumber;
+
+            // Find last payment and transaction dates
+            var lastPayment = _context.WholesalerDebtMovements
+                .Where(m => m.WholesalerId == _wholesaler.Id && m.MovementType == "Ödeme")
+                .OrderByDescending(m => m.MovementDate)
+                .FirstOrDefault();
+            lblSonOdemeTarihi.Text = lastPayment?.MovementDate.ToShortDateString() ?? "Yok";
+
+            var lastTransaction = _context.WholesalerDebtMovements
+                .Where(m => m.WholesalerId == _wholesaler.Id)
+                .OrderByDescending(m => m.MovementDate)
+                .FirstOrDefault();
+            lblSonIslemTarihi.Text = lastTransaction?.MovementDate.ToShortDateString() ?? "Yok";
 
             // Set debt status color
-            if (mevcutBorc > 0)
+            if (_wholesaler.Debt > 0)
             {
                 lblMevcutBorc.ForeColor = Color.Red;
                 lblBorcDurumu.Text = "BORÇLU";
                 lblBorcDurumu.ForeColor = Color.Red;
             }
-            else if (mevcutBorc < 0)
+            else if (_wholesaler.Debt < 0)
             {
                 lblMevcutBorc.ForeColor = Color.Green;
                 lblBorcDurumu.Text = "ALACAKLI";
@@ -90,19 +112,49 @@ namespace StokTakip.Forms
 
         private void LoadHesapHareketleri()
         {
-            // Sample transaction data - in real application, this would come from database
             dgvHareketler.Rows.Clear();
 
-            dgvHareketler.Rows.Add("12.07.2025", "Alış Faturası", "AF-2025-001", "250,00", "0,00", "364,70", "Yedek parça alımı");
-            dgvHareketler.Rows.Add("10.07.2025", "Ödeme", "ÖD-2025-015", "0,00", "150,00", "114,70", "Nakit ödeme");
-            dgvHareketler.Rows.Add("08.07.2025", "Alış Faturası", "AF-2025-002", "180,50", "0,00", "264,70", "Filtre alımı");
-            dgvHareketler.Rows.Add("05.07.2025", "Ödeme", "ÖD-2025-014", "0,00", "100,00", "84,20", "Kredi kartı ödeme");
-            dgvHareketler.Rows.Add("03.07.2025", "Alış Faturası", "AF-2025-003", "120,00", "0,00", "184,20", "Motor yağı alımı");
-            dgvHareketler.Rows.Add("01.07.2025", "İade", "İD-2025-001", "0,00", "35,80", "64,20", "Hatalı ürün iadesi");
-            dgvHareketler.Rows.Add("30.06.2025", "Alış Faturası", "AF-2025-004", "100,00", "0,00", "100,00", "Fren balata alımı");
+            if (_wholesaler == null) return;
 
-            ApplyRowColors();
-            ApplyCurrentFilter();
+            try
+            {
+                var movements = _context.WholesalerDebtMovements
+                    .Where(m => m.WholesalerId == _wholesaler.Id)
+                    .OrderByDescending(m => m.MovementDate)
+                    .ToList();
+
+                foreach (var movement in movements)
+                {
+                    string borc = "0,00";
+                    string alacak = "0,00";
+                    if (movement.MovementType == "Alış Faturası" || movement.MovementType == "Borç Ekleme")
+                    {
+                        borc = movement.Amount.ToString("F2");
+                    }
+                    else if (movement.MovementType == "Ödeme" || movement.MovementType == "İade")
+                    {
+                        alacak = movement.Amount.ToString("F2");
+                    }
+
+                    dgvHareketler.Rows.Add(
+                        movement.Id, // Assuming a column for Sira No
+                        movement.MovementDate.ToShortDateString(),
+                        movement.MovementType,
+                        movement.DocumentNumber ?? "",
+                        borc,
+                        alacak,
+                        _wholesaler.Debt.ToString("F2"), // This will show current debt, not debt at time of transaction
+                        movement.Description ?? ""
+                    );
+                }
+
+                ApplyRowColors();
+                ApplyCurrentFilter();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hesap hareketleri yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void ApplyRowColors()
@@ -111,7 +163,7 @@ namespace StokTakip.Forms
             {
                 if (row.IsNewRow) continue;
 
-                string islemTuru = row.Cells["colIslemTuru"].Value?.ToString() ?? "";
+                string islemTuru = row.Cells["colHareketTuru"].Value?.ToString() ?? "";
 
                 switch (islemTuru)
                 {
@@ -228,24 +280,17 @@ namespace StokTakip.Forms
 
         private void BtnOdemeYap_Click(object? sender, EventArgs e)
         {
-            using (var odemeForm = new ToptanciyaOdemeYapForm(toptanciAdi, mevcutBorc))
+            if (_wholesaler == null) return;
+
+            using (var odemeForm = _serviceProvider.GetRequiredService<ToptanciyaOdemeYapForm>())
             {
+                odemeForm.SetWholesaler(_wholesaler);
                 if (odemeForm.ShowDialog() == DialogResult.OK)
                 {
-                    // Update current debt
-                    mevcutBorc = mevcutBorc - odemeForm.OdemeTutari;
-                    LoadToptanciBilgileri();
+                    LoadToptanciBilgileri(); // Refresh wholesaler details
+                    LoadHesapHareketleri(); // Refresh movements
 
-                    // Add new payment transaction
-                    string yeniTarih = DateTime.Now.ToString("dd.MM.yyyy");
-                    dgvHareketler.Rows.Insert(0, yeniTarih, "Ödeme", $"ÖD-{DateTime.Now:yyyy-MMM}",
-                        "0,00", odemeForm.OdemeTutari.ToString("F2"), mevcutBorc.ToString("F2"),
-                        $"{odemeForm.OdemeSekli} ödeme");
-
-                    ApplyRowColors();
-                    ApplyCurrentFilter();
-
-                    MessageBox.Show($"Ödeme başarıyla kaydedildi.\nÖdenen Tutar: {odemeForm.OdemeTutari:F2} TL",
+                    MessageBox.Show($"Ödeme başarıyla kaydedildi.",
                         "Ödeme Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
@@ -253,24 +298,17 @@ namespace StokTakip.Forms
 
         private void BtnBorcEkle_Click(object? sender, EventArgs e)
         {
-            using (var borcForm = new ToptanciBorcunaEklemeForm(toptanciAdi, mevcutBorc))
+            if (_wholesaler == null) return;
+
+            using (var borcForm = _serviceProvider.GetRequiredService<ToptanciBorcunaEklemeForm>())
             {
+                borcForm.SetWholesaler(_wholesaler);
                 if (borcForm.ShowDialog() == DialogResult.OK)
                 {
-                    // Update current debt
-                    mevcutBorc = mevcutBorc + borcForm.EklenecekTutar;
-                    LoadToptanciBilgileri();
+                    LoadToptanciBilgileri(); // Refresh wholesaler details
+                    LoadHesapHareketleri(); // Refresh movements
 
-                    // Add new debt transaction
-                    string yeniTarih = DateTime.Now.ToString("dd.MM.yyyy");
-                    dgvHareketler.Rows.Insert(0, yeniTarih, "Alış Faturası", $"AF-{DateTime.Now:yyyy-MMM}",
-                        borcForm.EklenecekTutar.ToString("F2"), "0,00", mevcutBorc.ToString("F2"),
-                        borcForm.Aciklama);
-
-                    ApplyRowColors();
-                    ApplyCurrentFilter();
-
-                    MessageBox.Show($"Borç ekleme başarıyla kaydedildi.\nEklenen Tutar: {borcForm.EklenecekTutar:F2} TL",
+                    MessageBox.Show($"Borç ekleme başarıyla kaydedildi.",
                         "Borç Ekleme Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }

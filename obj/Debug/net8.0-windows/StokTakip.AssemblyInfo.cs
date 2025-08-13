@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StokTakip")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+398e7cb0843b2f73c4054ede5ec089abc49ec26f")]
 [assembly: System.Reflection.AssemblyProductAttribute("StokTakip")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StokTakip")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,10 +1,16 @@
 using System;
+using System.Linq;
 using System.Windows.Forms;
+using StokTakip.Data;
+using StokTakip.Models;
 
 namespace StokTakip.Forms
 {
     public partial class ToptanciYeniKayitForm : Form
     {
+        private readonly StokTakipDbContext _context;
+        private Wholesaler? _currentWholesaler;
+
         public string ToptanciAdi { get; private set; } = string.Empty;
         public string SirketYetkisi { get; private set; } = string.Empty;
         public string Email { get; private set; } = string.Empty;
@@ -20,11 +26,17 @@ namespace StokTakip.Forms
 
         private bool isEditMode;
 
-        public ToptanciYeniKayitForm(bool editMode = false)
+        public ToptanciYeniKayitForm(StokTakipDbContext context, Wholesaler? wholesaler = null)
         {
+            _context = context;
             InitializeComponent();
-            this.isEditMode = editMode;
+            _currentWholesaler = wholesaler;
+            this.isEditMode = (wholesaler != null);
             InitializeForm();
+            if (isEditMode && _currentWholesaler != null)
+            {
+                LoadToptanciData(_currentWholesaler);
+            }
         }
 
         private void InitializeForm()
@@ -42,23 +54,21 @@ namespace StokTakip.Forms
             }
         }
 
-        public void LoadToptanciData(string toptanciAdi, string sirketYetkisi = "", string email = "",
-            string internetAdresi = "", string vDaire = "", string vNo = "", string adres = "",
-            string isTelefonu = "", string gsmTelefonu = "", string fax = "", string ozelNotlar = "",
-            decimal toptanciyaOlanBorcunuz = 0)
+        public void LoadToptanciData(Wholesaler wholesaler)
         {
-            txtToptanciAdi.Text = toptanciAdi;
-            txtSirketYetkisi.Text = sirketYetkisi;
-            txtEmail.Text = email;
-            txtInternetAdresi.Text = internetAdresi;
-            txtVDaire.Text = vDaire;
-            txtVNo.Text = vNo;
-            txtAdres.Text = adres;
-            txtIsTelefonu.Text = isTelefonu;
-            txtGsmTelefonu.Text = gsmTelefonu;
-            txtFax.Text = fax;
-            txtOzelNotlar.Text = ozelNotlar;
-            txtToptanciyaOlanBorcunuz.Text = toptanciyaOlanBorcunuz.ToString("F2");
+            _currentWholesaler = wholesaler;
+            txtToptanciAdi.Text = wholesaler.Name;
+            txtSirketYetkisi.Text = wholesaler.ContactPerson;
+            txtEmail.Text = wholesaler.Email;
+            txtInternetAdresi.Text = wholesaler.Website;
+            txtVDaire.Text = wholesaler.TaxOffice;
+            txtVNo.Text = wholesaler.TaxNumber;
+            txtAdres.Text = wholesaler.Address;
+            txtIsTelefonu.Text = wholesaler.BusinessPhone;
+            txtGsmTelefonu.Text = wholesaler.MobilePhone;
+            txtFax.Text = wholesaler.Fax;
+            txtOzelNotlar.Text = wholesaler.Notes;
+            txtToptanciyaOlanBorcunuz.Text = wholesaler.Debt.ToString("F2");
         }
 
         private void ClearAllFields()
@@ -81,26 +91,95 @@ namespace StokTakip.Forms
         {
             if (ValidateInput())
             {
-                // Collect data from form
-                ToptanciAdi = txtToptanciAdi.Text.Trim();
-                SirketYetkisi = txtSirketYetkisi.Text.Trim();
-                Email = txtEmail.Text.Trim();
-                InternetAdresi = txtInternetAdresi.Text.Trim();
-                VDaire = txtVDaire.Text.Trim();
-                VNo = txtVNo.Text.Trim();
-                Adres = txtAdres.Text.Trim();
-                IsTelefonu = txtIsTelefonu.Text.Trim();
-                GsmTelefonu = txtGsmTelefonu.Text.Trim();
-                Fax = txtFax.Text.Trim();
-                OzelNotlar = txtOzelNotlar.Text.Trim();
-
-                if (decimal.TryParse(txtToptanciyaOlanBorcunuz.Text, out decimal borc))
+                try
                 {
-                    ToptanciyaOlanBorcunuz = borc;
-                }
+                    // Collect data from form
+                    ToptanciAdi = txtToptanciAdi.Text.Trim();
+                    SirketYetkisi = txtSirketYetkisi.Text.Trim();
+                    Email = txtEmail.Text.Trim();
+                    InternetAdresi = txtInternetAdresi.Text.Trim();
+                    VDaire = txtVDaire.Text.Trim();
+                    VNo = txtVNo.Text.Trim();
+                    Adres = txtAdres.Text.Trim();
+                    IsTelefonu = txtIsTelefonu.Text.Trim();
+                    GsmTelefonu = txtGsmTelefonu.Text.Trim();
+                    Fax = txtFax.Text.Trim();
+                    OzelNotlar = txtOzelNotlar.Text.Trim();
 
-                DialogResult = DialogResult.OK;
-                Close();
+                    if (decimal.TryParse(txtToptanciyaOlanBorcunuz.Text, out decimal borc))
+                    {
+                        ToptanciyaOlanBorcunuz = borc;
+                    }
+
+                    if (isEditMode && _currentWholesaler != null)
+                    {
+                        // Update existing Wholesaler entity
+                        _currentWholesaler.Name = ToptanciAdi;
+                        _currentWholesaler.ContactPerson = SirketYetkisi;
+                        _currentWholesaler.Email = Email;
+                        _currentWholesaler.Website = InternetAdresi;
+                        _currentWholesaler.TaxOffice = VDaire;
+                        _currentWholesaler.TaxNumber = VNo;
+                        _currentWholesaler.Address = Adres;
+                        _currentWholesaler.BusinessPhone = IsTelefonu;
+                        _currentWholesaler.MobilePhone = GsmTelefonu;
+                        _currentWholesaler.Fax = Fax;
+                        _currentWholesaler.Notes = OzelNotlar;
+                        _currentWholesaler.Debt = ToptanciyaOlanBorcunuz;
+                        _currentWholesaler.UpdatedDate = DateTime.Now;
+
+                        _context.Wholesalers.Update(_currentWholesaler);
+                        MessageBox.Show("Toptancı bilgileri başarıyla güncellendi!", "Başarılı",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        // Check if wholesaler with same name or tax number already exists
+                        var existingWholesaler = _context.Wholesalers.FirstOrDefault(w =>
+                            w.Name == ToptanciAdi ||
+                            (!string.IsNullOrEmpty(VNo) && w.TaxNumber == VNo));
+
+                        if (existingWholesaler != null)
+                        {
+                            MessageBox.Show("Bu toptancı adı veya vergi numarası zaten kayıtlı!", "Uyarı",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        // Create new Wholesaler entity
+                        var newWholesaler = new Wholesaler
+                        {
+                            Name = ToptanciAdi,
+                            ContactPerson = SirketYetkisi,
+                            Email = Email,
+                            Website = InternetAdresi,
+                            TaxOffice = VDaire,
+                            TaxNumber = VNo,
+                            Address = Adres,
+                            BusinessPhone = IsTelefonu,
+                            MobilePhone = GsmTelefonu,
+                            Fax = Fax,
+                            Notes = OzelNotlar,
+                            Debt = ToptanciyaOlanBorcunuz,
+                            IsActive = true,
+                            CreatedDate = DateTime.Now
+                        };
+
+                        _context.Wholesalers.Add(newWholesaler);
+                        MessageBox.Show("Toptancı başarıyla kaydedildi!", "Başarılı",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+
+                    _context.SaveChanges();
+
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Toptancı kaydedilirken hata oluştu: {ex.Message}", "Hata",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using StokTakip.Data;
 using StokTakip.Models;
 using System;
@@ -10,11 +11,13 @@ namespace StokTakip.Forms
     public partial class StoklarForm : Form
     {
         private readonly StokTakipDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
 
-        public StoklarForm(StokTakipDbContext context)
+        public StoklarForm(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
             InitializeComponent();
             _context = context;
+            _serviceProvider = serviceProvider;
             LoadProductData();
             SetupEventHandlers();
         }
@@ -47,7 +50,7 @@ namespace StokTakip.Forms
             try
             {
                 dgvUrunler.Rows.Clear();
-                
+
                 var products = _context.Products
                     .Include(p => p.ProductGroup)
                     .Where(p => p.IsActive)
@@ -73,7 +76,7 @@ namespace StokTakip.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ürün verileri yüklenirken hata oluştu: {ex.Message}", "Hata", 
+                MessageBox.Show($"Ürün verileri yüklenirken hata oluştu: {ex.Message}", "Hata",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -120,8 +123,37 @@ namespace StokTakip.Forms
         // Button event handlers
         private void BtnUrunDuzenle_Click(object? sender, EventArgs e)
         {
-            UrunDuzenleForm urunDuzenleForm = new UrunDuzenleForm();
-            urunDuzenleForm.ShowDialog();
+            if (dgvUrunler.SelectedRows.Count > 0)
+            {
+                try
+                {
+                    int productId = Convert.ToInt32(dgvUrunler.SelectedRows[0].Cells["colId"].Value);
+                    var product = _context.Products
+                        .Include(p => p.ProductGroup)
+                        .FirstOrDefault(p => p.Id == productId);
+
+                    if (product != null)
+                    {
+                        using (var editForm = _serviceProvider.GetRequiredService<UrunDuzenleForm>()) // Pass product to the form if needed
+                        {
+                            if (editForm.ShowDialog() == DialogResult.OK)
+                            {
+                                LoadProductData(); // Listeyi yenile
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ürün düzenlenirken hata oluştu: {ex.Message}", "Hata",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Lütfen düzenlemek istediğiniz ürünü seçin.", "Uyarı",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void BtnUrunSil_Click(object? sender, EventArgs e)
@@ -140,31 +172,31 @@ namespace StokTakip.Forms
 
         private void BtnUrunEkle_Click(object? sender, EventArgs e)
         {
-            UrunGirisForm urunGirisForm = new UrunGirisForm(_context);
+            var urunGirisForm = _serviceProvider.GetRequiredService<UrunGirisForm>();
             urunGirisForm.ShowDialog();
         }
 
         private void BtnTopluUrunSil_Click(object? sender, EventArgs e)
         {
-            SilinecekUrunlerForm silinecekUrunlerForm = new SilinecekUrunlerForm(_context);
+            var silinecekUrunlerForm = _serviceProvider.GetRequiredService<SilinecekUrunlerForm>();
             silinecekUrunlerForm.ShowDialog();
         }
 
         private void BtnUrunGruplan_Click(object? sender, EventArgs e)
         {
-            UrunGruplariForm urunGruplariForm = new UrunGruplariForm();
+            var urunGruplariForm = _serviceProvider.GetRequiredService<UrunGruplariForm>();
             urunGruplariForm.ShowDialog();
         }
 
         private void BtnTopluUrunFiyatiDegistirme_Click(object? sender, EventArgs e)
         {
-            FiyatDegistirmeForm fiyatDegistirmeForm = new FiyatDegistirmeForm();
+            var fiyatDegistirmeForm = _serviceProvider.GetRequiredService<FiyatDegistirmeForm>();
             fiyatDegistirmeForm.ShowDialog();
         }
 
         private void BtnUrunDetayi_Click(object? sender, EventArgs e)
         {
-            UrunAyrintisiForm urunAyrintisiForm = new UrunAyrintisiForm();
+            var urunAyrintisiForm = _serviceProvider.GetRequiredService<UrunAyrintisiForm>();
             urunAyrintisiForm.ShowDialog();
         }
 
@@ -180,7 +212,7 @@ namespace StokTakip.Forms
 
         private void BtnAsgariStokAlti_Click(object? sender, EventArgs e)
         {
-            AsgariStokAltiForm asgariStokAltiForm = new AsgariStokAltiForm();
+            var asgariStokAltiForm = _serviceProvider.GetRequiredService<AsgariStokAltiForm>();
             asgariStokAltiForm.ShowDialog();
         }
 

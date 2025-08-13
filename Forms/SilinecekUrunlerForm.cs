@@ -1,6 +1,9 @@
 using System;
+using System.Linq;
 using System.Windows.Forms;
+using Microsoft.EntityFrameworkCore;
 using StokTakip.Data;
+using StokTakip.Models;
 
 namespace StokTakip.Forms
 {
@@ -12,7 +15,7 @@ namespace StokTakip.Forms
         {
             _context = context;
             InitializeComponent();
-            LoadSampleData();
+            LoadProducts(); // Load data from DB
             SetupEventHandlers();
         }
 
@@ -30,18 +33,34 @@ namespace StokTakip.Forms
             chkSadeceStokMiktari.CheckedChanged += ChkSadeceStokMiktari_CheckedChanged;
         }
 
-        private void LoadSampleData()
+        private void LoadProducts()
         {
-            // Sample data for products to be deleted
-            dgvUrunler.Rows.Add("8690511010128", "ABC ÇAMAŞIR SUYU 4000 ML", "12");
-            dgvUrunler.Rows.Add("000002", "OE 688 PASSAT YAĞ B7", "0");
-            dgvUrunler.Rows.Add("000001", "ŞEKER 1KG", "17,5");
-            dgvUrunler.Rows.Add("8690575012519", "TAMEK DOMATES SALÇASI 830 GR", "7");
-            dgvUrunler.Rows.Add("8690504034506", "ÜLKER ALBENİ", "4");
-            dgvUrunler.Rows.Add("8690876010016", "YUDUM 1 LT SIVI YAĞ", "3");
+            dgvUrunler.Rows.Clear();
+            try
+            {
+                var products = _context.Products.Where(p => p.IsActive).ToList();
+                foreach (var product in products)
+                {
+                    dgvUrunler.Rows.Add(
+                        product.BarcodeNo,
+                        product.Name,
+                        product.CurrentStock.ToString("F1"),
+                        product.Id // Hidden ID for deletion
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ürünler yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void TxtUrunAdi_TextChanged(object? sender, EventArgs e)
+        {
+            FilterProducts();
+        }
+
+        private void FilterProducts()
         {
             string searchText = txtUrunAdi.Text.ToLower();
 
@@ -50,7 +69,20 @@ namespace StokTakip.Forms
                 if (row.IsNewRow) continue;
 
                 string productName = row.Cells["colUrunAdi"].Value?.ToString()?.ToLower() ?? "";
-                row.Visible = productName.Contains(searchText);
+                string barcodeNo = row.Cells["colBarkodNo"].Value?.ToString()?.ToLower() ?? "";
+
+                bool visible = productName.Contains(searchText) || barcodeNo.Contains(searchText);
+
+                // Apply stock filter if checkbox is checked
+                if (chkSadeceStokMiktari.Checked)
+                {
+                    decimal currentStock = decimal.TryParse(row.Cells["colMevcutStok"].Value?.ToString(), out decimal stock) ? stock : 0;
+                    if (currentStock != 0)
+                    {
+                        visible = false;
+                    }
+                }
+                row.Visible = visible;
             }
         }
 
@@ -60,11 +92,27 @@ namespace StokTakip.Forms
             {
                 foreach (DataGridViewRow selectedRow in dgvUrunler.SelectedRows)
                 {
-                    string barkodNo = selectedRow.Cells["colBarkodNo"].Value?.ToString() ?? "";
+                    string barcodeNo = selectedRow.Cells["colBarkodNo"].Value?.ToString() ?? "";
                     string urunAdi = selectedRow.Cells["colUrunAdi"].Value?.ToString() ?? "";
+                    string mevcutStok = selectedRow.Cells["colMevcutStok"].Value?.ToString() ?? "";
+                    int productId = Convert.ToInt32(selectedRow.Cells["colId"].Value);
 
-                    // Add to delete list (right panel)
-                    dgvSilinecekler.Rows.Add(barkodNo, urunAdi);
+                    // Check if already added to dgvSilinecekler
+                    bool alreadyAdded = false;
+                    foreach (DataGridViewRow row in dgvSilinecekler.Rows)
+                    {
+                        if (row.IsNewRow) continue;
+                        if (Convert.ToInt32(row.Cells["colSilId"].Value) == productId)
+                        {
+                            alreadyAdded = true;
+                            break;
+                        }
+                    }
+
+                    if (!alreadyAdded)
+                    {
+                        dgvSilinecekler.Rows.Add(productId, barcodeNo, urunAdi, mevcutStok);
+                    }
                 }
             }
         }
@@ -76,39 +124,48 @@ namespace StokTakip.Forms
 
         private void BtnTablodakiUrunleriSil_Click(object? sender, EventArgs e)
         {
-            var result = MessageBox.Show($"Silinecek listesindeki {dgvSilinecekler.Rows.Count} ürünü silmek istediğinizden emin misiniz?",
+            if (dgvSilinecekler.Rows.Count == 0 || (dgvSilinecekler.Rows.Count == 1 && dgvSilinecekler.Rows[0].IsNewRow))
+            {
+                MessageBox.Show("Silinecek ürün bulunmuyor.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show($"Silinecek listesindeki {dgvSilinecekler.Rows.Count - (dgvSilinecekler.AllowUserToAddRows ? 1 : 0)} ürünü silmek istediğinizden emin misiniz? (Ürünler veritabanından tamamen silinmeyecek, pasif hale getirilecektir.)",
                 "Ürünleri Sil", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
             if (result == DialogResult.Yes)
             {
-                dgvSilinecekler.Rows.Clear();
-                MessageBox.Show("Seçilen ürünler başarıyla silindi.", "İşlem Tamamlandı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close();
+                try
+                {
+                    foreach (DataGridViewRow row in dgvSilinecekler.Rows)
+                    {
+                        if (row.IsNewRow) continue;
+
+                        int productId = Convert.ToInt32(row.Cells["colSilId"].Value);
+                        var productToMarkInactive = _context.Products.Find(productId);
+
+                        if (productToMarkInactive != null)
+                        {
+                            productToMarkInactive.IsActive = false;
+                            productToMarkInactive.UpdatedDate = DateTime.Now;
+                        }
+                    }
+                    _context.SaveChanges();
+
+                    MessageBox.Show("Seçilen ürünler başarıyla pasif hale getirildi.", "İşlem Tamamlandı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadProducts(); // Refresh the main product list
+                    dgvSilinecekler.Rows.Clear(); // Clear the deletion list
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ürünler silinirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
         private void ChkSadeceStokMiktari_CheckedChanged(object? sender, EventArgs e)
         {
-            if (chkSadeceStokMiktari.Checked)
-            {
-                // Show only products with zero stock
-                foreach (DataGridViewRow row in dgvUrunler.Rows)
-                {
-                    if (row.IsNewRow) continue;
-
-                    string mevcutStok = row.Cells["colMevcutStok"].Value?.ToString() ?? "0";
-                    row.Visible = mevcutStok == "0";
-                }
-            }
-            else
-            {
-                // Show all products
-                foreach (DataGridViewRow row in dgvUrunler.Rows)
-                {
-                    if (row.IsNewRow) continue;
-                    row.Visible = true;
-                }
-            }
+            FilterProducts();
         }
     }
 }

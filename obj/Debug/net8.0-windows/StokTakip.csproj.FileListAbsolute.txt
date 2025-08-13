@@ -161,3 +161,4 @@ C:\Users\olum1\OneDrive\Masaüstü\StokTakip\obj\Debug\net8.0-windows\refint\Sto
 C:\Users\olum1\OneDrive\Masaüstü\StokTakip\obj\Debug\net8.0-windows\StokTakip.pdb
 C:\Users\olum1\OneDrive\Masaüstü\StokTakip\obj\Debug\net8.0-windows\StokTakip.genruntimeconfig.cache
 C:\Users\olum1\OneDrive\Masaüstü\StokTakip\obj\Debug\net8.0-windows\ref\StokTakip.dll
+C:\Users\olum1\OneDrive\Masaüstü\StokTakip\obj\Debug\net8.0-windows\StokTakip.sourcelink.json

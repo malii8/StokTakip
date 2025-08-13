@@ -1,12 +1,20 @@
 using System;
 using System.Windows.Forms;
+using Microsoft.Extensions.DependencyInjection;
+using StokTakip.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace StokTakip.Forms
 {
     public partial class MusterilerForm : Form
     {
-        public MusterilerForm()
+        private readonly IServiceProvider _serviceProvider;
+        private readonly StokTakipDbContext _context;
+
+        public MusterilerForm(IServiceProvider serviceProvider, StokTakipDbContext context)
         {
+            _serviceProvider = serviceProvider;
+            _context = context;
             InitializeComponent();
 
             // Event handler'ları bağla
@@ -17,47 +25,158 @@ namespace StokTakip.Forms
             btnMusteriBilgileriDuzenle.Click += BtnMusteriBilgileriDuzenle_Click;
             btnMusteriIade.Click += BtnMusteriIade_Click;
             btnMusteriBorcListesi.Click += BtnMusteriBorcListesi_Click;
+
+            LoadCustomerData(); // Initial load
+        }
+
+        private void LoadCustomerData()
+        {
+            dgvMusteriler.Rows.Clear();
+            try
+            {
+                var customers = _context.Customers.Where(c => c.IsActive).ToList();
+                foreach (var customer in customers)
+                {
+                    dgvMusteriler.Rows.Add(
+                        customer.Id,
+                        customer.Name,
+                        customer.Phone, // Changed from BusinessPhone
+                        customer.Debt.ToString("F2")
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Müşteri verileri yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void BtnMusteriBorcDetayi_Click(object? sender, EventArgs e)
         {
-            VeresiyeDefteri veresiyeDefteri = new VeresiyeDefteri();
-            veresiyeDefteri.ShowDialog();
+            if (dgvMusteriler.SelectedRows.Count > 0)
+            {
+                DataGridViewRow selectedRow = dgvMusteriler.SelectedRows[0];
+                int customerId = Convert.ToInt32(selectedRow.Cells["colId"].Value);
+                var customer = _context.Customers.Find(customerId);
+
+                if (customer != null)
+                {
+                    var veresiyeDefteri = _serviceProvider.GetRequiredService<VeresiyeDefteri>();
+                    veresiyeDefteri.SetCustomer(customer);
+                    veresiyeDefteri.ShowDialog();
+                    LoadCustomerData(); // Refresh data after form closes
+                }
+            }
+            else
+            {
+                MessageBox.Show("Lütfen bir müşteri seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void BtnHesabaBorcEkle_Click(object? sender, EventArgs e)
         {
-            HesabaBorcEkleForm hesabaBorcEkleForm = new HesabaBorcEkleForm();
-            hesabaBorcEkleForm.ShowDialog();
+            if (dgvMusteriler.SelectedRows.Count > 0)
+            {
+                DataGridViewRow selectedRow = dgvMusteriler.SelectedRows[0];
+                int customerId = Convert.ToInt32(selectedRow.Cells["colId"].Value);
+                var customer = _context.Customers.Find(customerId);
+
+                if (customer != null)
+                {
+                    var hesabaBorcEkleForm = _serviceProvider.GetRequiredService<HesabaBorcEkleForm>();
+                    hesabaBorcEkleForm.SetCustomer(customer);
+                    hesabaBorcEkleForm.ShowDialog();
+                    LoadCustomerData(); // Refresh customer data after debt added
+                }
+            }
+            else
+            {
+                MessageBox.Show("Lütfen bir müşteri seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void BtnTahsilatYap_Click(object? sender, EventArgs e)
         {
-            TahsilatYapForm tahsilatYapForm = new TahsilatYapForm();
-            tahsilatYapForm.ShowDialog();
+            if (dgvMusteriler.SelectedRows.Count > 0)
+            {
+                DataGridViewRow selectedRow = dgvMusteriler.SelectedRows[0];
+                int customerId = Convert.ToInt32(selectedRow.Cells["colId"].Value);
+                var customer = _context.Customers.Find(customerId);
+
+                if (customer != null)
+                {
+                    var tahsilatYapForm = _serviceProvider.GetRequiredService<TahsilatYapForm>();
+                    tahsilatYapForm.SetCustomer(customer);
+                    tahsilatYapForm.ShowDialog();
+                    LoadCustomerData(); // Refresh data after payment
+                }
+            }
+            else
+            {
+                MessageBox.Show("Lütfen bir müşteri seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void BtnMusteriEkle_Click(object? sender, EventArgs e)
         {
-            MusteriEkleForm musteriEkleForm = new MusteriEkleForm();
-            musteriEkleForm.ShowDialog();
+            var musteriEkleForm = _serviceProvider.GetRequiredService<MusteriEkleForm>();
+            if (musteriEkleForm.ShowDialog() == DialogResult.OK)
+            {
+                LoadCustomerData(); // Refresh data after new customer added
+            }
         }
 
         private void BtnMusteriBilgileriDuzenle_Click(object? sender, EventArgs e)
         {
-            MusteriBilgileriDuzenleForm musteriBilgileriDuzenleForm = new MusteriBilgileriDuzenleForm();
-            musteriBilgileriDuzenleForm.ShowDialog();
+            if (dgvMusteriler.SelectedRows.Count > 0)
+            {
+                DataGridViewRow selectedRow = dgvMusteriler.SelectedRows[0];
+                int customerId = Convert.ToInt32(selectedRow.Cells["colId"].Value);
+                var customer = _context.Customers.Find(customerId);
+
+                if (customer != null)
+                {
+                    var musteriBilgileriDuzenleForm = _serviceProvider.GetRequiredService<MusteriBilgileriDuzenleForm>();
+                    musteriBilgileriDuzenleForm.SetCustomer(customer);
+                    if (musteriBilgileriDuzenleForm.ShowDialog() == DialogResult.OK)
+                    {
+                        LoadCustomerData(); // Refresh data after customer updated
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Lütfen düzenlemek istediğiniz müşteriyi seçin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void BtnMusteriIade_Click(object? sender, EventArgs e)
         {
-            MusteriIadeForm musteriIadeForm = new MusteriIadeForm();
-            musteriIadeForm.ShowDialog();
+            if (dgvMusteriler.SelectedRows.Count > 0)
+            {
+                DataGridViewRow selectedRow = dgvMusteriler.SelectedRows[0];
+                int customerId = Convert.ToInt32(selectedRow.Cells["colId"].Value);
+                var customer = _context.Customers.Find(customerId);
+
+                if (customer != null)
+                {
+                    var musteriIadeForm = _serviceProvider.GetRequiredService<MusteriIadeForm>();
+                    musteriIadeForm.SetCustomer(customer);
+                    if (musteriIadeForm.ShowDialog() == DialogResult.OK)
+                    {
+                        LoadCustomerData(); // Refresh data after return
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Lütfen bir müşteri seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void BtnMusteriBorcListesi_Click(object? sender, EventArgs e)
         {
-            MusteriBorcListesiForm musteriBorcListesiForm = new MusteriBorcListesiForm();
+            var musteriBorcListesiForm = _serviceProvider.GetRequiredService<MusteriBorcListesiForm>();
             musteriBorcListesiForm.ShowDialog();
         }
     }

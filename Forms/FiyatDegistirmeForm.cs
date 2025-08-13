@@ -2,55 +2,67 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using StokTakip.Data;
+using StokTakip.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace StokTakip.Forms
 {
     public partial class FiyatDegistirmeForm : Form
     {
-        public FiyatDegistirmeForm()
+        private readonly StokTakipDbContext _context;
+
+        public FiyatDegistirmeForm(StokTakipDbContext context)
         {
+            _context = context;
             InitializeComponent();
-            LoadSampleData();
+            LoadProductGroups(); // Load groups first
+            LoadProductPrices(); // Then load products
             SetupEventHandlers();
         }
 
-        private void LoadSampleData()
+        private void LoadProductGroups()
         {
-            // Ürün grupları için sample data
             cmbUrunGrubu.Items.Clear();
             cmbUrunGrubu.Items.Add("Tümü");
-            cmbUrunGrubu.Items.Add("BİSKÜVİ");
-            cmbUrunGrubu.Items.Add("FİLTRE");
-            cmbUrunGrubu.Items.Add("SALÇA");
-            cmbUrunGrubu.Items.Add("TEXT11");
-            cmbUrunGrubu.Items.Add("YAĞ");
-            cmbUrunGrubu.SelectedIndex = 0;
-
-            // Sample ürün fiyat listesi
-            dgvUrunFiyatlari.Rows.Clear();
-            string[] sampleProducts = {
-                "1|KOCAELI BİSKÜVİ 100 GR|15.50|18.00",
-                "2|ALTINYAG SAF YAĞ 1 LT|85.00|95.00",
-                "3|SALÇA 800 GR|12.00|14.50",
-                "4|FİLTRE KAHVE 250 GR|45.00|52.00",
-                "5|NESCAFE GOLD 100 GR|85.00|95.00",
-                "6|ACE DETERJANİ 4 KG|125.00|140.00",
-                "7|SANA MARGARİN 500 GR|18.50|22.00",
-                "8|DOMATES SALÇASI 70 GR|4.50|5.50",
-                "9|ÇAYKUR RIZE ÇAYI 1 KG|95.00|110.00",
-                "10|ÜLKER PETİBÖR 100 GR|8.50|10.00"
-            };
-
-            foreach (string product in sampleProducts)
+            try
             {
-                string[] parts = product.Split('|');
-                dgvUrunFiyatlari.Rows.Add(
-                    false, // Checkbox
-                    parts[0], // Barkod
-                    parts[1], // Ürün Adı
-                    parts[2], // Alış Fiyatı
-                    parts[3]  // Satış Fiyatı
-                );
+                var groups = _context.ProductGroups.OrderBy(g => g.Name).ToList();
+                foreach (var group in groups)
+                {
+                    cmbUrunGrubu.Items.Add(group.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ürün grupları yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            cmbUrunGrubu.SelectedIndex = 0;
+        }
+
+        private void LoadProductPrices()
+        {
+            dgvUrunFiyatlari.Rows.Clear();
+            try
+            {
+                var products = _context.Products.Include(p => p.ProductGroup).ToList();
+
+                foreach (var product in products)
+                {
+                    dgvUrunFiyatlari.Rows.Add(
+                        false, // Checkbox
+                        product.Id, // Hidden ID for update
+                        product.BarcodeNo, // Barkod
+                        product.Name, // Ürün Adı
+                        product.PurchasePrice.ToString("F2"), // Alış Fiyatı
+                        product.SalePrice.ToString("F2"),  // Satış Fiyatı
+                        product.ProductGroup?.Name ?? "BELİRTİLMEDİ" // Ürün Grubu
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ürün fiyatları yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -140,9 +152,38 @@ namespace StokTakip.Forms
 
         private void BtnKaydet_Click(object? sender, EventArgs e)
         {
-            MessageBox.Show("Fiyat değişiklikleri kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            try
+            {
+                foreach (DataGridViewRow row in dgvUrunFiyatlari.Rows)
+                {
+                    if (row.Cells["colSecim"].Value != null && (bool)row.Cells["colSecim"].Value)
+                    {
+                        int productId = Convert.ToInt32(row.Cells["colId"].Value);
+                        var product = _context.Products.Find(productId);
+
+                        if (product != null)
+                        {
+                            if (decimal.TryParse(row.Cells["colAlisFiyati"].Value?.ToString(), out decimal newPurchasePrice))
+                            {
+                                product.PurchasePrice = newPurchasePrice;
+                            }
+                            if (decimal.TryParse(row.Cells["colSatisFiyati"].Value?.ToString(), out decimal newSalePrice))
+                            {
+                                product.SalePrice = newSalePrice;
+                            }
+                            product.UpdatedDate = DateTime.Now;
+                        }
+                    }
+                }
+                _context.SaveChanges();
+                MessageBox.Show("Fiyat değişiklikleri başarıyla kaydedildi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fiyat değişiklikleri kaydedilirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void BtnVazgec_Click(object? sender, EventArgs e)
@@ -153,35 +194,48 @@ namespace StokTakip.Forms
 
         private void CmbUrunGrubu_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            string? selectedGroup = cmbUrunGrubu.SelectedItem?.ToString();
-            if (string.IsNullOrEmpty(selectedGroup) || selectedGroup == "Tümü")
-            {
-                foreach (DataGridViewRow row in dgvUrunFiyatlari.Rows)
-                {
-                    row.Visible = true;
-                }
-            }
-            else
-            {
-                foreach (DataGridViewRow row in dgvUrunFiyatlari.Rows)
-                {
-                    string urunAdi = row.Cells["colUrunAdi"].Value?.ToString() ?? "";
-                    row.Visible = urunAdi.ToUpper().Contains(selectedGroup.ToUpper());
-                }
-            }
+            FilterData();
         }
 
         private void TxtUrunAra_TextChanged(object? sender, EventArgs e)
         {
+            FilterData();
+        }
+
+        private void FilterData()
+        {
             string searchText = txtUrunAra.Text.ToUpper();
+            string? selectedGroup = cmbUrunGrubu.SelectedItem?.ToString();
+
             foreach (DataGridViewRow row in dgvUrunFiyatlari.Rows)
             {
-                string urunAdi = row.Cells["colUrunAdi"].Value?.ToString()?.ToUpper() ?? "";
-                string barkod = row.Cells["colBarkod"].Value?.ToString()?.ToUpper() ?? "";
+                if (row.IsNewRow) continue;
 
-                row.Visible = string.IsNullOrEmpty(searchText) ||
-                             urunAdi.Contains(searchText) ||
-                             barkod.Contains(searchText);
+                bool visible = true;
+
+                // Filter by search text
+                if (!string.IsNullOrEmpty(searchText))
+                {
+                    string urunAdi = row.Cells["colUrunAdi"].Value?.ToString()?.ToUpper() ?? "";
+                    string barkod = row.Cells["colBarkod"].Value?.ToString()?.ToUpper() ?? "";
+
+                    if (!(urunAdi.Contains(searchText) || barkod.Contains(searchText)))
+                    {
+                        visible = false;
+                    }
+                }
+
+                // Filter by product group
+                if (visible && selectedGroup != "Tümü" && !string.IsNullOrEmpty(selectedGroup))
+                {
+                    string rowGroup = row.Cells["colUrunGrubu"].Value?.ToString() ?? "";
+                    if (!rowGroup.ToUpper().Contains(selectedGroup.ToUpper()))
+                    {
+                        visible = false;
+                    }
+                }
+
+                row.Visible = visible;
             }
         }
     }

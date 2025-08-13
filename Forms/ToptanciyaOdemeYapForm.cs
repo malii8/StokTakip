@@ -1,5 +1,7 @@
 using System;
 using System.Windows.Forms;
+using StokTakip.Models;
+using StokTakip.Data;
 
 namespace StokTakip.Forms
 {
@@ -9,21 +11,25 @@ namespace StokTakip.Forms
         public string Aciklama { get; private set; } = string.Empty;
         public string OdemeSekli { get; private set; } = string.Empty;
 
-        private string toptanciAdi;
-        private decimal toplamBorc;
+        private Wholesaler? _wholesaler;
+        private readonly StokTakipDbContext _context;
 
-        public ToptanciyaOdemeYapForm(string toptanciAdi, decimal toplamBorc)
+        public ToptanciyaOdemeYapForm(StokTakipDbContext context)
         {
+            _context = context;
             InitializeComponent();
-            this.toptanciAdi = toptanciAdi;
-            this.toplamBorc = toplamBorc;
             InitializeForm();
+        }
+
+        public void SetWholesaler(Wholesaler wholesaler)
+        {
+            _wholesaler = wholesaler;
+            txtToptanciAdi.Text = _wholesaler.Name;
+            txtToplamBorc.Text = $"{_wholesaler.Debt:F2} TL";
         }
 
         private void InitializeForm()
         {
-            txtToptanciAdi.Text = toptanciAdi;
-            txtToplamBorc.Text = $"{toplamBorc:F2} TL";
             dtpTarih.Value = DateTime.Now;
             dtpSaat.Value = DateTime.Now;
 
@@ -34,7 +40,7 @@ namespace StokTakip.Forms
 
         private void BtnOnayla_Click(object? sender, EventArgs e)
         {
-            if (ValidateInput())
+            if (ValidateInput() && _wholesaler != null)
             {
                 OdemeTutari = Convert.ToDecimal(txtOdemeTutari.Text);
                 Aciklama = txtAciklama.Text;
@@ -42,6 +48,33 @@ namespace StokTakip.Forms
                 if (rbNakit.Checked) OdemeSekli = "Nakit";
                 else if (rbKrediKarti.Checked) OdemeSekli = "Kredi Kartı";
                 else if (rbHavale.Checked) OdemeSekli = "Havale";
+
+                // Update wholesaler debt
+                _wholesaler.Debt -= OdemeTutari;
+
+                // Record cash movement
+                var cashMovement = new CashMovement
+                {
+                    MovementType = "Gider", // Ödeme olduğu için gider
+                    Amount = OdemeTutari,
+                    MovementDate = dtpTarih.Value.Date + dtpSaat.Value.TimeOfDay,
+                    Description = $"{_wholesaler.Name} toptancısına {OdemeSekli} ile ödeme",
+                    Notes = Aciklama
+                };
+                _context.CashMovements.Add(cashMovement);
+
+                // Record wholesaler debt movement
+                var debtMovement = new WholesalerDebtMovement
+                {
+                    WholesalerId = _wholesaler.Id,
+                    Amount = OdemeTutari,
+                    MovementType = "Ödeme",
+                    MovementDate = dtpTarih.Value.Date + dtpSaat.Value.TimeOfDay,
+                    Description = Aciklama
+                };
+                _context.WholesalerDebtMovements.Add(debtMovement);
+
+                _context.SaveChanges();
 
                 DialogResult = DialogResult.OK;
                 Close();
@@ -70,7 +103,7 @@ namespace StokTakip.Forms
                 return false;
             }
 
-            if (tutar > toplamBorc)
+            if (tutar > _wholesaler?.Debt)
             {
                 MessageBox.Show("Ödeme tutarı toplam borçtan fazla olamaz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtOdemeTutari.Focus();

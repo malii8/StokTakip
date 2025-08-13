@@ -13,7 +13,7 @@ namespace StokTakip.Models
         [StringLength(20)]
         public string ReceiptNumber { get; set; } = string.Empty;
 
-        public DateTime ReceiptDate { get; set; } = DateTime.Now;
+        public DateTime ReceiptDate { get; set; } = new DateTime(2025, 1, 1);
 
         [ForeignKey("Customer")]
         public int? CustomerId { get; set; }
@@ -44,7 +44,7 @@ namespace StokTakip.Models
         [StringLength(500)]
         public string? Notes { get; set; }
 
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = new DateTime(2025, 1, 1);
 
         // Navigation properties
         public virtual ICollection<SalesReceiptDetail> Details { get; set; } = new List<SalesReceiptDetail>();

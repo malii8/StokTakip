@@ -1,15 +1,18 @@
 using System.Windows.Forms;
 using StokTakip.Data;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace StokTakip.Forms
 {
     public partial class AlisFaturasiForm : Form
     {
         private readonly StokTakipDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
 
-        public AlisFaturasiForm(StokTakipDbContext context)
+        public AlisFaturasiForm(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
             _context = context;
+            _serviceProvider = serviceProvider;
             InitializeComponent();
             btnYeniUrunEkle.Click += new System.EventHandler(btnYeniUrunEkle_Click);
             btnYeniToptanci.Click += new System.EventHandler(btnYeniToptanci_Click);
@@ -18,19 +21,19 @@ namespace StokTakip.Forms
 
         private void btnYeniUrunEkle_Click(object? sender, System.EventArgs e)
         {
-            UrunYeniKayitForm urunYeniKayitForm = new UrunYeniKayitForm(_context);
+            var urunYeniKayitForm = _serviceProvider.GetRequiredService<UrunYeniKayitForm>();
             urunYeniKayitForm.ShowDialog();
         }
 
         private void btnYeniToptanci_Click(object? sender, System.EventArgs e)
         {
-            ToptanciKayitForm toptanciKayitForm = new ToptanciKayitForm(_context);
+            var toptanciKayitForm = _serviceProvider.GetRequiredService<ToptanciKayitForm>();
             toptanciKayitForm.ShowDialog();
         }
 
         private void btnUrunAra_Click(object? sender, System.EventArgs e)
         {
-            UrunAramaForm urunAramaForm = new UrunAramaForm(_context);
+            var urunAramaForm = _serviceProvider.GetRequiredService<UrunAramaForm>();
             urunAramaForm.ShowDialog();
         }
     }

@@ -32,6 +32,6 @@ namespace StokTakip.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Discount { get; set; } = 0;
 
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = new DateTime(2025, 1, 1);
     }
 }

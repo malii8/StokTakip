@@ -31,6 +31,8 @@ namespace StokTakip.Forms
             this.lblArama = new System.Windows.Forms.Label();
             this.txtArama = new System.Windows.Forms.TextBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.txtUrunAdi = new System.Windows.Forms.TextBox();
+            this.lblUrunAdi = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -61,6 +63,22 @@ namespace StokTakip.Forms
             this.dataGridView1.Size = new System.Drawing.Size(760, 388);
             this.dataGridView1.TabIndex = 2;
             // 
+            // lblUrunAdi
+            // 
+            this.lblUrunAdi.AutoSize = true;
+            this.lblUrunAdi.Location = new System.Drawing.Point(12, 20);
+            this.lblUrunAdi.Name = "lblUrunAdi";
+            this.lblUrunAdi.Size = new System.Drawing.Size(57, 13);
+            this.lblUrunAdi.TabIndex = 0;
+            this.lblUrunAdi.Text = "Ürünün Adı:";
+            // 
+            // txtUrunAdi
+            // 
+            this.txtUrunAdi.Location = new System.Drawing.Point(75, 17);
+            this.txtUrunAdi.Name = "txtUrunAdi";
+            this.txtUrunAdi.Size = new System.Drawing.Size(200, 20);
+            this.txtUrunAdi.TabIndex = 1;
+            // 
             // UrunAramaForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -69,6 +87,8 @@ namespace StokTakip.Forms
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.txtArama);
             this.Controls.Add(this.lblArama);
+            this.Controls.Add(this.txtUrunAdi);
+            this.Controls.Add(this.lblUrunAdi);
             this.Name = "UrunAramaForm";
             this.Text = "ÜRÜN ADI İLE ARAMA";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -82,5 +102,7 @@ namespace StokTakip.Forms
         private System.Windows.Forms.Label lblArama;
         private System.Windows.Forms.TextBox txtArama;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.TextBox txtUrunAdi;
+        private System.Windows.Forms.Label lblUrunAdi;
     }
 }

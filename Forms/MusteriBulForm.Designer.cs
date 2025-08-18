@@ -55,7 +55,6 @@ namespace StokTakip.Forms
             this.txtMusteriAra.Name = "txtMusteriAra";
             this.txtMusteriAra.Size = new System.Drawing.Size(300, 23);
             this.txtMusteriAra.TabIndex = 2;
-            this.txtMusteriAra.TextChanged += new System.EventHandler(this.txtMusteriAra_TextChanged);
             // 
             // btnYeniMusteriEkle
             // 

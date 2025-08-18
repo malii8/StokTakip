@@ -235,7 +235,7 @@ namespace StokTakip.Forms
             this.btnFaturayiKaydet.Name = "btnFaturayiKaydet";
             this.btnFaturayiKaydet.Size = new System.Drawing.Size(100, 50);
             this.btnFaturayiKaydet.TabIndex = 18;
-            this.btnFaturayiKaydet.Text = "Faturayı Kaydet (F4)";
+            this.btnFaturayiKaydet.Text = "Fatura Satış (F4)";
             this.btnFaturayiKaydet.UseVisualStyleBackColor = true;
             // 
             // dataGridView1
@@ -391,13 +391,12 @@ namespace StokTakip.Forms
             // 
             // btnYeniUrunEkle
             // 
-            this.btnYeniUrunEkle.Location = new System.Drawing.Point(360, 45);
+            this.btnYeniUrunEkle.Location = new System.Drawing.Point(356, 47);
             this.btnYeniUrunEkle.Name = "btnYeniUrunEkle";
-            this.btnYeniUrunEkle.Size = new System.Drawing.Size(90, 23);
-            this.btnYeniUrunEkle.TabIndex = 37;
+            this.btnYeniUrunEkle.Size = new System.Drawing.Size(120, 20);
+            this.btnYeniUrunEkle.TabIndex = 2;
             this.btnYeniUrunEkle.Text = "Yeni Ürün Ekle";
             this.btnYeniUrunEkle.UseVisualStyleBackColor = true;
-
             // 
             // lblIskonto
             // 

@@ -15,15 +15,34 @@ namespace StokTakip.Forms
 
         public MusteriBulForm(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
+            InitializeComponent();
             _context = context;
             _serviceProvider = serviceProvider;
-            InitializeComponent();
+            InitializeDataGridView(); // Bu satır InitializeComponent() sonrasına taşındı
             LoadCustomers();
 
             // Event handler'ları bağla
             btnYeniMusteriEkle.Click += BtnYeniMusteriEkle_Click;
             dgvMusteriler.CellDoubleClick += DgvMusteriler_CellDoubleClick;
             txtMusteriAra.TextChanged += TxtMusteriAra_TextChanged;
+        }
+
+        private void InitializeDataGridView()
+        {
+            dgvMusteriler.Columns.Clear();
+            dgvMusteriler.Columns.Add("colId", "ID");
+            dgvMusteriler.Columns.Add("colSiraNo", "Sıra No");
+            dgvMusteriler.Columns.Add("colMusterininAdi", "Müşterinin Adı");
+            dgvMusteriler.Columns.Add("colBorcu", "Borcu");
+
+            // Sütunların otomatik boyutlandırılmasını ayarla
+            foreach (DataGridViewColumn column in dgvMusteriler.Columns)
+            {
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            }
+
+            // ID sütununu gizle
+            dgvMusteriler.Columns["colId"].Visible = false;
         }
 
         private void LoadCustomers()
@@ -75,7 +94,7 @@ namespace StokTakip.Forms
             {
                 if (row.IsNewRow) continue;
 
-                string customerName = row.Cells["colMusterininAdiSoyadi"].Value?.ToString()?.ToLower() ?? "";
+                string customerName = row.Cells["colMusterininAdi"].Value?.ToString()?.ToLower() ?? "";
                 row.Visible = customerName.Contains(searchText);
             }
         }

@@ -76,6 +76,9 @@ namespace StokTakip
             services.AddTransient<UrunGruplariForm>();
             services.AddTransient<UrunYeniKayitForm>();
             services.AddTransient<VeresiyeDefteri>();
+            services.AddTransient<HizliTusSilForm>();
+            services.AddTransient<HizliTusDegistirForm>();
+            services.AddTransient<StoksuzUrunForm>();
         }
 
         private static string GetConnectionString()

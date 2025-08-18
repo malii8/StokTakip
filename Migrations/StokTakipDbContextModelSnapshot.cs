@@ -266,64 +266,64 @@ namespace StokTakip.Migrations
                         new
                         {
                             Id = 1,
-                            BarcodeNo = "8690511010128",
+                            BarcodeNo = "1234567890123",
                             CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CurrentStock = 12m,
+                            CurrentStock = 100m,
                             IsActive = true,
-                            MinimumStock = 2m,
-                            Name = "ABC ÇAMAŞIR SUYU 4000 ML",
-                            ProductGroupId = 5,
-                            PurchasePrice = 70.00m,
-                            SalePrice = 90.00m,
-                            StockCode = "ABC-4000",
+                            MinimumStock = 10m,
+                            Name = "Hava Filtresi",
+                            ProductGroupId = 1,
+                            PurchasePrice = 50.00m,
+                            SalePrice = 75.00m,
+                            StockCode = "HF-100",
                             Unit = "Adet",
                             VatRate = 18m
                         },
                         new
                         {
                             Id = 2,
-                            BarcodeNo = "8690504034506",
+                            BarcodeNo = "9876543210987",
                             CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CurrentStock = 4m,
+                            CurrentStock = 50m,
                             IsActive = true,
-                            MinimumStock = 4m,
-                            Name = "ÜLKER ALBENİ 35 GR",
+                            MinimumStock = 5m,
+                            Name = "Yağ Filtresi",
                             ProductGroupId = 1,
-                            PurchasePrice = 7.00m,
-                            SalePrice = 10.00m,
-                            StockCode = "ULK-ALB",
+                            PurchasePrice = 30.00m,
+                            SalePrice = 45.00m,
+                            StockCode = "YF-200",
                             Unit = "Adet",
-                            VatRate = 8m
+                            VatRate = 18m
                         },
                         new
                         {
                             Id = 3,
-                            BarcodeNo = "8690876010016",
+                            BarcodeNo = "1122334455667",
                             CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CurrentStock = 3m,
+                            CurrentStock = 30m,
                             IsActive = true,
-                            MinimumStock = 1m,
-                            Name = "YUDUM 1 LT SIVI YAĞ",
-                            ProductGroupId = 4,
-                            PurchasePrice = 55.00m,
-                            SalePrice = 75.00m,
-                            StockCode = "YUD-1LT",
+                            MinimumStock = 3m,
+                            Name = "Motor Yağı 5W-30",
+                            ProductGroupId = 2,
+                            PurchasePrice = 120.00m,
+                            SalePrice = 180.00m,
+                            StockCode = "MY-5W30",
                             Unit = "Adet",
-                            VatRate = 8m
+                            VatRate = 18m
                         },
                         new
                         {
                             Id = 4,
-                            BarcodeNo = "8690575012519",
+                            BarcodeNo = "000001",
                             CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CurrentStock = 7m,
                             IsActive = true,
                             MinimumStock = 1m,
-                            Name = "TAMEK DOMATES SALÇASI 830 GR",
-                            ProductGroupId = 3,
-                            PurchasePrice = 45.00m,
+                            Name = "MANN C24003",
+                            ProductGroupId = 1,
+                            PurchasePrice = 40.00m,
                             SalePrice = 60.00m,
-                            StockCode = "TAM-830",
+                            StockCode = "MANN-C24003",
                             Unit = "Adet",
                             VatRate = 8m
                         },
@@ -377,58 +377,41 @@ namespace StokTakip.Migrations
                         {
                             Id = 1,
                             CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Bisküvi ürünleri",
-                            Name = "BİSKÜVİ"
+                            Name = "Filtreler"
                         },
                         new
                         {
                             Id = 2,
                             CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Filtre ürünleri",
-                            Name = "FİLTRE"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Salça ürünleri",
-                            Name = "SALÇA"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Yağ ürünleri",
-                            Name = "YAĞ"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Deterjan ürünleri",
-                            Name = "DETERJAN"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Süt ürünleri",
-                            Name = "SÜT ÜRÜNLERİ"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "İçecek ürünleri",
-                            Name = "İÇECEK"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Krema ürünleri",
-                            Name = "KREMA"
+                            Name = "Motor Yağları"
                         });
+                });
+
+            modelBuilder.Entity("StokTakip.Models.QuickSaleButtonConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BarcodeNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ButtonIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("QuickSaleButtonConfigs");
                 });
 
             modelBuilder.Entity("StokTakip.Models.SalesReceipt", b =>
@@ -597,6 +580,48 @@ namespace StokTakip.Migrations
                     b.ToTable("StockMovements");
                 });
 
+            modelBuilder.Entity("StokTakip.Models.Unit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Units");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Adet"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Koli"
+                        });
+                });
+
             modelBuilder.Entity("StokTakip.Models.Wholesaler", b =>
                 {
                     b.Property<int>("Id")
@@ -732,6 +757,9 @@ namespace StokTakip.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int?>("SalesReceiptId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -742,6 +770,8 @@ namespace StokTakip.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SalesReceiptId");
+
                     b.HasIndex("WholesalerId");
 
                     b.ToTable("WholesalerDebtMovements");
@@ -750,7 +780,7 @@ namespace StokTakip.Migrations
             modelBuilder.Entity("StokTakip.Models.CashMovement", b =>
                 {
                     b.HasOne("StokTakip.Models.SalesReceipt", "SalesReceipt")
-                        .WithMany()
+                        .WithMany("CashMovements")
                         .HasForeignKey("SalesReceiptId")
                         .OnDelete(DeleteBehavior.SetNull);
 
@@ -762,11 +792,11 @@ namespace StokTakip.Migrations
                     b.HasOne("StokTakip.Models.Customer", "Customer")
                         .WithMany("DebtMovements")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("StokTakip.Models.SalesReceipt", "SalesReceipt")
-                        .WithMany()
+                        .WithMany("CustomerDebtMovements")
                         .HasForeignKey("SalesReceiptId")
                         .OnDelete(DeleteBehavior.SetNull);
 
@@ -783,6 +813,17 @@ namespace StokTakip.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("ProductGroup");
+                });
+
+            modelBuilder.Entity("StokTakip.Models.QuickSaleButtonConfig", b =>
+                {
+                    b.HasOne("StokTakip.Models.Product", "Product")
+                        .WithMany("QuickSaleButtonConfigs")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("StokTakip.Models.SalesReceipt", b =>
@@ -824,13 +865,12 @@ namespace StokTakip.Migrations
 
                     b.HasOne("StokTakip.Models.SalesReceipt", "SalesReceipt")
                         .WithMany()
-                        .HasForeignKey("SalesReceiptId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("SalesReceiptId");
 
                     b.HasOne("StokTakip.Models.Wholesaler", "Wholesaler")
                         .WithMany("StockMovements")
                         .HasForeignKey("WholesalerId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Product");
 
@@ -841,11 +881,18 @@ namespace StokTakip.Migrations
 
             modelBuilder.Entity("StokTakip.Models.WholesalerDebtMovement", b =>
                 {
+                    b.HasOne("StokTakip.Models.SalesReceipt", "SalesReceipt")
+                        .WithMany("WholesalerDebtMovements")
+                        .HasForeignKey("SalesReceiptId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("StokTakip.Models.Wholesaler", "Wholesaler")
                         .WithMany("DebtMovements")
                         .HasForeignKey("WholesalerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("SalesReceipt");
 
                     b.Navigation("Wholesaler");
                 });
@@ -859,6 +906,8 @@ namespace StokTakip.Migrations
 
             modelBuilder.Entity("StokTakip.Models.Product", b =>
                 {
+                    b.Navigation("QuickSaleButtonConfigs");
+
                     b.Navigation("SalesReceiptDetails");
 
                     b.Navigation("StockMovements");
@@ -871,7 +920,13 @@ namespace StokTakip.Migrations
 
             modelBuilder.Entity("StokTakip.Models.SalesReceipt", b =>
                 {
+                    b.Navigation("CashMovements");
+
+                    b.Navigation("CustomerDebtMovements");
+
                     b.Navigation("Details");
+
+                    b.Navigation("WholesalerDebtMovements");
                 });
 
             modelBuilder.Entity("StokTakip.Models.Wholesaler", b =>

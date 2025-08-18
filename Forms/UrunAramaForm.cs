@@ -10,17 +10,38 @@ namespace StokTakip.Forms
 {
     public partial class UrunAramaForm : Form
     {
-        public Product? SelectedProduct { get; private set; }
         private readonly StokTakipDbContext _context;
         private readonly IServiceProvider _serviceProvider;
+
+        public Product? SelectedProduct { get; private set; } // Yeni eklendi
 
         public UrunAramaForm(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
             _context = context;
-            _serviceProvider = serviceProvider;
+            _serviceProvider = serviceProvider; // _serviceProvider'ı başlat
             InitializeComponent();
-            SetupForm();
-            LoadProducts(); // Initial load
+            LoadProducts();
+            txtUrunAdi.TextChanged += TxtUrunAdi_TextChanged;
+            dataGridView1.CellDoubleClick += DataGridView1_CellDoubleClick; // Yeni olay işleyicisi
+        }
+
+        private void TxtUrunAdi_TextChanged(object? sender, EventArgs e)
+        {
+            LoadProducts(txtUrunAdi.Text);
+        }
+
+        private void DataGridView1_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                var selectedProduct = dataGridView1.Rows[e.RowIndex].DataBoundItem as Product;
+                if (selectedProduct != null)
+                {
+                    SelectedProduct = selectedProduct; // Seçilen ürünü ata
+                    this.DialogResult = DialogResult.OK; // Formu OK sonucuyla kapat
+                    this.Close();
+                }
+            }
         }
 
         private void SetupForm()
@@ -105,37 +126,29 @@ namespace StokTakip.Forms
         {
             try
             {
-                var query = from p in _context.Products
-                            where p.IsActive
-                            select new
-                            {
-                                p.Id,
-                                p.BarcodeNo,
-                                p.Name,
-                                p.StockCode,
-                                ProductGroupName = p.ProductGroup != null ? p.ProductGroup.Name : "",
-                                p.SalePrice,
-                                p.CurrentStock
-                            };
+                var products = _context.Products
+                    .Include(p => p.ProductGroup)
+                    .Where(p => string.IsNullOrEmpty(searchText) || p.Name.Contains(searchText) || p.BarcodeNo.Contains(searchText))
+                    .ToList();
 
-                if (!string.IsNullOrEmpty(searchText))
-                {
-                    query = query.Where(p =>
-                        p.Name.Contains(searchText) ||
-                        p.BarcodeNo.Contains(searchText) ||
-                        p.StockCode.Contains(searchText));
-                }
-
-                var products = query.OrderBy(p => p.Name).ToList();
                 dataGridView1.DataSource = products;
-
-                // lblSonuc label'ı yoksa konsola yazdır veya title'a ekle
-                this.Text = $"Ürün Arama - Toplam {products.Count} ürün bulundu";
+                dataGridView1.AutoGenerateColumns = false;
+                dataGridView1.Columns.Clear();
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "BarcodeNo", HeaderText = "Barkod No" });
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Name", HeaderText = "Ürün Adı" });
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "StockCode", HeaderText = "Ürün Kodu" });
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "ProductGroup.Name", HeaderText = "Grup" });
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "SalePrice", HeaderText = "Satış Fiyatı" });
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "CurrentStock", HeaderText = "Stok" });
+                foreach (DataGridViewColumn column in dataGridView1.Columns)
+                {
+                    column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                }
+                dataGridView1.Dock = DockStyle.Bottom; // Tabloyu alt satıra sabitle
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ürünler yüklenirken hata oluştu: {ex.Message}", "Hata",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Ürünler yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

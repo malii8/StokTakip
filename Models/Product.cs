@@ -54,5 +54,6 @@ namespace StokTakip.Models
         // Navigation properties
         public virtual ICollection<SalesReceiptDetail> SalesReceiptDetails { get; set; } = new List<SalesReceiptDetail>();
         public virtual ICollection<StockMovement> StockMovements { get; set; } = new List<StockMovement>();
+        public virtual ICollection<QuickSaleButtonConfig> QuickSaleButtonConfigs { get; set; } = new List<QuickSaleButtonConfig>();
     }
 }

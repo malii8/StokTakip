@@ -56,12 +56,24 @@ namespace StokTakip.Forms
             this.lblToplamFis = new System.Windows.Forms.Label();
             this.lblIptalFis = new System.Windows.Forms.Label();
             this.lblToplamTutar = new System.Windows.Forms.Label();
+                this.printDocument1 = new System.Drawing.Printing.PrintDocument();
+                this.printPreviewDialog1 = new System.Windows.Forms.PrintPreviewDialog();
             this.pnlTop.SuspendLayout();
             this.grpFilters.SuspendLayout();
             this.pnlButtons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvEskiFisler)).BeginInit();
             this.pnlBottom.SuspendLayout();
             this.SuspendLayout();
+                // 
+                // printPreviewDialog1
+                // 
+                this.printPreviewDialog1.Document = this.printDocument1;
+                this.printPreviewDialog1.Name = "printPreviewDialog1";
+                this.printPreviewDialog1.UseAntiAlias = true;
+                // 
+                // printDocument1
+                // 
+                this.printDocument1.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument1_PrintPage);
             // 
             // pnlTop
             // 
@@ -412,5 +424,7 @@ namespace StokTakip.Forms
         private System.Windows.Forms.Label lblToplamFis;
         private System.Windows.Forms.Label lblIptalFis;
         private System.Windows.Forms.Label lblToplamTutar;
+    private System.Drawing.Printing.PrintDocument printDocument1;
+    private System.Windows.Forms.PrintPreviewDialog printPreviewDialog1;
     }
 }

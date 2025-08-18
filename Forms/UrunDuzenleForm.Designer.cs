@@ -247,7 +247,7 @@ namespace StokTakip.Forms
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(80, 40);
             this.btnKaydet.TabIndex = 23;
-            this.btnKaydet.Text = "Kaydet";
+            this.btnKaydet.Text = "Güncelle";
             this.btnKaydet.UseVisualStyleBackColor = false;
             // 
             // btnVazgec

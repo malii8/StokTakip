@@ -253,15 +253,49 @@ namespace StokTakip.Forms
         {
             if (dgvEskiFisler.SelectedRows.Count > 0)
             {
-                DataGridViewRow selectedRow = dgvEskiFisler.SelectedRows[0];
-                string fisNo = selectedRow.Cells["colFisNo"].Value?.ToString() ?? "";
-
-                MessageBox.Show($"Fiş No: {fisNo} yazdırılıyor...", "Yazdır", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Show print preview dialog
+                printPreviewDialog1.ShowDialog();
             }
             else
             {
                 MessageBox.Show("Lütfen bir fiş seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+        }
+
+        private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
+        {
+            if (e.Graphics == null) return;
+            if (dgvEskiFisler.SelectedRows.Count == 0) return;
+
+            DataGridViewRow selectedRow = dgvEskiFisler.SelectedRows[0];
+            string fisNo = selectedRow.Cells["colFisNo"].Value?.ToString() ?? "";
+            string tarih = selectedRow.Cells["colTarih"].Value?.ToString() ?? "";
+            string saat = selectedRow.Cells["colSaat"].Value?.ToString() ?? "";
+            string odemeTuru = selectedRow.Cells["colOdemeTuru"].Value?.ToString() ?? "";
+            string musteriAdi = selectedRow.Cells["colMusteriAdi"].Value?.ToString() ?? "";
+            string tutar = selectedRow.Cells["colTutar"].Value?.ToString() ?? "";
+            string durum = selectedRow.Cells["colDurum"].Value?.ToString() ?? "";
+
+            int y = 40;
+            int lineHeight = 30;
+            var font = new System.Drawing.Font("Arial", 12);
+            var boldFont = new System.Drawing.Font("Arial", 14, System.Drawing.FontStyle.Bold);
+
+            e.Graphics.DrawString("Fiş Bilgileri", boldFont, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Fiş No: {fisNo}", font, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Tarih: {tarih}", font, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Saat: {saat}", font, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Ödeme Türü: {odemeTuru}", font, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Müşteri Adı: {musteriAdi}", font, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Tutar: {tutar}", font, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Durum: {durum}", font, System.Drawing.Brushes.Black, 40, y);
         }
 
         private void BtnExcel_Click(object? sender, EventArgs e)

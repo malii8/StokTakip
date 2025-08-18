@@ -37,51 +37,16 @@ namespace StokTakip.Forms
             this.txtBarkod = new System.Windows.Forms.TextBox();
             this.lblBarkod = new System.Windows.Forms.Label();
             this.btnMusteriSec = new System.Windows.Forms.Button();
-            this.rbSatisFiyati1 = new System.Windows.Forms.RadioButton();
+            this.lblSelectedCustomerName = new System.Windows.Forms.Label();
+            this.lblSelectedCustomerDebt = new System.Windows.Forms.Label();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.dgvSatisListesi = new System.Windows.Forms.DataGridView();
             this.pnlRight = new System.Windows.Forms.Panel();
             this.pnlHizliSatis = new System.Windows.Forms.Panel();
-            this.btnHizliTusDegistir = new System.Windows.Forms.Button();
-            this.btnHizliTusSil = new System.Windows.Forms.Button();
-            this.btnHizliTusAta18 = new System.Windows.Forms.Button();
-            this.btnHizliUrun18 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta17 = new System.Windows.Forms.Button();
-            this.btnHizliUrun17 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta16 = new System.Windows.Forms.Button();
-            this.btnHizliUrun16 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta15 = new System.Windows.Forms.Button();
-            this.btnHizliUrun15 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta14 = new System.Windows.Forms.Button();
-            this.btnHizliUrun14 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta13 = new System.Windows.Forms.Button();
-            this.btnHizliUrun13 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta12 = new System.Windows.Forms.Button();
-            this.btnHizliUrun12 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta11 = new System.Windows.Forms.Button();
-            this.btnHizliUrun11 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta10 = new System.Windows.Forms.Button();
-            this.btnHizliUrun10 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta9 = new System.Windows.Forms.Button();
-            this.btnHizliUrun9 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta8 = new System.Windows.Forms.Button();
-            this.btnHizliUrun8 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta7 = new System.Windows.Forms.Button();
-            this.btnHizliUrun7 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta6 = new System.Windows.Forms.Button();
-            this.btnHizliUrun6 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta5 = new System.Windows.Forms.Button();
-            this.btnHizliUrun5 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta4 = new System.Windows.Forms.Button();
-            this.btnHizliUrun4 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta3 = new System.Windows.Forms.Button();
-            this.btnHizliUrun3 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta2 = new System.Windows.Forms.Button();
-            this.btnHizliUrun2 = new System.Windows.Forms.Button();
-            this.btnHizliTusAta1 = new System.Windows.Forms.Button();
-            this.btnHizliUrun1 = new System.Windows.Forms.Button();
             this.btnStoksuzSatis = new System.Windows.Forms.Button();
             this.lblHizliSatis = new System.Windows.Forms.Label();
+            this.btnTuslariSil = new System.Windows.Forms.Button();
+            this.btnTuslariDegistir = new System.Windows.Forms.Button();
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.pnlKasa = new System.Windows.Forms.Panel();
             this.txtKar = new System.Windows.Forms.TextBox();
@@ -99,13 +64,14 @@ namespace StokTakip.Forms
             this.pnlToplam = new System.Windows.Forms.Panel();
             this.lblToplam = new System.Windows.Forms.Label();
             this.pnlSatisOnaylama = new System.Windows.Forms.Panel();
-            this.chkIkinciMonitor = new System.Windows.Forms.CheckBox();
             this.btnHavale = new System.Windows.Forms.Button();
             this.btnNakitKredi = new System.Windows.Forms.Button();
             this.btnKrediKarti = new System.Windows.Forms.Button();
             this.btnVeresiye = new System.Windows.Forms.Button();
             this.btnNakit = new System.Windows.Forms.Button();
             this.lblSatisOnaylama = new System.Windows.Forms.Label();
+            this.printDocument1 = new System.Drawing.Printing.PrintDocument();
+            this.printPreviewDialog1 = new System.Windows.Forms.PrintPreviewDialog();
             this.pnlTop.SuspendLayout();
             this.pnlBarkod.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -125,7 +91,8 @@ namespace StokTakip.Forms
             this.pnlTop.Controls.Add(this.btnUrunAra);
             this.pnlTop.Controls.Add(this.pnlBarkod);
             this.pnlTop.Controls.Add(this.btnMusteriSec);
-            this.pnlTop.Controls.Add(this.rbSatisFiyati1);
+            this.pnlTop.Controls.Add(this.lblSelectedCustomerName);
+            this.pnlTop.Controls.Add(this.lblSelectedCustomerDebt);
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Name = "pnlTop";
@@ -206,17 +173,27 @@ namespace StokTakip.Forms
             this.btnMusteriSec.Text = "Müşteri Seç (F8)";
             this.btnMusteriSec.UseVisualStyleBackColor = true;
             // 
-            // rbSatisFiyati1
+            // lblSelectedCustomerName
             // 
-            this.rbSatisFiyati1.AutoSize = true;
-            this.rbSatisFiyati1.Checked = true;
-            this.rbSatisFiyati1.Location = new System.Drawing.Point(12, 12);
-            this.rbSatisFiyati1.Name = "rbSatisFiyati1";
-            this.rbSatisFiyati1.Size = new System.Drawing.Size(142, 17);
-            this.rbSatisFiyati1.TabIndex = 0;
-            this.rbSatisFiyati1.TabStop = true;
-            this.rbSatisFiyati1.Text = "Normal Satış Fiyatı Geçerli Olsun";
-            this.rbSatisFiyati1.UseVisualStyleBackColor = true;
+            this.lblSelectedCustomerName.AutoSize = true;
+            this.lblSelectedCustomerName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblSelectedCustomerName.ForeColor = System.Drawing.Color.Green;
+            this.lblSelectedCustomerName.Location = new System.Drawing.Point(160, 10);
+            this.lblSelectedCustomerName.Name = "lblSelectedCustomerName";
+            this.lblSelectedCustomerName.Size = new System.Drawing.Size(144, 20);
+            this.lblSelectedCustomerName.TabIndex = 6;
+            this.lblSelectedCustomerName.Text = "Perakende Satış";
+            // 
+            // lblSelectedCustomerDebt
+            // 
+            this.lblSelectedCustomerDebt.AutoSize = true;
+            this.lblSelectedCustomerDebt.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblSelectedCustomerDebt.ForeColor = System.Drawing.Color.Red;
+            this.lblSelectedCustomerDebt.Location = new System.Drawing.Point(350, 10);
+            this.lblSelectedCustomerDebt.Name = "lblSelectedCustomerDebt";
+            this.lblSelectedCustomerDebt.Size = new System.Drawing.Size(49, 20);
+            this.lblSelectedCustomerDebt.TabIndex = 7;
+            this.lblSelectedCustomerDebt.Text = "0,00";
             // 
             // pnlMain
             // 
@@ -248,44 +225,8 @@ namespace StokTakip.Forms
             // 
             // pnlHizliSatis
             // 
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusDegistir);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusSil);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta18);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun18);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta17);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun17);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta16);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun16);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta15);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun15);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta14);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun14);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta13);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun13);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta12);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun12);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta11);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun11);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta10);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun10);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta9);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun9);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta8);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun8);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta7);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun7);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta6);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun6);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta5);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun5);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta4);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun4);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta3);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun3);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta2);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun2);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliTusAta1);
-            this.pnlHizliSatis.Controls.Add(this.btnHizliUrun1);
+            this.pnlHizliSatis.Controls.Add(this.btnTuslariDegistir);
+            this.pnlHizliSatis.Controls.Add(this.btnTuslariSil);
             this.pnlHizliSatis.Controls.Add(this.btnStoksuzSatis);
             this.pnlHizliSatis.Controls.Add(this.lblHizliSatis);
             this.pnlHizliSatis.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -294,339 +235,9 @@ namespace StokTakip.Forms
             this.pnlHizliSatis.Size = new System.Drawing.Size(300, 481);
             this.pnlHizliSatis.TabIndex = 0;
             // 
-            // btnHizliTusDegistir
-            // 
-            this.btnHizliTusDegistir.Location = new System.Drawing.Point(220, 440);
-            this.btnHizliTusDegistir.Name = "btnHizliTusDegistir";
-            this.btnHizliTusDegistir.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusDegistir.TabIndex = 40;
-            this.btnHizliTusDegistir.Text = "Tuşları Değiştir";
-            this.btnHizliTusDegistir.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusSil
-            // 
-            this.btnHizliTusSil.Location = new System.Drawing.Point(140, 440);
-            this.btnHizliTusSil.Name = "btnHizliTusSil";
-            this.btnHizliTusSil.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusSil.TabIndex = 39;
-            this.btnHizliTusSil.Text = "Tuşları Sil";
-            this.btnHizliTusSil.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta18
-            // 
-            this.btnHizliTusAta18.Location = new System.Drawing.Point(220, 400);
-            this.btnHizliTusAta18.Name = "btnHizliTusAta18";
-            this.btnHizliTusAta18.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta18.TabIndex = 38;
-            this.btnHizliTusAta18.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta18.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun18
-            // 
-            this.btnHizliUrun18.Location = new System.Drawing.Point(140, 400);
-            this.btnHizliUrun18.Name = "btnHizliUrun18";
-            this.btnHizliUrun18.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun18.TabIndex = 37;
-            this.btnHizliUrun18.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta17
-            // 
-            this.btnHizliTusAta17.Location = new System.Drawing.Point(60, 400);
-            this.btnHizliTusAta17.Name = "btnHizliTusAta17";
-            this.btnHizliTusAta17.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta17.TabIndex = 36;
-            this.btnHizliTusAta17.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta17.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun17
-            // 
-            this.btnHizliUrun17.Location = new System.Drawing.Point(-20, 400);
-            this.btnHizliUrun17.Name = "btnHizliUrun17";
-            this.btnHizliUrun17.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun17.TabIndex = 35;
-            this.btnHizliUrun17.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta16
-            // 
-            this.btnHizliTusAta16.Location = new System.Drawing.Point(220, 360);
-            this.btnHizliTusAta16.Name = "btnHizliTusAta16";
-            this.btnHizliTusAta16.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta16.TabIndex = 34;
-            this.btnHizliTusAta16.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta16.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun16
-            // 
-            this.btnHizliUrun16.Location = new System.Drawing.Point(140, 360);
-            this.btnHizliUrun16.Name = "btnHizliUrun16";
-            this.btnHizliUrun16.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun16.TabIndex = 33;
-            this.btnHizliUrun16.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta15
-            // 
-            this.btnHizliTusAta15.Location = new System.Drawing.Point(60, 360);
-            this.btnHizliTusAta15.Name = "btnHizliTusAta15";
-            this.btnHizliTusAta15.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta15.TabIndex = 32;
-            this.btnHizliTusAta15.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta15.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun15
-            // 
-            this.btnHizliUrun15.Location = new System.Drawing.Point(-20, 360);
-            this.btnHizliUrun15.Name = "btnHizliUrun15";
-            this.btnHizliUrun15.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun15.TabIndex = 31;
-            this.btnHizliUrun15.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta14
-            // 
-            this.btnHizliTusAta14.Location = new System.Drawing.Point(220, 320);
-            this.btnHizliTusAta14.Name = "btnHizliTusAta14";
-            this.btnHizliTusAta14.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta14.TabIndex = 30;
-            this.btnHizliTusAta14.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta14.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun14
-            // 
-            this.btnHizliUrun14.Location = new System.Drawing.Point(140, 320);
-            this.btnHizliUrun14.Name = "btnHizliUrun14";
-            this.btnHizliUrun14.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun14.TabIndex = 29;
-            this.btnHizliUrun14.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta13
-            // 
-            this.btnHizliTusAta13.Location = new System.Drawing.Point(60, 320);
-            this.btnHizliTusAta13.Name = "btnHizliTusAta13";
-            this.btnHizliTusAta13.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta13.TabIndex = 28;
-            this.btnHizliTusAta13.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta13.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun13
-            // 
-            this.btnHizliUrun13.Location = new System.Drawing.Point(-20, 320);
-            this.btnHizliUrun13.Name = "btnHizliUrun13";
-            this.btnHizliUrun13.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun13.TabIndex = 27;
-            this.btnHizliUrun13.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta12
-            // 
-            this.btnHizliTusAta12.Location = new System.Drawing.Point(220, 280);
-            this.btnHizliTusAta12.Name = "btnHizliTusAta12";
-            this.btnHizliTusAta12.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta12.TabIndex = 26;
-            this.btnHizliTusAta12.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta12.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun12
-            // 
-            this.btnHizliUrun12.Location = new System.Drawing.Point(140, 280);
-            this.btnHizliUrun12.Name = "btnHizliUrun12";
-            this.btnHizliUrun12.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun12.TabIndex = 25;
-            this.btnHizliUrun12.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta11
-            // 
-            this.btnHizliTusAta11.Location = new System.Drawing.Point(60, 280);
-            this.btnHizliTusAta11.Name = "btnHizliTusAta11";
-            this.btnHizliTusAta11.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta11.TabIndex = 24;
-            this.btnHizliTusAta11.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta11.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun11
-            // 
-            this.btnHizliUrun11.Location = new System.Drawing.Point(-20, 280);
-            this.btnHizliUrun11.Name = "btnHizliUrun11";
-            this.btnHizliUrun11.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun11.TabIndex = 23;
-            this.btnHizliUrun11.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta10
-            // 
-            this.btnHizliTusAta10.Location = new System.Drawing.Point(220, 240);
-            this.btnHizliTusAta10.Name = "btnHizliTusAta10";
-            this.btnHizliTusAta10.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta10.TabIndex = 22;
-            this.btnHizliTusAta10.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta10.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun10
-            // 
-            this.btnHizliUrun10.Location = new System.Drawing.Point(140, 240);
-            this.btnHizliUrun10.Name = "btnHizliUrun10";
-            this.btnHizliUrun10.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun10.TabIndex = 21;
-            this.btnHizliUrun10.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta9
-            // 
-            this.btnHizliTusAta9.Location = new System.Drawing.Point(60, 240);
-            this.btnHizliTusAta9.Name = "btnHizliTusAta9";
-            this.btnHizliTusAta9.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta9.TabIndex = 20;
-            this.btnHizliTusAta9.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta9.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun9
-            // 
-            this.btnHizliUrun9.Location = new System.Drawing.Point(-20, 240);
-            this.btnHizliUrun9.Name = "btnHizliUrun9";
-            this.btnHizliUrun9.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun9.TabIndex = 19;
-            this.btnHizliUrun9.Text = "YUDUM 1 LT SIVI YAĞ";
-            this.btnHizliUrun9.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta8
-            // 
-            this.btnHizliTusAta8.Location = new System.Drawing.Point(220, 200);
-            this.btnHizliTusAta8.Name = "btnHizliTusAta8";
-            this.btnHizliTusAta8.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta8.TabIndex = 18;
-            this.btnHizliTusAta8.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta8.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun8
-            // 
-            this.btnHizliUrun8.Location = new System.Drawing.Point(140, 200);
-            this.btnHizliUrun8.Name = "btnHizliUrun8";
-            this.btnHizliUrun8.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun8.TabIndex = 17;
-            this.btnHizliUrun8.Text = "ÜLKER ALBENİ";
-            this.btnHizliUrun8.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta7
-            // 
-            this.btnHizliTusAta7.Location = new System.Drawing.Point(60, 200);
-            this.btnHizliTusAta7.Name = "btnHizliTusAta7";
-            this.btnHizliTusAta7.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta7.TabIndex = 16;
-            this.btnHizliTusAta7.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta7.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun7
-            // 
-            this.btnHizliUrun7.Location = new System.Drawing.Point(-20, 200);
-            this.btnHizliUrun7.Name = "btnHizliUrun7";
-            this.btnHizliUrun7.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun7.TabIndex = 15;
-            this.btnHizliUrun7.Text = "TAMEK DOMATES SALÇASI 830 GR";
-            this.btnHizliUrun7.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta6
-            // 
-            this.btnHizliTusAta6.Location = new System.Drawing.Point(220, 160);
-            this.btnHizliTusAta6.Name = "btnHizliTusAta6";
-            this.btnHizliTusAta6.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta6.TabIndex = 14;
-            this.btnHizliTusAta6.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta6.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun6
-            // 
-            this.btnHizliUrun6.Location = new System.Drawing.Point(140, 160);
-            this.btnHizliUrun6.Name = "btnHizliUrun6";
-            this.btnHizliUrun6.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun6.TabIndex = 13;
-            this.btnHizliUrun6.Text = "ŞEKER 1KG";
-            this.btnHizliUrun6.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta5
-            // 
-            this.btnHizliTusAta5.Location = new System.Drawing.Point(60, 160);
-            this.btnHizliTusAta5.Name = "btnHizliTusAta5";
-            this.btnHizliTusAta5.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta5.TabIndex = 12;
-            this.btnHizliTusAta5.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta5.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun5
-            // 
-            this.btnHizliUrun5.Location = new System.Drawing.Point(-20, 160);
-            this.btnHizliUrun5.Name = "btnHizliUrun5";
-            this.btnHizliUrun5.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun5.TabIndex = 11;
-            this.btnHizliUrun5.Text = "ABC ÇAMAŞIR SUYU 4000 ML";
-            this.btnHizliUrun5.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta4
-            // 
-            this.btnHizliTusAta4.Location = new System.Drawing.Point(220, 120);
-            this.btnHizliTusAta4.Name = "btnHizliTusAta4";
-            this.btnHizliTusAta4.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta4.TabIndex = 10;
-            this.btnHizliTusAta4.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta4.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun4
-            // 
-            this.btnHizliUrun4.Location = new System.Drawing.Point(140, 120);
-            this.btnHizliUrun4.Name = "btnHizliUrun4";
-            this.btnHizliUrun4.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun4.TabIndex = 9;
-            this.btnHizliUrun4.Text = "OE 688 PASSAT YAĞ B7";
-            this.btnHizliUrun4.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta3
-            // 
-            this.btnHizliTusAta3.Location = new System.Drawing.Point(60, 120);
-            this.btnHizliTusAta3.Name = "btnHizliTusAta3";
-            this.btnHizliTusAta3.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta3.TabIndex = 8;
-            this.btnHizliTusAta3.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta3.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun3
-            // 
-            this.btnHizliUrun3.Location = new System.Drawing.Point(-20, 120);
-            this.btnHizliUrun3.Name = "btnHizliUrun3";
-            this.btnHizliUrun3.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun3.TabIndex = 7;
-            this.btnHizliUrun3.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta2
-            // 
-            this.btnHizliTusAta2.Location = new System.Drawing.Point(220, 80);
-            this.btnHizliTusAta2.Name = "btnHizliTusAta2";
-            this.btnHizliTusAta2.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta2.TabIndex = 6;
-            this.btnHizliTusAta2.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta2.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun2
-            // 
-            this.btnHizliUrun2.Location = new System.Drawing.Point(140, 80);
-            this.btnHizliUrun2.Name = "btnHizliUrun2";
-            this.btnHizliUrun2.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun2.TabIndex = 5;
-            this.btnHizliUrun2.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliTusAta1
-            // 
-            this.btnHizliTusAta1.Location = new System.Drawing.Point(60, 80);
-            this.btnHizliTusAta1.Name = "btnHizliTusAta1";
-            this.btnHizliTusAta1.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliTusAta1.TabIndex = 4;
-            this.btnHizliTusAta1.Text = "HIZLI TUŞ ATA";
-            this.btnHizliTusAta1.UseVisualStyleBackColor = true;
-            // 
-            // btnHizliUrun1
-            // 
-            this.btnHizliUrun1.Location = new System.Drawing.Point(-20, 80);
-            this.btnHizliUrun1.Name = "btnHizliUrun1";
-            this.btnHizliUrun1.Size = new System.Drawing.Size(75, 35);
-            this.btnHizliUrun1.TabIndex = 3;
-            this.btnHizliUrun1.UseVisualStyleBackColor = true;
-            // 
             // btnStoksuzSatis
             // 
-            this.btnStoksuzSatis.Location = new System.Drawing.Point(10, 40);
+            this.btnStoksuzSatis.Location = new System.Drawing.Point(10, 30);
             this.btnStoksuzSatis.Name = "btnStoksuzSatis";
             this.btnStoksuzSatis.Size = new System.Drawing.Size(120, 35);
             this.btnStoksuzSatis.TabIndex = 2;
@@ -637,11 +248,33 @@ namespace StokTakip.Forms
             // 
             this.lblHizliSatis.AutoSize = true;
             this.lblHizliSatis.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblHizliSatis.Location = new System.Drawing.Point(70, 10);
+            this.lblHizliSatis.Location = new System.Drawing.Point(70, 5);
             this.lblHizliSatis.Name = "lblHizliSatis";
             this.lblHizliSatis.Size = new System.Drawing.Size(167, 20);
             this.lblHizliSatis.TabIndex = 0;
             this.lblHizliSatis.Text = "HIZLI SATIŞ TUŞLARI";
+            // 
+            // btnTuslariSil
+            // 
+            this.btnTuslariSil.Image = global::StokTakip.Properties.Resources.delete_button;
+            this.btnTuslariSil.Location = new System.Drawing.Point(190, 440);
+            this.btnTuslariSil.Name = "btnTuslariSil";
+            this.btnTuslariSil.Size = new System.Drawing.Size(100, 35);
+            this.btnTuslariSil.TabIndex = 3;
+            this.btnTuslariSil.Text = "Tuşları Sil";
+            this.btnTuslariSil.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnTuslariSil.UseVisualStyleBackColor = true;
+            // 
+            // btnTuslariDegistir
+            // 
+            this.btnTuslariDegistir.Image = global::StokTakip.Properties.Resources.refresh_button;
+            this.btnTuslariDegistir.Location = new System.Drawing.Point(10, 440);
+            this.btnTuslariDegistir.Name = "btnTuslariDegistir";
+            this.btnTuslariDegistir.Size = new System.Drawing.Size(100, 35);
+            this.btnTuslariDegistir.TabIndex = 4;
+            this.btnTuslariDegistir.Text = "Tuşları Değiştir";
+            this.btnTuslariDegistir.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnTuslariDegistir.UseVisualStyleBackColor = true;
             // 
             // pnlBottom
             // 
@@ -676,6 +309,7 @@ namespace StokTakip.Forms
             this.txtKar.BackColor = System.Drawing.Color.Yellow;
             this.txtKar.Location = new System.Drawing.Point(310, 60);
             this.txtKar.Name = "txtKar";
+            this.txtKar.ReadOnly = true;
             this.txtKar.Size = new System.Drawing.Size(100, 20);
             this.txtKar.TabIndex = 8;
             // 
@@ -691,7 +325,7 @@ namespace StokTakip.Forms
             // chkKarGoster
             // 
             this.chkKarGoster.AutoSize = true;
-            this.chkKarGoster.Location = new System.Drawing.Point(180, 40);
+            this.chkKarGoster.Location = new System.Drawing.Point(120, 40);
             this.chkKarGoster.Name = "chkKarGoster";
             this.chkKarGoster.Size = new System.Drawing.Size(89, 17);
             this.chkKarGoster.TabIndex = 6;
@@ -704,6 +338,7 @@ namespace StokTakip.Forms
             this.txtParaUstu.ForeColor = System.Drawing.Color.White;
             this.txtParaUstu.Location = new System.Drawing.Point(310, 35);
             this.txtParaUstu.Name = "txtParaUstu";
+            this.txtParaUstu.ReadOnly = true;
             this.txtParaUstu.Size = new System.Drawing.Size(100, 20);
             this.txtParaUstu.TabIndex = 5;
             // 
@@ -800,7 +435,6 @@ namespace StokTakip.Forms
             // 
             // pnlSatisOnaylama
             // 
-            this.pnlSatisOnaylama.Controls.Add(this.chkIkinciMonitor);
             this.pnlSatisOnaylama.Controls.Add(this.btnHavale);
             this.pnlSatisOnaylama.Controls.Add(this.btnNakitKredi);
             this.pnlSatisOnaylama.Controls.Add(this.btnKrediKarti);
@@ -811,16 +445,6 @@ namespace StokTakip.Forms
             this.pnlSatisOnaylama.Name = "pnlSatisOnaylama";
             this.pnlSatisOnaylama.Size = new System.Drawing.Size(400, 90);
             this.pnlSatisOnaylama.TabIndex = 0;
-            // 
-            // chkIkinciMonitor
-            // 
-            this.chkIkinciMonitor.AutoSize = true;
-            this.chkIkinciMonitor.Location = new System.Drawing.Point(280, 70);
-            this.chkIkinciMonitor.Name = "chkIkinciMonitor";
-            this.chkIkinciMonitor.Size = new System.Drawing.Size(98, 17);
-            this.chkIkinciMonitor.TabIndex = 6;
-            this.chkIkinciMonitor.Text = "İkinci Monitör Aç";
-            this.chkIkinciMonitor.UseVisualStyleBackColor = true;
             // 
             // btnHavale
             // 
@@ -902,6 +526,7 @@ namespace StokTakip.Forms
             this.pnlKasa.ResumeLayout(false);
             this.pnlKasa.PerformLayout();
             this.pnlFis.ResumeLayout(false);
+            this.pnlFis.PerformLayout();
             this.pnlToplam.ResumeLayout(false);
             this.pnlSatisOnaylama.ResumeLayout(false);
             this.pnlSatisOnaylama.PerformLayout();
@@ -912,7 +537,16 @@ namespace StokTakip.Forms
         #endregion
 
         private System.Windows.Forms.Panel pnlTop;
-        private System.Windows.Forms.RadioButton rbSatisFiyati1;
+        private System.Windows.Forms.Button btnSatisIptal;
+        private System.Windows.Forms.Button btnUrunAra;
+        private System.Windows.Forms.Panel pnlBarkod;
+        private System.Windows.Forms.Label lblBarkod;
+        private System.Windows.Forms.TextBox txtBarkod;
+        private System.Windows.Forms.Label lblMiktar;
+        private System.Windows.Forms.TextBox txtMiktar;
+        private System.Windows.Forms.Button btnMusteriSec;
+        private System.Windows.Forms.Label lblSelectedCustomerName;
+        private System.Windows.Forms.Label lblSelectedCustomerDebt;
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.DataGridView dgvSatisListesi;
         private System.Windows.Forms.Panel pnlRight;
@@ -927,17 +561,9 @@ namespace StokTakip.Forms
         private System.Windows.Forms.Button btnKrediKarti;
         private System.Windows.Forms.Button btnNakitKredi;
         private System.Windows.Forms.Button btnHavale;
-        private System.Windows.Forms.Panel pnlBarkod;
-        private System.Windows.Forms.Label lblBarkod;
-        private System.Windows.Forms.TextBox txtBarkod;
-        private System.Windows.Forms.Label lblMiktar;
-        private System.Windows.Forms.TextBox txtMiktar;
-        private System.Windows.Forms.Button btnMusteriSec;
-        private System.Windows.Forms.Button btnUrunAra;
-        private System.Windows.Forms.Button btnSatisIptal;
         private System.Windows.Forms.Panel pnlToplam;
         private System.Windows.Forms.Label lblToplam;
-        private System.Windows.Forms.CheckBox chkIkinciMonitor;
+        private System.Windows.Forms.CheckBox chkKarGoster;
         private System.Windows.Forms.Panel pnlFis;
         private System.Windows.Forms.Button btnSatisBilgisiYazdir;
         private System.Windows.Forms.Button btnEskiFisler;
@@ -948,46 +574,11 @@ namespace StokTakip.Forms
         private System.Windows.Forms.TextBox txtAlinanPara;
         private System.Windows.Forms.Label lblParaUstu;
         private System.Windows.Forms.TextBox txtParaUstu;
-        private System.Windows.Forms.CheckBox chkKarGoster;
         private System.Windows.Forms.Label lblKar;
         private System.Windows.Forms.TextBox txtKar;
-        private System.Windows.Forms.Button btnHizliUrun1;
-        private System.Windows.Forms.Button btnHizliTusAta1;
-        private System.Windows.Forms.Button btnHizliUrun2;
-        private System.Windows.Forms.Button btnHizliTusAta2;
-        private System.Windows.Forms.Button btnHizliUrun3;
-        private System.Windows.Forms.Button btnHizliTusAta3;
-        private System.Windows.Forms.Button btnHizliUrun4;
-        private System.Windows.Forms.Button btnHizliTusAta4;
-        private System.Windows.Forms.Button btnHizliUrun5;
-        private System.Windows.Forms.Button btnHizliTusAta5;
-        private System.Windows.Forms.Button btnHizliUrun6;
-        private System.Windows.Forms.Button btnHizliTusAta6;
-        private System.Windows.Forms.Button btnHizliUrun7;
-        private System.Windows.Forms.Button btnHizliTusAta7;
-        private System.Windows.Forms.Button btnHizliUrun8;
-        private System.Windows.Forms.Button btnHizliTusAta8;
-        private System.Windows.Forms.Button btnHizliUrun9;
-        private System.Windows.Forms.Button btnHizliTusAta9;
-        private System.Windows.Forms.Button btnHizliUrun10;
-        private System.Windows.Forms.Button btnHizliTusAta10;
-        private System.Windows.Forms.Button btnHizliUrun11;
-        private System.Windows.Forms.Button btnHizliTusAta11;
-        private System.Windows.Forms.Button btnHizliUrun12;
-        private System.Windows.Forms.Button btnHizliTusAta12;
-        private System.Windows.Forms.Button btnHizliUrun13;
-        private System.Windows.Forms.Button btnHizliTusAta13;
-        private System.Windows.Forms.Button btnHizliUrun14;
-        private System.Windows.Forms.Button btnHizliTusAta14;
-        private System.Windows.Forms.Button btnHizliUrun15;
-        private System.Windows.Forms.Button btnHizliTusAta15;
-        private System.Windows.Forms.Button btnHizliUrun16;
-        private System.Windows.Forms.Button btnHizliTusAta16;
-        private System.Windows.Forms.Button btnHizliUrun17;
-        private System.Windows.Forms.Button btnHizliTusAta17;
-        private System.Windows.Forms.Button btnHizliUrun18;
-        private System.Windows.Forms.Button btnHizliTusAta18;
-        private System.Windows.Forms.Button btnHizliTusSil;
-        private System.Windows.Forms.Button btnHizliTusDegistir;
+        private System.Windows.Forms.Button btnTuslariSil;
+        private System.Windows.Forms.Button btnTuslariDegistir;
+        private System.Drawing.Printing.PrintDocument printDocument1;
+        private System.Windows.Forms.PrintPreviewDialog printPreviewDialog1;
     }
 }

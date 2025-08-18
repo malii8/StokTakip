@@ -51,7 +51,8 @@ namespace StokTakip.Forms
             this.lblMevcutStok = new System.Windows.Forms.Label();
             this.txtMevcutStok = new System.Windows.Forms.TextBox();
             this.lblOlcuBirimi = new System.Windows.Forms.Label();
-            this.txtOlcuBirimi = new System.Windows.Forms.TextBox();
+            this.cmbOlcuBirimi = new System.Windows.Forms.ComboBox();
+            this.btnYeniOlcuBirimi = new System.Windows.Forms.Button();
             this.lblAsgariStok = new System.Windows.Forms.Label();
             this.txtAsgariStok = new System.Windows.Forms.TextBox();
             this.lblToptanci = new System.Windows.Forms.Label();
@@ -262,12 +263,22 @@ namespace StokTakip.Forms
             this.lblOlcuBirimi.TabIndex = 22;
             this.lblOlcuBirimi.Text = "Ölçü Birimi:";
             // 
-            // txtOlcuBirimi
+            // cmbOlcuBirimi
             // 
-            this.txtOlcuBirimi.Location = new System.Drawing.Point(150, 307);
-            this.txtOlcuBirimi.Name = "txtOlcuBirimi";
-            this.txtOlcuBirimi.Size = new System.Drawing.Size(100, 20);
-            this.txtOlcuBirimi.TabIndex = 23;
+            this.cmbOlcuBirimi.FormattingEnabled = true;
+            this.cmbOlcuBirimi.Location = new System.Drawing.Point(150, 307);
+            this.cmbOlcuBirimi.Name = "cmbOlcuBirimi";
+            this.cmbOlcuBirimi.Size = new System.Drawing.Size(200, 21);
+            this.cmbOlcuBirimi.TabIndex = 23;
+            // 
+            // btnYeniOlcuBirimi
+            // 
+            this.btnYeniOlcuBirimi.Location = new System.Drawing.Point(360, 305);
+            this.btnYeniOlcuBirimi.Name = "btnYeniOlcuBirimi";
+            this.btnYeniOlcuBirimi.Size = new System.Drawing.Size(150, 23);
+            this.btnYeniOlcuBirimi.TabIndex = 24;
+            this.btnYeniOlcuBirimi.Text = "Yeni Ölçü Birimi Ekle";
+            this.btnYeniOlcuBirimi.UseVisualStyleBackColor = true;
             // 
             // lblAsgariStok
             // 
@@ -275,7 +286,7 @@ namespace StokTakip.Forms
             this.lblAsgariStok.Location = new System.Drawing.Point(40, 340);
             this.lblAsgariStok.Name = "lblAsgariStok";
             this.lblAsgariStok.Size = new System.Drawing.Size(68, 13);
-            this.lblAsgariStok.TabIndex = 24;
+            this.lblAsgariStok.TabIndex = 25;
             this.lblAsgariStok.Text = "Asgari Stok:";
             // 
             // txtAsgariStok
@@ -283,7 +294,7 @@ namespace StokTakip.Forms
             this.txtAsgariStok.Location = new System.Drawing.Point(150, 337);
             this.txtAsgariStok.Name = "txtAsgariStok";
             this.txtAsgariStok.Size = new System.Drawing.Size(100, 20);
-            this.txtAsgariStok.TabIndex = 25;
+            this.txtAsgariStok.TabIndex = 26;
             this.txtAsgariStok.Text = "0";
             // 
             // lblToptanci
@@ -292,7 +303,7 @@ namespace StokTakip.Forms
             this.lblToptanci.Location = new System.Drawing.Point(40, 370);
             this.lblToptanci.Name = "lblToptanci";
             this.lblToptanci.Size = new System.Drawing.Size(73, 13);
-            this.lblToptanci.TabIndex = 26;
+            this.lblToptanci.TabIndex = 27;
             this.lblToptanci.Text = "Toptancı Adı:";
             // 
             // cmbToptanci
@@ -301,14 +312,14 @@ namespace StokTakip.Forms
             this.cmbToptanci.Location = new System.Drawing.Point(150, 367);
             this.cmbToptanci.Name = "cmbToptanci";
             this.cmbToptanci.Size = new System.Drawing.Size(200, 21);
-            this.cmbToptanci.TabIndex = 27;
+            this.cmbToptanci.TabIndex = 28;
             // 
             // btnYeniToptanci
             // 
             this.btnYeniToptanci.Location = new System.Drawing.Point(360, 365);
             this.btnYeniToptanci.Name = "btnYeniToptanci";
             this.btnYeniToptanci.Size = new System.Drawing.Size(150, 23);
-            this.btnYeniToptanci.TabIndex = 28;
+            this.btnYeniToptanci.TabIndex = 29;
             this.btnYeniToptanci.Text = "Yeni Toptancı Ekle";
             this.btnYeniToptanci.UseVisualStyleBackColor = true;
             // 
@@ -318,7 +329,7 @@ namespace StokTakip.Forms
             this.lblOdemeSekli.Location = new System.Drawing.Point(40, 400);
             this.lblOdemeSekli.Name = "lblOdemeSekli";
             this.lblOdemeSekli.Size = new System.Drawing.Size(72, 13);
-            this.lblOdemeSekli.TabIndex = 29;
+            this.lblOdemeSekli.TabIndex = 30;
             this.lblOdemeSekli.Text = "Ödeme Şekli:";
             // 
             // cmbOdemeSekli
@@ -327,7 +338,7 @@ namespace StokTakip.Forms
             this.cmbOdemeSekli.Location = new System.Drawing.Point(150, 397);
             this.cmbOdemeSekli.Name = "cmbOdemeSekli";
             this.cmbOdemeSekli.Size = new System.Drawing.Size(200, 21);
-            this.cmbOdemeSekli.TabIndex = 30;
+            this.cmbOdemeSekli.TabIndex = 31;
             // 
             // lblZorunluAlanlar
             // 
@@ -336,7 +347,7 @@ namespace StokTakip.Forms
             this.lblZorunluAlanlar.Location = new System.Drawing.Point(40, 450);
             this.lblZorunluAlanlar.Name = "lblZorunluAlanlar";
             this.lblZorunluAlanlar.Size = new System.Drawing.Size(132, 13);
-            this.lblZorunluAlanlar.TabIndex = 31;
+            this.lblZorunluAlanlar.TabIndex = 32;
             this.lblZorunluAlanlar.Text = "* Girilmesi Mecburi Olan Satırlar";
             // 
             // btnKaydet
@@ -344,7 +355,7 @@ namespace StokTakip.Forms
             this.btnKaydet.Location = new System.Drawing.Point(40, 480);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(100, 40);
-            this.btnKaydet.TabIndex = 32;
+            this.btnKaydet.TabIndex = 33;
             this.btnKaydet.Text = "Kaydet (F1)";
             this.btnKaydet.UseVisualStyleBackColor = true;
             // 
@@ -353,7 +364,7 @@ namespace StokTakip.Forms
             this.btnVazgec.Location = new System.Drawing.Point(150, 480);
             this.btnVazgec.Name = "btnVazgec";
             this.btnVazgec.Size = new System.Drawing.Size(100, 40);
-            this.btnVazgec.TabIndex = 33;
+            this.btnVazgec.TabIndex = 34;
             this.btnVazgec.Text = "Vazgeç";
             this.btnVazgec.UseVisualStyleBackColor = true;
             // 
@@ -362,7 +373,7 @@ namespace StokTakip.Forms
             this.btnUrunAra.Location = new System.Drawing.Point(280, 480);
             this.btnUrunAra.Name = "btnUrunAra";
             this.btnUrunAra.Size = new System.Drawing.Size(120, 40);
-            this.btnUrunAra.TabIndex = 34;
+            this.btnUrunAra.TabIndex = 35;
             this.btnUrunAra.Text = "Ürün Adı İle Arama (F2)";
             this.btnUrunAra.UseVisualStyleBackColor = true;
             // 
@@ -371,7 +382,7 @@ namespace StokTakip.Forms
             this.btnFaturaliGiris.Location = new System.Drawing.Point(410, 480);
             this.btnFaturaliGiris.Name = "btnFaturaliGiris";
             this.btnFaturaliGiris.Size = new System.Drawing.Size(120, 40);
-            this.btnFaturaliGiris.TabIndex = 35;
+            this.btnFaturaliGiris.TabIndex = 36;
             this.btnFaturaliGiris.Text = "Faturalı Ürün Girişi";
             this.btnFaturaliGiris.UseVisualStyleBackColor = true;
             // 
@@ -392,7 +403,8 @@ namespace StokTakip.Forms
             this.Controls.Add(this.lblToptanci);
             this.Controls.Add(this.txtAsgariStok);
             this.Controls.Add(this.lblAsgariStok);
-            this.Controls.Add(this.txtOlcuBirimi);
+            this.Controls.Add(this.btnYeniOlcuBirimi);
+            this.Controls.Add(this.cmbOlcuBirimi);
             this.Controls.Add(this.lblOlcuBirimi);
             this.Controls.Add(this.txtMevcutStok);
             this.Controls.Add(this.lblMevcutStok);
@@ -448,7 +460,8 @@ namespace StokTakip.Forms
         private System.Windows.Forms.Label lblMevcutStok;
         private System.Windows.Forms.TextBox txtMevcutStok;
         private System.Windows.Forms.Label lblOlcuBirimi;
-        private System.Windows.Forms.TextBox txtOlcuBirimi;
+        private System.Windows.Forms.ComboBox cmbOlcuBirimi;
+        private System.Windows.Forms.Button btnYeniOlcuBirimi;
         private System.Windows.Forms.Label lblAsgariStok;
         private System.Windows.Forms.TextBox txtAsgariStok;
         private System.Windows.Forms.Label lblToptanci;

@@ -48,5 +48,8 @@ namespace StokTakip.Models
 
         // Navigation properties
         public virtual ICollection<SalesReceiptDetail> Details { get; set; } = new List<SalesReceiptDetail>();
+        public virtual ICollection<CashMovement> CashMovements { get; set; } = new List<CashMovement>();
+        public virtual ICollection<CustomerDebtMovement> CustomerDebtMovements { get; set; } = new List<CustomerDebtMovement>();
+        public virtual ICollection<WholesalerDebtMovement> WholesalerDebtMovements { get; set; } = new List<WholesalerDebtMovement>();
     }
 }

@@ -141,7 +141,7 @@ namespace StokTakip.Forms
                     lblMevcutStok.Text = $"Mevcut Stok: {mevcutMiktar} adet";
                 }
 
-                CalculateTotal(null, null);
+                CalculateTotal(null, EventArgs.Empty);
             }
         }
 
@@ -158,7 +158,7 @@ namespace StokTakip.Forms
                     txtBirimFiyat.Text = birimFiyat.ToString("F2");
                 }
 
-                CalculateTotal(null, null);
+                CalculateTotal(null, EventArgs.Empty);
                 MessageBox.Show("Ürün seçildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else

@@ -12,6 +12,8 @@ namespace StokTakip.Forms
     {
         private readonly StokTakipDbContext _context;
         private readonly IServiceProvider _serviceProvider;
+        private Product? _currentProduct; // To hold the product being edited
+        private bool _isEditMode = false;
 
         public UrunGirisForm(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
@@ -20,6 +22,43 @@ namespace StokTakip.Forms
             InitializeComponent();
             LoadProductGroups();
             SetupEventHandlers();
+            ClearForm(); // Initialize form for new entry
+        }
+
+        public void LoadProductForEdit(Product product)
+        {
+            _currentProduct = product;
+            _isEditMode = true;
+            btnKaydet.Text = "Güncelle"; // Change button text
+            lblZorunluAlanlar.Visible = false; // Hide mandatory fields label in edit mode
+
+            // Populate form fields with product data
+            txtBarkodNo.Text = product.BarcodeNo;
+            txtBarkodNo.ReadOnly = true; // Barcode should not be editable in edit mode
+            btnOtomatikBarkod.Enabled = false; // Disable automatic barcode generation in edit mode
+
+            txtUrunAdi.Text = product.Name;
+            txtUrunKodu.Text = product.StockCode;
+            cmbUrunGrubu.SelectedItem = product.ProductGroup?.Name; // Set selected item by name
+            txtAlisFiyatiKdvDahil.Text = product.PurchasePrice.ToString("F2"); // Assuming this is the default
+            txtAlisFiyatiKdvHaric.Text = (product.PurchasePrice / (1 + (product.VatRate / 100))).ToString("F2");
+            txtSatisFiyati.Text = product.SalePrice.ToString("F2");
+            txtKdvOrani.Text = product.VatRate.ToString("F0");
+            txtMevcutStok.Text = product.CurrentStock.ToString("F1");
+            cmbOlcuBirimi.SelectedItem = product.Unit; // Change from txtOlcuBirimi.Text
+            txtAsgariStok.Text = product.MinimumStock.ToString("F1");
+
+            // Set KDV radio buttons based on how prices are stored or preferred for display
+            rbKdvDahil.Checked = true; // Default to Kdv Dahil for display
+            RbKdvDahil_CheckedChanged(rbKdvDahil, EventArgs.Empty);
+
+            // Load wholesaler and payment type if available
+            if (product.Notes != null && product.Notes.Contains("Toptancı:"))
+            {
+                string wholesalerName = product.Notes.Split(new string[] { "Toptancı:" }, StringSplitOptions.None)[1].Split(new char[] { ',' })[0].Trim();
+                cmbToptanci.SelectedItem = wholesalerName;
+            }
+            // Payment method is not directly stored in Product, so it won't be loaded here.
         }
 
         private void LoadProductGroups()
@@ -47,6 +86,8 @@ namespace StokTakip.Forms
             btnFaturaliGiris.Click += new EventHandler(btnFaturaliGiris_Click);
             btnOtomatikBarkod.Click += new EventHandler(btnOtomatikBarkod_Click);
             btnKaydet.Click += new EventHandler(btnKaydet_Click);
+            btnYeniOlcuBirimi.Click += new EventHandler(btnYeniOlcuBirimi_Click); // Add this line
+            btnVazgec.Click += new EventHandler(btnVazgec_Click);
 
             // Fiyat hesaplama event'leri
             txtAlisFiyatiKdvDahil.TextChanged += new EventHandler(txtAlisFiyatiKdvDahil_TextChanged);
@@ -56,6 +97,13 @@ namespace StokTakip.Forms
             // Ödeme şekli ve toptancı combo'larını yükle
             LoadWholesalers();
             LoadPaymentTypes();
+            LoadUnits(); // Add this line
+
+            rbKdvDahil.CheckedChanged += RbKdvDahil_CheckedChanged;
+            rbKdvHaric.CheckedChanged += RbKdvHaric_CheckedChanged;
+
+            // Initial state
+            RbKdvDahil_CheckedChanged(rbKdvDahil, EventArgs.Empty);
         }
 
         private void btnOtomatikBarkod_Click(object? sender, EventArgs e)
@@ -74,11 +122,24 @@ namespace StokTakip.Forms
 
         private string GenerateNewBarcode()
         {
-            // Primary key tabanlı otomatik barkod - bir sonraki ID'yi al
-            var nextId = _context.Products.Any() ? _context.Products.Max(p => p.Id) + 1 : 1;
+            Random random = new Random();
+            string newBarcode;
+            bool isUnique = false;
 
-            // 8690 ile başlayan 13 haneli barkod oluştur (8690 + 9 haneli ID)
-            return $"8690{nextId:D9}";
+            do
+            {
+                // Generate a random 12-digit number
+                long randomNumber = (long)(random.NextDouble() * 1000000000000L); // 12-digit random number
+                newBarcode = randomNumber.ToString("D12");
+
+                // Check if the generated barcode already exists in the database
+                if (!_context.Products.Any(p => p.BarcodeNo == newBarcode))
+                {
+                    isUnique = true;
+                }
+            } while (!isUnique);
+
+            return newBarcode;
         }
 
         private void btnFaturaliGiris_Click(object? sender, EventArgs e)
@@ -90,7 +151,13 @@ namespace StokTakip.Forms
         private void btnUrunAra_Click(object? sender, EventArgs e)
         {
             var urunAramaForm = _serviceProvider.GetRequiredService<UrunAramaForm>();
-            urunAramaForm.ShowDialog();
+            if (urunAramaForm.ShowDialog() == DialogResult.OK)
+            {
+                if (urunAramaForm.SelectedProduct != null)
+                {
+                    LoadProductForEdit(urunAramaForm.SelectedProduct);
+                }
+            }
         }
 
         private void btnYeniToptanci_Click(object? sender, EventArgs e)
@@ -171,58 +238,83 @@ namespace StokTakip.Forms
                     return;
                 }
 
-                // Barkod numarası benzersiz mi kontrol et
-                var existingProduct = _context.Products.FirstOrDefault(p => p.BarcodeNo == txtBarkodNo.Text);
-                if (existingProduct != null)
-                {
-                    MessageBox.Show("Bu barkod numarası zaten kullanılıyor!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtBarkodNo.Focus();
-                    return;
-                }
-
-                // Ürün grubunu bul
                 ProductGroup? selectedGroup = null;
                 if (cmbUrunGrubu.SelectedItem != null)
                 {
                     selectedGroup = _context.ProductGroups.FirstOrDefault(g => g.Name == cmbUrunGrubu.SelectedItem.ToString());
                 }
 
-                // Toptancıyı bul
                 Wholesaler? selectedWholesaler = null;
                 if (cmbToptanci.SelectedItem != null && !string.IsNullOrEmpty(cmbToptanci.SelectedItem.ToString()))
                 {
                     selectedWholesaler = _context.Wholesalers.FirstOrDefault(w => w.Name == cmbToptanci.SelectedItem.ToString());
                 }
 
-                // Yeni ürün oluştur
-                var newProduct = new Product
+                if (_isEditMode && _currentProduct != null)
                 {
-                    BarcodeNo = txtBarkodNo.Text,
-                    Name = txtUrunAdi.Text,
-                    StockCode = txtUrunKodu.Text,
-                    ProductGroupId = selectedGroup?.Id,
-                    PurchasePrice = decimal.TryParse(txtAlisFiyatiKdvHaric.Text, out decimal purchasePrice) ? purchasePrice : 0,
-                    SalePrice = decimal.TryParse(txtSatisFiyati.Text, out decimal salePrice) ? salePrice : 0,
-                    CurrentStock = decimal.TryParse(txtMevcutStok.Text, out decimal currentStock) ? currentStock : 0,
-                    MinimumStock = decimal.TryParse(txtAsgariStok.Text, out decimal minStock) ? minStock : 0,
-                    Unit = txtOlcuBirimi.Text ?? "Adet",
-                    VatRate = decimal.TryParse(txtKdvOrani.Text, out decimal vatRate) ? vatRate : 10,
-                    Notes = $"Toptancı: {selectedWholesaler?.Name ?? "Belirtilmemiş"}, Ödeme: {cmbOdemeSekli.SelectedItem?.ToString() ?? "Belirtilmemiş"}",
-                    IsActive = true,
-                    CreatedDate = DateTime.Now
-                };
+                    // Update existing product
+                    _currentProduct.Name = txtUrunAdi.Text;
+                    _currentProduct.StockCode = txtUrunKodu.Text;
+                    _currentProduct.ProductGroupId = selectedGroup?.Id;
+                    _currentProduct.PurchasePrice = decimal.TryParse(txtAlisFiyatiKdvHaric.Text, out decimal purchasePrice) ? purchasePrice : 0;
+                    _currentProduct.SalePrice = decimal.TryParse(txtSatisFiyati.Text, out decimal salePrice) ? salePrice : 0;
+                    _currentProduct.CurrentStock = decimal.TryParse(txtMevcutStok.Text, out decimal currentStock) ? currentStock : 0;
+                    _currentProduct.MinimumStock = decimal.TryParse(txtAsgariStok.Text, out decimal minStock) ? minStock : 0;
+                    _currentProduct.Unit = cmbOlcuBirimi.SelectedItem?.ToString() ?? "Adet";
+                    _currentProduct.VatRate = decimal.TryParse(txtKdvOrani.Text, out decimal vatRate) ? vatRate : 10;
+                    _currentProduct.Notes = $"Toptancı: {selectedWholesaler?.Name ?? "Belirtilmemiş"}, Ödeme: {cmbOdemeSekli.SelectedItem?.ToString() ?? "Belirtilmemiş"}";
+                    _currentProduct.UpdatedDate = DateTime.Now;
 
-                _context.Products.Add(newProduct);
+                    _context.Products.Update(_currentProduct);
+                    MessageBox.Show("Ürün başarıyla güncellendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    // Barkod numarası benzersiz mi kontrol et
+                    var existingProduct = _context.Products.FirstOrDefault(p => p.BarcodeNo == txtBarkodNo.Text);
+                    if (existingProduct != null)
+                    {
+                        MessageBox.Show("Bu barkod numarası zaten kullanılıyor!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        txtBarkodNo.Focus();
+                        return;
+                    }
+
+                    // Yeni ürün oluştur
+                    var newProduct = new Product
+                    {
+                        BarcodeNo = txtBarkodNo.Text,
+                        Name = txtUrunAdi.Text,
+                        StockCode = txtUrunKodu.Text,
+                        ProductGroupId = selectedGroup?.Id,
+                        PurchasePrice = decimal.TryParse(txtAlisFiyatiKdvHaric.Text, out decimal purchasePrice) ? purchasePrice : 0,
+                        SalePrice = decimal.TryParse(txtSatisFiyati.Text, out decimal salePrice) ? salePrice : 0,
+                        CurrentStock = decimal.TryParse(txtMevcutStok.Text, out decimal currentStock) ? currentStock : 0,
+                        MinimumStock = decimal.TryParse(txtAsgariStok.Text, out decimal minStock) ? minStock : 0,
+                        Unit = cmbOlcuBirimi.SelectedItem?.ToString() ?? "Adet", // Change from txtOlcuBirimi.Text
+                        VatRate = decimal.TryParse(txtKdvOrani.Text, out decimal vatRate) ? vatRate : 10,
+                        Notes = $"Toptancı: {selectedWholesaler?.Name ?? "Belirtilmemiş"}, Ödeme: {cmbOdemeSekli.SelectedItem?.ToString() ?? "Belirtilmemiş"}",
+                        IsActive = true,
+                        CreatedDate = DateTime.Now
+                    };
+
+                    _context.Products.Add(newProduct);
+                    MessageBox.Show("Ürün başarıyla eklendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
                 _context.SaveChanges();
 
-                MessageBox.Show("Ürün başarıyla eklendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Formu temizle
+                // Formu temizle ve yeni giriş moduna dön
                 ClearForm();
+                _isEditMode = false;
+                _currentProduct = null;
+                btnKaydet.Text = "Kaydet (F1)"; // Reset button text
+                txtBarkodNo.ReadOnly = false; // Enable barcode editing for new entry
+                btnOtomatikBarkod.Enabled = true; // Enable automatic barcode generation
+                lblZorunluAlanlar.Visible = true; // Show mandatory fields label
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ürün kaydedilirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Ürün kaydedilirken/güncellenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -237,7 +329,7 @@ namespace StokTakip.Forms
             txtSatisFiyati.Clear();
             txtMevcutStok.Text = "0";
             txtAsgariStok.Text = "0";
-            txtOlcuBirimi.Text = "Adet";
+            cmbOlcuBirimi.SelectedIndex = 0; // Set to first item, e.g., "Adet"
             txtKdvOrani.Text = "10";
             cmbToptanci.SelectedIndex = -1;
             cmbOdemeSekli.SelectedIndex = -1;
@@ -270,6 +362,27 @@ namespace StokTakip.Forms
             cmbOdemeSekli.Items.Add("Çek");
             cmbOdemeSekli.Items.Add("Veresiye");
             cmbOdemeSekli.SelectedIndex = 0; // Varsayılan olarak "Nakit"
+        }
+
+        private void LoadUnits()
+        {
+            try
+            {
+                var units = _context.Units.OrderBy(u => u.Name).ToList();
+                cmbOlcuBirimi.Items.Clear();
+                foreach (var unit in units)
+                {
+                    cmbOlcuBirimi.Items.Add(unit.Name);
+                }
+                if (cmbOlcuBirimi.Items.Count > 0)
+                {
+                    cmbOlcuBirimi.SelectedIndex = 0; // Select the first item by default
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ölçü birimleri yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // Fiyat hesaplama metodları
@@ -316,6 +429,69 @@ namespace StokTakip.Forms
                     txtAlisFiyatiKdvDahil.TextChanged += txtAlisFiyatiKdvDahil_TextChanged;
                 }
             }
+        }
+
+        private void RbKdvDahil_CheckedChanged(object? sender, EventArgs e)
+        {
+            if (rbKdvDahil.Checked)
+            {
+                txtAlisFiyatiKdvDahil.Enabled = true;
+                txtAlisFiyatiKdvHaric.Enabled = false;
+                txtAlisFiyatiKdvHaric.Text = ""; // Clear the other field
+                txtKdvOrani.Enabled = false; // Disable KDV Oranı when Kdv Dahil is checked
+            }
+        }
+
+        private void RbKdvHaric_CheckedChanged(object? sender, EventArgs e)
+        {
+            if (rbKdvHaric.Checked)
+            {
+                txtAlisFiyatiKdvDahil.Enabled = false;
+                txtAlisFiyatiKdvHaric.Enabled = true;
+                txtAlisFiyatiKdvDahil.Text = ""; // Clear the other field
+                txtKdvOrani.Enabled = true; // Enable KDV Oranı when Kdv Haric is checked
+            }
+        }
+
+        private void btnYeniOlcuBirimi_Click(object? sender, EventArgs e)
+        {
+            string yeniOlcuBirimi = Interaction.InputBox("Yeni ölçü birimini girin:", "Ölçü Birimi Ekle", "");
+            if (!string.IsNullOrWhiteSpace(yeniOlcuBirimi))
+            {
+                try
+                {
+                    var existingUnit = _context.Units.FirstOrDefault(u => u.Name == yeniOlcuBirimi);
+                    if (existingUnit != null)
+                    {
+                        MessageBox.Show("Bu ölçü birimi zaten mevcut!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    var newUnit = new Unit
+                    {
+                        Name = yeniOlcuBirimi,
+                        Description = $"{yeniOlcuBirimi} ölçü birimi",
+                        CreatedDate = DateTime.Now
+                    };
+
+                    _context.Units.Add(newUnit);
+                    _context.SaveChanges();
+
+                    LoadUnits(); // Reload units into combobox
+                    cmbOlcuBirimi.SelectedItem = yeniOlcuBirimi; // Select the newly added unit
+
+                    MessageBox.Show("Ölçü birimi başarıyla eklendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ölçü birimi eklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void btnVazgec_Click(object? sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

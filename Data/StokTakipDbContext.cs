@@ -20,6 +20,8 @@ namespace StokTakip.Data
         public DbSet<CashMovement> CashMovements { get; set; }
         public DbSet<CustomerDebtMovement> CustomerDebtMovements { get; set; }
         public DbSet<WholesalerDebtMovement> WholesalerDebtMovements { get; set; }
+        public DbSet<Unit> Units { get; set; }
+        public DbSet<QuickSaleButtonConfig> QuickSaleButtonConfigs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +29,12 @@ namespace StokTakip.Data
 
             // ProductGroup configuration
             modelBuilder.Entity<ProductGroup>(entity =>
+            {
+                entity.HasIndex(e => e.Name).IsUnique();
+            });
+
+            // Unit configuration
+            modelBuilder.Entity<Unit>(entity =>
             {
                 entity.HasIndex(e => e.Name).IsUnique();
             });
@@ -86,26 +94,21 @@ namespace StokTakip.Data
             modelBuilder.Entity<StockMovement>(entity =>
             {
                 entity.HasOne(sm => sm.Product)
-                      .WithMany(p => p.StockMovements)
-                      .HasForeignKey(sm => sm.ProductId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                  .WithMany(p => p.StockMovements)
+                  .HasForeignKey(sm => sm.ProductId)
+                  .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(sm => sm.Wholesaler)
-                      .WithMany(w => w.StockMovements)
-                      .HasForeignKey(sm => sm.WholesalerId)
-                      .OnDelete(DeleteBehavior.SetNull);
-
-                entity.HasOne(sm => sm.SalesReceipt)
-                      .WithMany()
-                      .HasForeignKey(sm => sm.SalesReceiptId)
-                      .OnDelete(DeleteBehavior.SetNull);
+                  .WithMany(w => w.StockMovements)
+                  .HasForeignKey(sm => sm.WholesalerId)
+                  .OnDelete(DeleteBehavior.Restrict);
             });
 
             // CashMovement configuration
             modelBuilder.Entity<CashMovement>(entity =>
             {
                 entity.HasOne(cm => cm.SalesReceipt)
-                      .WithMany()
+                      .WithMany(sr => sr.CashMovements)
                       .HasForeignKey(cm => cm.SalesReceiptId)
                       .OnDelete(DeleteBehavior.SetNull);
             });
@@ -116,10 +119,10 @@ namespace StokTakip.Data
                 entity.HasOne(cdm => cdm.Customer)
                       .WithMany(c => c.DebtMovements)
                       .HasForeignKey(cdm => cdm.CustomerId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                      .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(cdm => cdm.SalesReceipt)
-                      .WithMany()
+                      .WithMany(sr => sr.CustomerDebtMovements)
                       .HasForeignKey(cdm => cdm.SalesReceiptId)
                       .OnDelete(DeleteBehavior.SetNull);
             });
@@ -130,80 +133,90 @@ namespace StokTakip.Data
                 entity.HasOne(wdm => wdm.Wholesaler)
                       .WithMany(w => w.DebtMovements)
                       .HasForeignKey(wdm => wdm.WholesalerId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(wdm => wdm.SalesReceipt)
+                      .WithMany(sr => sr.WholesalerDebtMovements)
+                      .HasForeignKey(wdm => wdm.SalesReceiptId)
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
-            // Seed data
-            SeedData(modelBuilder);
-        }
+            // QuickSaleButtonConfig configuration
+            modelBuilder.Entity<QuickSaleButtonConfig>(entity =>
+            {
+                entity.HasOne(qsbc => qsbc.Product)
+                      .WithMany(p => p.QuickSaleButtonConfigs)
+                      .HasForeignKey(qsbc => qsbc.ProductId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
 
-        private void SeedData(ModelBuilder modelBuilder)
-        {
-            // Seed ProductGroups
+            // Seed sample data
             modelBuilder.Entity<ProductGroup>().HasData(
-                new ProductGroup { Id = 1, Name = "BİSKÜVİ", Description = "Bisküvi ürünleri" },
-                new ProductGroup { Id = 2, Name = "FİLTRE", Description = "Filtre ürünleri" },
-                new ProductGroup { Id = 3, Name = "SALÇA", Description = "Salça ürünleri" },
-                new ProductGroup { Id = 4, Name = "YAĞ", Description = "Yağ ürünleri" },
-                new ProductGroup { Id = 5, Name = "DETERJAN", Description = "Deterjan ürünleri" },
-                new ProductGroup { Id = 6, Name = "SÜT ÜRÜNLERİ", Description = "Süt ürünleri" },
-                new ProductGroup { Id = 7, Name = "İÇECEK", Description = "İçecek ürünleri" },
-                new ProductGroup { Id = 8, Name = "KREMA", Description = "Krema ürünleri" }
+                new ProductGroup { Id = 1, Name = "Filtreler", CreatedDate = new DateTime(2025, 1, 1) },
+                new ProductGroup { Id = 2, Name = "Motor Yağları", CreatedDate = new DateTime(2025, 1, 1) }
             );
 
-            // Seed sample Products
+            modelBuilder.Entity<Unit>().HasData(
+                new Unit { Id = 1, Name = "Adet", CreatedDate = new DateTime(2025, 1, 1) },
+                new Unit { Id = 2, Name = "Koli", CreatedDate = new DateTime(2025, 1, 1) }
+            );
+
             modelBuilder.Entity<Product>().HasData(
                 new Product
                 {
                     Id = 1,
-                    BarcodeNo = "8690511010128",
-                    Name = "ABC ÇAMAŞIR SUYU 4000 ML",
-                    StockCode = "ABC-4000",
-                    ProductGroupId = 5,
-                    PurchasePrice = 70.00m,
-                    SalePrice = 90.00m,
-                    CurrentStock = 12,
-                    MinimumStock = 2,
-                    VatRate = 18
+                    BarcodeNo = "1234567890123",
+                    Name = "Hava Filtresi",
+                    StockCode = "HF-100",
+                    ProductGroupId = 1,
+                    PurchasePrice = 50.00m,
+                    SalePrice = 75.00m,
+                    CurrentStock = 100,
+                    MinimumStock = 10,
+                    VatRate = 18,
+                    CreatedDate = new DateTime(2025, 1, 1)
                 },
                 new Product
                 {
                     Id = 2,
-                    BarcodeNo = "8690504034506",
-                    Name = "ÜLKER ALBENİ 35 GR",
-                    StockCode = "ULK-ALB",
+                    BarcodeNo = "9876543210987",
+                    Name = "Yağ Filtresi",
+                    StockCode = "YF-200",
                     ProductGroupId = 1,
-                    PurchasePrice = 7.00m,
-                    SalePrice = 10.00m,
-                    CurrentStock = 4,
-                    MinimumStock = 4,
-                    VatRate = 8
+                    PurchasePrice = 30.00m,
+                    SalePrice = 45.00m,
+                    CurrentStock = 50,
+                    MinimumStock = 5,
+                    VatRate = 18,
+                    CreatedDate = new DateTime(2025, 1, 1)
                 },
                 new Product
                 {
                     Id = 3,
-                    BarcodeNo = "8690876010016",
-                    Name = "YUDUM 1 LT SIVI YAĞ",
-                    StockCode = "YUD-1LT",
-                    ProductGroupId = 4,
-                    PurchasePrice = 55.00m,
-                    SalePrice = 75.00m,
-                    CurrentStock = 3,
-                    MinimumStock = 1,
-                    VatRate = 8
+                    BarcodeNo = "1122334455667",
+                    Name = "Motor Yağı 5W-30",
+                    StockCode = "MY-5W30",
+                    ProductGroupId = 2,
+                    PurchasePrice = 120.00m,
+                    SalePrice = 180.00m,
+                    CurrentStock = 30,
+                    MinimumStock = 3,
+                    VatRate = 18,
+                    CreatedDate = new DateTime(2025, 1, 1)
                 },
                 new Product
                 {
                     Id = 4,
-                    BarcodeNo = "8690575012519",
-                    Name = "TAMEK DOMATES SALÇASI 830 GR",
-                    StockCode = "TAM-830",
-                    ProductGroupId = 3,
-                    PurchasePrice = 45.00m,
+                    BarcodeNo = "000001",
+                    Name = "MANN C24003",
+                    StockCode = "MANN-C24003",
+                    ProductGroupId = 1,
+                    PurchasePrice = 40.00m,
                     SalePrice = 60.00m,
                     CurrentStock = 7,
                     MinimumStock = 1,
-                    VatRate = 8
+                    VatRate = 8,
+                    CreatedDate = new DateTime(2025, 1, 1)
                 },
                 new Product
                 {
@@ -216,7 +229,8 @@ namespace StokTakip.Data
                     SalePrice = 150.00m,
                     CurrentStock = 0,
                     MinimumStock = 30,
-                    VatRate = 18
+                    VatRate = 18,
+                    CreatedDate = new DateTime(2025, 1, 1)
                 }
             );
 
@@ -232,7 +246,8 @@ namespace StokTakip.Data
                     Address = "İstanbul",
                     TaxOffice = "Kadıköy",
                     TaxNumber = "1234567890",
-                    Debt = 0.00m
+                    Debt = 0.00m,
+                    CreatedDate = new DateTime(2025, 1, 1)
                 },
                 new Wholesaler
                 {
@@ -244,7 +259,8 @@ namespace StokTakip.Data
                     Address = "İstanbul",
                     TaxOffice = "Şişli",
                     TaxNumber = "0987654321",
-                    Debt = 114.70m
+                    Debt = 114.70m,
+                    CreatedDate = new DateTime(2025, 1, 1)
                 }
             );
         }

@@ -29,6 +29,10 @@ namespace StokTakip.Models
         [StringLength(50)]
         public string UserName { get; set; } = "Admin";
 
+        [ForeignKey("SalesReceipt")]
+        public int? SalesReceiptId { get; set; }
+        public virtual SalesReceipt? SalesReceipt { get; set; }
+
         public DateTime MovementDate { get; set; } = new DateTime(2025, 1, 1);
     }
 }

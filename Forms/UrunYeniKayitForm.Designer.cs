@@ -55,6 +55,7 @@ namespace StokTakip.Forms
             this.lblStokKodu = new System.Windows.Forms.Label();
             this.lblUrunAdi = new System.Windows.Forms.Label();
             this.lblBarkodNo = new System.Windows.Forms.Label();
+            this.btnYeniOlcuBirimi = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,6 +97,7 @@ namespace StokTakip.Forms
             this.groupBox1.Controls.Add(this.lblStokKodu);
             this.groupBox1.Controls.Add(this.lblUrunAdi);
             this.groupBox1.Controls.Add(this.lblBarkodNo);
+            this.groupBox1.Controls.Add(this.btnYeniOlcuBirimi);
             this.groupBox1.Location = new System.Drawing.Point(12, 60);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(460, 489);
@@ -200,12 +202,11 @@ namespace StokTakip.Forms
             // 
             // btnOtomatikBarkod
             // 
-            this.btnOtomatikBarkod.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnOtomatikBarkod.Location = new System.Drawing.Point(340, 88);
+            this.btnOtomatikBarkod.Location = new System.Drawing.Point(340, 60);
             this.btnOtomatikBarkod.Name = "btnOtomatikBarkod";
-            this.btnOtomatikBarkod.Size = new System.Drawing.Size(110, 23);
-            this.btnOtomatikBarkod.TabIndex = 13;
-            this.btnOtomatikBarkod.Text = "Otomatik Barkod No Ver";
+            this.btnOtomatikBarkod.Size = new System.Drawing.Size(120, 23);
+            this.btnOtomatikBarkod.TabIndex = 2;
+            this.btnOtomatikBarkod.Text = "Otomatik Barkod No";
             this.btnOtomatikBarkod.UseVisualStyleBackColor = true;
             // 
             // rbKdvHaric
@@ -330,6 +331,15 @@ namespace StokTakip.Forms
             this.lblBarkodNo.TabIndex = 0;
             this.lblBarkodNo.Text = "Barkod No:";
             // 
+            // btnYeniOlcuBirimi
+            // 
+            this.btnYeniOlcuBirimi.Location = new System.Drawing.Point(340, 390);
+            this.btnYeniOlcuBirimi.Name = "btnYeniOlcuBirimi";
+            this.btnYeniOlcuBirimi.Size = new System.Drawing.Size(120, 23);
+            this.btnYeniOlcuBirimi.TabIndex = 25;
+            this.btnYeniOlcuBirimi.Text = "Yeni Ölçü Birimi";
+            this.btnYeniOlcuBirimi.UseVisualStyleBackColor = true;
+            // 
             // UrunYeniKayitForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -375,5 +385,6 @@ namespace StokTakip.Forms
         private System.Windows.Forms.ComboBox cmbOlcuBirimi;
         private System.Windows.Forms.Button btnKaydet;
         private System.Windows.Forms.Button btnVazgec;
+        private System.Windows.Forms.Button btnYeniOlcuBirimi;
     }
 }

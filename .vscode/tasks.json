@@ -13,6 +13,96 @@
 			],
 			"group": "build",
 			"isBackground": false
+		},
+		{
+			"label": "build StokTakip.csproj",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"StokTakip.csproj"
+			]
+		},
+		{
+			"label": "build StokTakip.csproj",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"StokTakip.csproj"
+			]
+		},
+		{
+			"label": "build StokTakip.csproj",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"StokTakip.csproj"
+			]
+		},
+		{
+			"label": "build StokTakip.csproj",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"StokTakip.csproj"
+			]
+		},
+		{
+			"label": "build StokTakip.csproj",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"StokTakip.csproj"
+			]
+		},
+		{
+			"label": "build StokTakip.csproj",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"StokTakip.csproj"
+			]
+		},
+		{
+			"label": "build StokTakip.csproj",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"StokTakip.csproj"
+			]
+		},
+		{
+			"label": "build StokTakip.csproj",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"StokTakip.csproj"
+			]
+		},
+		{
+			"label": "build StokTakip.csproj",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"StokTakip.csproj"
+			]
+		},
+		{
+			"label": "build StokTakip.csproj",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"StokTakip.csproj"
+			]
 		}
 	]
 }

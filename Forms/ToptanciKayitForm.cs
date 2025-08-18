@@ -16,11 +16,30 @@ namespace StokTakip.Forms
         public ToptanciKayitForm(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
             InitializeComponent();
+            this.WindowState = FormWindowState.Normal; // Formu normal boyutta aç
             _context = context;
             _serviceProvider = serviceProvider;
+            InitializeDataGridView(); // Add this line
             LoadWholesalerData();
             SetupEventHandlers();
             InitializeForm();
+        }
+
+        private void InitializeDataGridView()
+        {
+            dgvToptancilar.Columns.Clear();
+            dgvToptancilar.Columns.Add("colId", "ID");
+            dgvToptancilar.Columns.Add("colName", "Toptancı Adı");
+            dgvToptancilar.Columns.Add("colBorc", "Borç");
+
+            // Sütunların otomatik boyutlandırılmasını ayarla
+            foreach (DataGridViewColumn column in dgvToptancilar.Columns)
+            {
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            }
+
+            // ID sütununu gizle
+            dgvToptancilar.Columns["colId"].Visible = false;
         }
 
         private void InitializeForm()

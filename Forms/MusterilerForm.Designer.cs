@@ -69,6 +69,7 @@ namespace StokTakip.Forms
             this.colSiraNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMusterininAdi = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colBorcu = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblTumMusterilerinVeresiyeTop = new System.Windows.Forms.Label();
             this.lblVeresiyeTopValue = new System.Windows.Forms.Label();
             this.lblTumMusterilerinOdeyecegiTaksitTop = new System.Windows.Forms.Label();
@@ -310,7 +311,7 @@ namespace StokTakip.Forms
             // 
             this.btnMusteriBorcDetayi.Location = new System.Drawing.Point(500, 225);
             this.btnMusteriBorcDetayi.Name = "btnMusteriBorcDetayi";
-            this.btnMusteriBorcDetayi.Size = new System.Drawing.Size(80, 30);
+            this.btnMusteriBorcDetayi.Size = new System.Drawing.Size(80, 45);
             this.btnMusteriBorcDetayi.TabIndex = 26;
             this.btnMusteriBorcDetayi.Text = "Müşteri\nBorç Detayı";
             this.btnMusteriBorcDetayi.UseVisualStyleBackColor = true;
@@ -319,7 +320,7 @@ namespace StokTakip.Forms
             // 
             this.btnHesabaBorcEkle.Location = new System.Drawing.Point(590, 225);
             this.btnHesabaBorcEkle.Name = "btnHesabaBorcEkle";
-            this.btnHesabaBorcEkle.Size = new System.Drawing.Size(80, 30);
+            this.btnHesabaBorcEkle.Size = new System.Drawing.Size(80, 45);
             this.btnHesabaBorcEkle.TabIndex = 27;
             this.btnHesabaBorcEkle.Text = "Hesaba\nBorç Ekle";
             this.btnHesabaBorcEkle.UseVisualStyleBackColor = true;
@@ -328,7 +329,7 @@ namespace StokTakip.Forms
             // 
             this.btnTahsilatYap.Location = new System.Drawing.Point(680, 225);
             this.btnTahsilatYap.Name = "btnTahsilatYap";
-            this.btnTahsilatYap.Size = new System.Drawing.Size(80, 30);
+            this.btnTahsilatYap.Size = new System.Drawing.Size(80, 45);
             this.btnTahsilatYap.TabIndex = 28;
             this.btnTahsilatYap.Text = "Tahsilat Yap";
             this.btnTahsilatYap.UseVisualStyleBackColor = true;
@@ -337,7 +338,7 @@ namespace StokTakip.Forms
             // 
             this.btnMusteriEkle.Location = new System.Drawing.Point(520, 340);
             this.btnMusteriEkle.Name = "btnMusteriEkle";
-            this.btnMusteriEkle.Size = new System.Drawing.Size(100, 30);
+            this.btnMusteriEkle.Size = new System.Drawing.Size(100, 45);
             this.btnMusteriEkle.TabIndex = 29;
             this.btnMusteriEkle.Text = "Müşteri Ekle";
             this.btnMusteriEkle.UseVisualStyleBackColor = true;
@@ -346,34 +347,34 @@ namespace StokTakip.Forms
             // 
             this.btnMusteriBilgileriDuzenle.Location = new System.Drawing.Point(630, 340);
             this.btnMusteriBilgileriDuzenle.Name = "btnMusteriBilgileriDuzenle";
-            this.btnMusteriBilgileriDuzenle.Size = new System.Drawing.Size(100, 30);
+            this.btnMusteriBilgileriDuzenle.Size = new System.Drawing.Size(100, 45);
             this.btnMusteriBilgileriDuzenle.TabIndex = 30;
             this.btnMusteriBilgileriDuzenle.Text = "Müşteri Bilgileri\nDüzenle";
             this.btnMusteriBilgileriDuzenle.UseVisualStyleBackColor = true;
             // 
             // btnMusteriSil
             // 
-            this.btnMusteriSil.Location = new System.Drawing.Point(520, 380);
+            this.btnMusteriSil.Location = new System.Drawing.Point(520, 400);
             this.btnMusteriSil.Name = "btnMusteriSil";
-            this.btnMusteriSil.Size = new System.Drawing.Size(100, 30);
+            this.btnMusteriSil.Size = new System.Drawing.Size(100, 45);
             this.btnMusteriSil.TabIndex = 31;
             this.btnMusteriSil.Text = "Müşteri Sil";
             this.btnMusteriSil.UseVisualStyleBackColor = true;
             // 
             // btnMusteriBorcListesi
             // 
-            this.btnMusteriBorcListesi.Location = new System.Drawing.Point(630, 380);
+            this.btnMusteriBorcListesi.Location = new System.Drawing.Point(630, 400);
             this.btnMusteriBorcListesi.Name = "btnMusteriBorcListesi";
-            this.btnMusteriBorcListesi.Size = new System.Drawing.Size(100, 30);
+            this.btnMusteriBorcListesi.Size = new System.Drawing.Size(100, 45);
             this.btnMusteriBorcListesi.TabIndex = 32;
             this.btnMusteriBorcListesi.Text = "Müşteri\nBorç Listesi";
             this.btnMusteriBorcListesi.UseVisualStyleBackColor = true;
             // 
             // btnTaksitOdemesiGeciktenMusteriler
             // 
-            this.btnTaksitOdemesiGeciktenMusteriler.Location = new System.Drawing.Point(740, 420);
+            this.btnTaksitOdemesiGeciktenMusteriler.Location = new System.Drawing.Point(750, 500);
             this.btnTaksitOdemesiGeciktenMusteriler.Name = "btnTaksitOdemesiGeciktenMusteriler";
-            this.btnTaksitOdemesiGeciktenMusteriler.Size = new System.Drawing.Size(120, 30);
+            this.btnTaksitOdemesiGeciktenMusteriler.Size = new System.Drawing.Size(120, 45);
             this.btnTaksitOdemesiGeciktenMusteriler.TabIndex = 33;
             this.btnTaksitOdemesiGeciktenMusteriler.Text = "Taksit Ödemesi\nGecikten Müşteriler";
             this.btnTaksitOdemesiGeciktenMusteriler.UseVisualStyleBackColor = true;
@@ -416,11 +417,13 @@ namespace StokTakip.Forms
             this.dgvMusteriler.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colSiraNo,
             this.colMusterininAdi,
-            this.colBorcu});
+            this.colBorcu,
+            this.colId});
             this.dgvMusteriler.Location = new System.Drawing.Point(15, 365);
             this.dgvMusteriler.Name = "dgvMusteriler";
             this.dgvMusteriler.Size = new System.Drawing.Size(445, 200);
             this.dgvMusteriler.TabIndex = 37;
+            this.dgvMusteriler.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMusteriler_CellDoubleClick);
             // 
             // colSiraNo
             // 
@@ -439,6 +442,12 @@ namespace StokTakip.Forms
             this.colBorcu.HeaderText = "Borcu";
             this.colBorcu.Name = "colBorcu";
             this.colBorcu.Width = 100;
+            // 
+            // colId
+            // 
+            this.colId.HeaderText = "Id";
+            this.colId.Name = "colId";
+            this.colId.Visible = false;
             // 
             // lblTumMusterilerinVeresiyeTop
             // 
@@ -488,7 +497,7 @@ namespace StokTakip.Forms
             // 
             this.btnMusteriIade.Location = new System.Drawing.Point(740, 340);
             this.btnMusteriIade.Name = "btnMusteriIade";
-            this.btnMusteriIade.Size = new System.Drawing.Size(100, 30);
+            this.btnMusteriIade.Size = new System.Drawing.Size(100, 45);
             this.btnMusteriIade.TabIndex = 34;
             this.btnMusteriIade.Text = "Müşteri\nİade Al";
             this.btnMusteriIade.UseVisualStyleBackColor = true;
@@ -596,6 +605,7 @@ namespace StokTakip.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn colSiraNo;
         private System.Windows.Forms.DataGridViewTextBoxColumn colMusterininAdi;
         private System.Windows.Forms.DataGridViewTextBoxColumn colBorcu;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colId;
         private System.Windows.Forms.Label lblTumMusterilerinVeresiyeTop;
         private System.Windows.Forms.Label lblVeresiyeTopValue;
         private System.Windows.Forms.Label lblTumMusterilerinOdeyecegiTaksitTop;

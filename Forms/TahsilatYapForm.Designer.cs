@@ -53,6 +53,8 @@ namespace StokTakip.Forms
             this.btnOdemeBilgisiYazdir = new System.Windows.Forms.Button();
             this.chkOtomatikYazdir = new System.Windows.Forms.CheckBox();
             this.grpOdemeSekli = new System.Windows.Forms.GroupBox();
+            this.printDocument1 = new System.Drawing.Printing.PrintDocument();
+            this.printPreviewDialog1 = new System.Windows.Forms.PrintPreviewDialog();
             ((System.ComponentModel.ISupportInitialize)(this.picNakit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picKrediKarti)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picHavale)).BeginInit();
@@ -172,6 +174,7 @@ namespace StokTakip.Forms
             this.txtOdemeTutari.Size = new System.Drawing.Size(200, 26);
             this.txtOdemeTutari.TabIndex = 10;
             this.txtOdemeTutari.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txtOdemeTutari.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtOdemeTutari_KeyPress);
             // 
             // lblAciklama
             // 
@@ -291,7 +294,7 @@ namespace StokTakip.Forms
             this.btnOnayla.ForeColor = System.Drawing.Color.White;
             this.btnOnayla.Location = new System.Drawing.Point(70, 520);
             this.btnOnayla.Name = "btnOnayla";
-            this.btnOnayla.Size = new System.Drawing.Size(80, 35);
+            this.btnOnayla.Size = new System.Drawing.Size(80, 50);
             this.btnOnayla.TabIndex = 21;
             this.btnOnayla.Text = "Onayla";
             this.btnOnayla.UseVisualStyleBackColor = false;
@@ -303,7 +306,7 @@ namespace StokTakip.Forms
             this.btnVazgec.ForeColor = System.Drawing.Color.White;
             this.btnVazgec.Location = new System.Drawing.Point(160, 520);
             this.btnVazgec.Name = "btnVazgec";
-            this.btnVazgec.Size = new System.Drawing.Size(80, 35);
+            this.btnVazgec.Size = new System.Drawing.Size(80, 50);
             this.btnVazgec.TabIndex = 22;
             this.btnVazgec.Text = "Vazgeç";
             this.btnVazgec.UseVisualStyleBackColor = false;
@@ -315,10 +318,11 @@ namespace StokTakip.Forms
             this.btnOdemeBilgisiYazdir.ForeColor = System.Drawing.Color.White;
             this.btnOdemeBilgisiYazdir.Location = new System.Drawing.Point(250, 520);
             this.btnOdemeBilgisiYazdir.Name = "btnOdemeBilgisiYazdir";
-            this.btnOdemeBilgisiYazdir.Size = new System.Drawing.Size(80, 35);
+            this.btnOdemeBilgisiYazdir.Size = new System.Drawing.Size(80, 50);
             this.btnOdemeBilgisiYazdir.TabIndex = 23;
             this.btnOdemeBilgisiYazdir.Text = "Ödeme\nBilgisi\nYazdır";
             this.btnOdemeBilgisiYazdir.UseVisualStyleBackColor = false;
+            this.btnOdemeBilgisiYazdir.Click += new System.EventHandler(this.btnOdemeBilgisiYazdir_Click);
             // 
             // chkOtomatikYazdir
             // 
@@ -400,5 +404,7 @@ namespace StokTakip.Forms
         private System.Windows.Forms.Button btnVazgec;
         private System.Windows.Forms.Button btnOdemeBilgisiYazdir;
         private System.Windows.Forms.CheckBox chkOtomatikYazdir;
+        private System.Drawing.Printing.PrintDocument printDocument1;
+        private System.Windows.Forms.PrintPreviewDialog printPreviewDialog1;
     }
 }

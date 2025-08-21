@@ -457,7 +457,7 @@ namespace StokTakip.Forms
             // 
             // btnNakitKredi
             // 
-            this.btnNakitKredi.Location = new System.Drawing.Point(140, 50);
+            this.btnNakitKredi.Location = new System.Drawing.Point(140, 65);
             this.btnNakitKredi.Name = "btnNakitKredi";
             this.btnNakitKredi.Size = new System.Drawing.Size(130, 35);
             this.btnNakitKredi.TabIndex = 4;
@@ -466,7 +466,7 @@ namespace StokTakip.Forms
             // 
             // btnKrediKarti
             // 
-            this.btnKrediKarti.Location = new System.Drawing.Point(4, 50);
+            this.btnKrediKarti.Location = new System.Drawing.Point(4, 65);
             this.btnKrediKarti.Name = "btnKrediKarti";
             this.btnKrediKarti.Size = new System.Drawing.Size(130, 35);
             this.btnKrediKarti.TabIndex = 3;
@@ -477,7 +477,7 @@ namespace StokTakip.Forms
             // 
             this.btnVeresiye.Location = new System.Drawing.Point(140, 26);
             this.btnVeresiye.Name = "btnVeresiye";
-            this.btnVeresiye.Size = new System.Drawing.Size(130, 20);
+            this.btnVeresiye.Size = new System.Drawing.Size(130, 35);
             this.btnVeresiye.TabIndex = 2;
             this.btnVeresiye.Text = "Veresiye Satış (F6)";
             this.btnVeresiye.UseVisualStyleBackColor = true;
@@ -486,7 +486,7 @@ namespace StokTakip.Forms
             // 
             this.btnNakit.Location = new System.Drawing.Point(4, 26);
             this.btnNakit.Name = "btnNakit";
-            this.btnNakit.Size = new System.Drawing.Size(130, 20);
+            this.btnNakit.Size = new System.Drawing.Size(130, 35);
             this.btnNakit.TabIndex = 1;
             this.btnNakit.Text = "Nakit Satış (F1)";
             this.btnNakit.UseVisualStyleBackColor = true;

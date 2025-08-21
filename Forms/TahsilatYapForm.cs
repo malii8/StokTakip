@@ -19,6 +19,10 @@ namespace StokTakip.Forms
             _context = context;
             InitializeComponent();
             InitializeForm();
+
+            // Wire up event handlers
+            btnOnayla.Click += btnOnayla_Click;
+            btnVazgec.Click += btnVazgec_Click;
         }
 
         public void SetCustomer(Customer customer)
@@ -36,6 +40,11 @@ namespace StokTakip.Forms
             // Default payment method
             rbNakit.Checked = true;
             OdemeSekli = "Nakit";
+
+            // Wire up CheckedChanged event for radio buttons
+            rbNakit.CheckedChanged += rbOdemeSekli_CheckedChanged;
+            rbKrediKarti.CheckedChanged += rbOdemeSekli_CheckedChanged;
+            rbHavale.CheckedChanged += rbOdemeSekli_CheckedChanged;
         }
 
         private void btnOnayla_Click(object? sender, EventArgs e)
@@ -79,6 +88,9 @@ namespace StokTakip.Forms
 
                     _context.SaveChanges();
 
+                    // Update the displayed total debt after successful payment
+                    txtToplamBorc.Text = $"{_customer.Debt:F2} TL";
+
                     MessageBox.Show("Tahsilat başarıyla kaydedildi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     this.DialogResult = DialogResult.OK;
                     this.Close();
@@ -94,6 +106,40 @@ namespace StokTakip.Forms
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private void btnOdemeBilgisiYazdir_Click(object? sender, EventArgs e)
+        {
+            printDocument1.PrintPage += printDocument1_PrintPage;
+            printPreviewDialog1.Document = printDocument1;
+            printPreviewDialog1.ShowDialog();
+            printDocument1.PrintPage -= printDocument1_PrintPage;
+        }
+
+        private void printDocument1_PrintPage(object? sender, System.Drawing.Printing.PrintPageEventArgs e)
+        {
+            if (e.Graphics == null) return;
+            var font = new System.Drawing.Font("Arial", 12);
+            var boldFont = new System.Drawing.Font("Arial", 14, System.Drawing.FontStyle.Bold);
+            int y = 40;
+            int lineHeight = 30;
+
+            e.Graphics.DrawString("Ödeme Bilgisi", boldFont, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Müşteri: {txtMusterininAdi.Text}", font, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Toplam Borç: {txtToplamBorc.Text}", font, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Tarih: {txtTarih.Text}", font, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Saat: {txtSaat.Text}", font, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Ödeme Tutarı: {txtOdemeTutari.Text}", font, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            e.Graphics.DrawString($"Açıklama: {txtAciklama.Text}", font, System.Drawing.Brushes.Black, 40, y);
+            y += lineHeight;
+            string odemeSekli = rbNakit.Checked ? "Nakit" : rbKrediKarti.Checked ? "Kredi Kartı" : rbHavale.Checked ? "Havale" : "";
+            e.Graphics.DrawString($"Ödeme Şekli: {odemeSekli}", font, System.Drawing.Brushes.Black, 40, y);
         }
 
         private bool ValidateInput()
@@ -133,6 +179,22 @@ namespace StokTakip.Forms
             if (sender is RadioButton rb && rb.Checked)
             {
                 OdemeSekli = rb.Text;
+            }
+        }
+
+        private void txtOdemeTutari_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Allow only digits, backspace, and a single decimal point
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) &&
+                (e.KeyChar != ','))
+            {
+                e.Handled = true;
+            }
+
+            // Allow only one decimal point
+            if ((e.KeyChar == ',') && ((sender as TextBox)?.Text.IndexOf(',') > -1))
+            {
+                e.Handled = true;
             }
         }
     }

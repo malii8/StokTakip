@@ -25,6 +25,7 @@ namespace StokTakip.Forms
             btnMusteriBilgileriDuzenle.Click += BtnMusteriBilgileriDuzenle_Click;
             btnMusteriIade.Click += BtnMusteriIade_Click;
             btnMusteriBorcListesi.Click += BtnMusteriBorcListesi_Click;
+            dgvMusteriler.CellDoubleClick += dgvMusteriler_CellDoubleClick; // Event handler for double click
 
             LoadCustomerData(); // Initial load
         }
@@ -35,13 +36,14 @@ namespace StokTakip.Forms
             try
             {
                 var customers = _context.Customers.Where(c => c.IsActive).ToList();
+                int siraNo = 1;
                 foreach (var customer in customers)
                 {
                     dgvMusteriler.Rows.Add(
-                        customer.Id,
-                        customer.Name,
-                        customer.Phone, // Changed from BusinessPhone
-                        customer.Debt.ToString("F2")
+                        siraNo++, // colSiraNo
+                        customer.Name, // colMusterininAdi
+                        customer.Debt.ToString("F2"), // colBorcu
+                        customer.Id // colId (hidden)
                     );
                 }
             }
@@ -178,6 +180,35 @@ namespace StokTakip.Forms
         {
             var musteriBorcListesiForm = _serviceProvider.GetRequiredService<MusteriBorcListesiForm>();
             musteriBorcListesiForm.ShowDialog();
+        }
+
+        private void dgvMusteriler_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = this.dgvMusteriler.Rows[e.RowIndex];
+                // The customer ID is now correctly stored in the colId column (which is hidden)
+                int customerId = Convert.ToInt32(row.Cells["colId"].Value);
+                var customer = _context.Customers.Find(customerId);
+
+                if (customer != null)
+                {
+                    txtAdiSoyadi.Text = customer.Name;
+                    txtTicariUnvani.Text = customer.CompanyName;
+                    txtGsmTelefonu.Text = customer.Phone;
+                    txtVergiDairesi.Text = customer.TaxOffice;
+                    txtVergiNoTCN.Text = customer.TaxNumber;
+                    txtAdres.Text = customer.Address;
+                    txtEmail.Text = customer.Email;
+                    txtOzelNotlar.Text = customer.Notes;
+                    txtVeresiyeTop.Text = customer.Debt.ToString("F2");
+                    // The following fields do not have direct mappings in the Customer model
+                    // txtIlIlce.Text = customer.CityDistrict;
+                    // txtBelirLenen.Text = customer.CreditLimit.ToString("F2");
+                    // txtKalanTakTop.Text = customer.RemainingInstallmentAmount.ToString("F2");
+                    // txtToplamBorc.Text = customer.TotalDebt.ToString("F2");
+                }
+            }
         }
     }
 }

@@ -99,7 +99,7 @@ namespace StokTakip.Forms
             // 
             this.btnRaporAl.Location = new System.Drawing.Point(290, 35);
             this.btnRaporAl.Name = "btnRaporAl";
-            this.btnRaporAl.Size = new System.Drawing.Size(80, 30);
+            this.btnRaporAl.Size = new System.Drawing.Size(80, 35);
             this.btnRaporAl.TabIndex = 3;
             this.btnRaporAl.Text = "Rapor Al";
             this.btnRaporAl.UseVisualStyleBackColor = true;
@@ -108,7 +108,7 @@ namespace StokTakip.Forms
             // 
             this.btnTaksitler.Location = new System.Drawing.Point(380, 35);
             this.btnTaksitler.Name = "btnTaksitler";
-            this.btnTaksitler.Size = new System.Drawing.Size(80, 30);
+            this.btnTaksitler.Size = new System.Drawing.Size(80, 35);
             this.btnTaksitler.TabIndex = 4;
             this.btnTaksitler.Text = "Taksitler";
             this.btnTaksitler.UseVisualStyleBackColor = true;
@@ -117,7 +117,7 @@ namespace StokTakip.Forms
             // 
             this.btnHesabaBorcEkle.Location = new System.Drawing.Point(470, 35);
             this.btnHesabaBorcEkle.Name = "btnHesabaBorcEkle";
-            this.btnHesabaBorcEkle.Size = new System.Drawing.Size(80, 30);
+            this.btnHesabaBorcEkle.Size = new System.Drawing.Size(80, 35);
             this.btnHesabaBorcEkle.TabIndex = 5;
             this.btnHesabaBorcEkle.Text = "Hesaba\nBorç Ekle";
             this.btnHesabaBorcEkle.UseVisualStyleBackColor = true;
@@ -126,7 +126,7 @@ namespace StokTakip.Forms
             // 
             this.btnTahsilatYap.Location = new System.Drawing.Point(560, 35);
             this.btnTahsilatYap.Name = "btnTahsilatYap";
-            this.btnTahsilatYap.Size = new System.Drawing.Size(80, 30);
+            this.btnTahsilatYap.Size = new System.Drawing.Size(80, 35);
             this.btnTahsilatYap.TabIndex = 6;
             this.btnTahsilatYap.Text = "Tahsilat Yap";
             this.btnTahsilatYap.UseVisualStyleBackColor = true;
@@ -294,7 +294,8 @@ namespace StokTakip.Forms
             // 
             // dgvAlisverisDetayi
             // 
-            this.dgvAlisverisDetayi.BackgroundColor = System.Drawing.Color.Orange;
+            this.dgvAlisverisDetayi.AllowUserToAddRows = false;
+            this.dgvAlisverisDetayi.AllowUserToDeleteRows = false;
             this.dgvAlisverisDetayi.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvAlisverisDetayi.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colSiraNo2,
@@ -304,76 +305,77 @@ namespace StokTakip.Forms
             this.colMiktari,
             this.colToplamTutari,
             this.colOdemeSekli});
-            this.dgvAlisverisDetayi.Location = new System.Drawing.Point(20, 355);
+            this.dgvAlisverisDetayi.Location = new System.Drawing.Point(20, 380);
             this.dgvAlisverisDetayi.Name = "dgvAlisverisDetayi";
-            this.dgvAlisverisDetayi.Size = new System.Drawing.Size(700, 180);
-            this.dgvAlisverisDetayi.TabIndex = 18;
+            this.dgvAlisverisDetayi.ReadOnly = true;
+            this.dgvAlisverisDetayi.Size = new System.Drawing.Size(680, 200); // Genişlik 700'den 720'ye çıkarıldı
+            this.dgvAlisverisDetayi.TabIndex = 25;
             // 
             // colSiraNo2
             // 
             this.colSiraNo2.HeaderText = "Sıra No";
             this.colSiraNo2.Name = "colSiraNo2";
-            this.colSiraNo2.Width = 60;
+            this.colSiraNo2.ReadOnly = true;
             // 
             // colTarih2
             // 
             this.colTarih2.HeaderText = "Tarih";
             this.colTarih2.Name = "colTarih2";
-            this.colTarih2.Width = 90;
+            this.colTarih2.ReadOnly = true;
             // 
             // colUrunAdi
             // 
             this.colUrunAdi.HeaderText = "Ürün Adı";
             this.colUrunAdi.Name = "colUrunAdi";
-            this.colUrunAdi.Width = 150;
+            this.colUrunAdi.ReadOnly = true;
             // 
             // colBirimFiyati
             // 
             this.colBirimFiyati.HeaderText = "Birim Fiyatı";
             this.colBirimFiyati.Name = "colBirimFiyati";
-            this.colBirimFiyati.Width = 80;
+            this.colBirimFiyati.ReadOnly = true;
             // 
             // colMiktari
             // 
             this.colMiktari.HeaderText = "Miktarı";
             this.colMiktari.Name = "colMiktari";
-            this.colMiktari.Width = 60;
+            this.colMiktari.ReadOnly = true;
             // 
             // colToplamTutari
             // 
             this.colToplamTutari.HeaderText = "Toplam Tutarı";
             this.colToplamTutari.Name = "colToplamTutari";
-            this.colToplamTutari.Width = 90;
+            this.colToplamTutari.ReadOnly = true;
             // 
             // colOdemeSekli
             // 
             this.colOdemeSekli.HeaderText = "Ödeme Şekli";
             this.colOdemeSekli.Name = "colOdemeSekli";
-            this.colOdemeSekli.Width = 80;
+            this.colOdemeSekli.ReadOnly = true;
             // 
             // btnTabloExcelAktar
             // 
             this.btnTabloExcelAktar.Location = new System.Drawing.Point(670, 280);
             this.btnTabloExcelAktar.Name = "btnTabloExcelAktar";
-            this.btnTabloExcelAktar.Size = new System.Drawing.Size(80, 30);
+            this.btnTabloExcelAktar.Size = new System.Drawing.Size(80, 45);
             this.btnTabloExcelAktar.TabIndex = 19;
             this.btnTabloExcelAktar.Text = "Tabloyu\nExcel'e Aktar";
             this.btnTabloExcelAktar.UseVisualStyleBackColor = true;
             // 
             // btnTabloExcelAktar2
             // 
-            this.btnTabloExcelAktar2.Location = new System.Drawing.Point(750, 380);
+            this.btnTabloExcelAktar2.Location = new System.Drawing.Point(750, 380); // Konum ayarlandı
             this.btnTabloExcelAktar2.Name = "btnTabloExcelAktar2";
-            this.btnTabloExcelAktar2.Size = new System.Drawing.Size(80, 30);
+            this.btnTabloExcelAktar2.Size = new System.Drawing.Size(80, 45);
             this.btnTabloExcelAktar2.TabIndex = 20;
             this.btnTabloExcelAktar2.Text = "Tabloyu\nExcel'e Aktar";
             this.btnTabloExcelAktar2.UseVisualStyleBackColor = true;
             // 
             // btnSeciUrunSatisFisiniGoster
             // 
-            this.btnSeciUrunSatisFisiniGoster.Location = new System.Drawing.Point(750, 420);
+            this.btnSeciUrunSatisFisiniGoster.Location = new System.Drawing.Point(750, 430); // Konum ayarlandı
             this.btnSeciUrunSatisFisiniGoster.Name = "btnSeciUrunSatisFisiniGoster";
-            this.btnSeciUrunSatisFisiniGoster.Size = new System.Drawing.Size(80, 30);
+            this.btnSeciUrunSatisFisiniGoster.Size = new System.Drawing.Size(80, 50);
             this.btnSeciUrunSatisFisiniGoster.TabIndex = 21;
             this.btnSeciUrunSatisFisiniGoster.Text = "Seçil Ürünün\nSATIŞ FİŞİNİ\nGöster";
             this.btnSeciUrunSatisFisiniGoster.UseVisualStyleBackColor = true;
@@ -382,9 +384,9 @@ namespace StokTakip.Forms
             // 
             this.btnEFaturayaAktar.BackColor = System.Drawing.Color.Red;
             this.btnEFaturayaAktar.ForeColor = System.Drawing.Color.White;
-            this.btnEFaturayaAktar.Location = new System.Drawing.Point(750, 460);
+            this.btnEFaturayaAktar.Location = new System.Drawing.Point(750, 490); // Konum ayarlandı
             this.btnEFaturayaAktar.Name = "btnEFaturayaAktar";
-            this.btnEFaturayaAktar.Size = new System.Drawing.Size(80, 30);
+            this.btnEFaturayaAktar.Size = new System.Drawing.Size(80, 45);
             this.btnEFaturayaAktar.TabIndex = 22;
             this.btnEFaturayaAktar.Text = "E-Faturaya\nAktar";
             this.btnEFaturayaAktar.UseVisualStyleBackColor = false;
@@ -394,16 +396,16 @@ namespace StokTakip.Forms
             this.lblUrunToplami.AutoSize = true;
             this.lblUrunToplami.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.lblUrunToplami.ForeColor = System.Drawing.Color.Blue;
-            this.lblUrunToplami.Location = new System.Drawing.Point(500, 550);
+            this.lblUrunToplami.Location = new System.Drawing.Point(730, 550); // Konum sağa kaydırıldı
             this.lblUrunToplami.Name = "lblUrunToplami";
             this.lblUrunToplami.Size = new System.Drawing.Size(75, 13);
             this.lblUrunToplami.TabIndex = 23;
-            this.lblUrunToplami.Text = "Ürün Toplamı";
+            this.lblUrunToplami.Text = "Ürün Toplamı:";
             // 
             // txtUrunToplami
             // 
             this.txtUrunToplami.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.txtUrunToplami.Location = new System.Drawing.Point(590, 545);
+            this.txtUrunToplami.Location = new System.Drawing.Point(800, 545); // Konum sağa kaydırıldı
             this.txtUrunToplami.Name = "txtUrunToplami";
             this.txtUrunToplami.ReadOnly = true;
             this.txtUrunToplami.Size = new System.Drawing.Size(100, 26);

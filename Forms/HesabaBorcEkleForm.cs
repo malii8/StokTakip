@@ -15,6 +15,10 @@ namespace StokTakip.Forms
             _context = context;
             InitializeComponent();
             InitializeForm();
+
+            // Wire up event handlers
+            btnOnayGreenTick.Click += btnOnayGreenTick_Click;
+            btnVazgecRedX.Click += btnVazgecRedX_Click;
         }
 
         public void SetCustomer(Customer customer)

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StokTakip.Data;
 using StokTakip.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace StokTakip.Forms
 {
@@ -15,9 +16,20 @@ namespace StokTakip.Forms
 
         public VeresiyeDefteri(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
+            InitializeComponent();
             _context = context;
             _serviceProvider = serviceProvider;
-            InitializeComponent();
+            dgvBorcDetayi.AutoGenerateColumns = false;
+            dgvAlisverisDetayi.AutoGenerateColumns = false;
+
+            // Tarih filtrelerini ayarla
+            dtpBaslangic.Value = new DateTime(2023, 1, 1); // Başlangıç tarihini 01.01.2023 olarak ayarla
+            dtpBitis.Value = DateTime.Now;
+
+            // Olayları bağla
+            dtpBaslangic.ValueChanged += dtpBaslangic_ValueChanged;
+            dtpBitis.ValueChanged += dtpBitis_ValueChanged;
+
             // Event handler'ları bağla
             btnTahsilatYap.Click += BtnTahsilatYap_Click;
             btnHesabaBorcEkle.Click += BtnHesabaBorcEkle_Click;
@@ -28,6 +40,7 @@ namespace StokTakip.Forms
             _customer = customer;
             LoadCustomerDetails();
             LoadDebtMovements();
+            LoadSalesDetails();
         }
 
         private void LoadCustomerDetails()
@@ -69,30 +82,31 @@ namespace StokTakip.Forms
             {
                 var movements = _context.CustomerDebtMovements
                     .Where(m => m.CustomerId == _customer.Id)
-                    .OrderByDescending(m => m.MovementDate)
+                    .OrderBy(m => m.MovementDate) // Order by ascending date for correct balance calculation
                     .ToList();
+
+                decimal currentBalance = 0;
 
                 foreach (var movement in movements)
                 {
-                    string borc = "0,00";
-                    string tahsilat = "0,00";
+                    decimal previousBalance = currentBalance;
 
                     if (movement.MovementType == "Borç Ekleme")
                     {
-                        borc = movement.Amount.ToString("F2");
+                        currentBalance += movement.Amount;
                     }
-                    else if (movement.MovementType == "Tahsilat")
+                    else if (movement.MovementType == "Tahsilat" || movement.MovementType == "İade")
                     {
-                        tahsilat = movement.Amount.ToString("F2");
+                        currentBalance -= movement.Amount;
                     }
 
                     dgvBorcDetayi.Rows.Add(
-                        movement.Id, // Assuming a column for Sira No
+                        movement.Id,
                         movement.MovementDate.ToShortDateString(),
                         movement.MovementType,
-                        "0,00", // Onceki Bakiye - This would require more complex logic
-                        movement.Amount.ToString("F2"), // Islem Tutari
-                        _customer.Debt.ToString("F2"), // Kalan Borc - This will be current debt
+                        previousBalance.ToString("F2"),
+                        movement.Amount.ToString("F2"),
+                        currentBalance.ToString("F2"),
                         movement.Description ?? ""
                     );
                 }
@@ -100,6 +114,50 @@ namespace StokTakip.Forms
             catch (Exception ex)
             {
                 MessageBox.Show($"Borç hareketleri yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LoadSalesDetails()
+        {
+            dgvAlisverisDetayi.Rows.Clear();
+            if (_customer == null)
+            {
+                MessageBox.Show("Müşteri seçilmedi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
+                var receipts = _context.SalesReceipts
+                    .Where(r => r.CustomerId == _customer.Id && r.ReceiptDate >= dtpBaslangic.Value && r.ReceiptDate <= dtpBitis.Value)
+                    .Include(r => r.Details)
+                    .ThenInclude(d => d.Product)
+                    .OrderByDescending(r => r.ReceiptDate)
+                    .ToList();
+
+                decimal totalProductsAmount = 0; // Toplam tutarı tutacak değişken
+                int siraNo = 1;
+                foreach (var receipt in receipts)
+                {
+                    foreach (var detail in receipt.Details)
+                    {
+                        dgvAlisverisDetayi.Rows.Add(
+                            siraNo++,
+                            receipt.ReceiptDate.ToString("dd.MM.yyyy - HH:mm:ss"),
+                            detail.Product.Name,
+                            detail.UnitPrice.ToString("F2"),
+                            detail.Quantity.ToString("F2"),
+                            detail.Total.ToString("F2"),
+                            receipt.PaymentType
+                        );
+                        totalProductsAmount += detail.Total; // Her ürünün toplam tutarını ekle
+                    }
+                }
+                txtUrunToplami.Text = totalProductsAmount.ToString("F2") + " TL"; // Toplam tutarı etikete yaz
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Satış detayları yüklenirken bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -127,6 +185,74 @@ namespace StokTakip.Forms
                 LoadCustomerDetails(); // Refresh customer details
                 LoadDebtMovements(); // Refresh movements
             }
+        }
+
+        private void dtpBaslangic_ValueChanged(object? sender, EventArgs e)
+        {
+            LoadDebtMovements();
+            LoadSalesDetails();
+        }
+
+        private void dtpBitis_ValueChanged(object? sender, EventArgs e)
+        {
+            LoadDebtMovements();
+            LoadSalesDetails();
+        }
+
+        private void LoadCustomerDebtDetails()
+        {
+            if (_customer == null) return;
+
+            txtMusterininAdi.Text = _customer.Name;
+
+            var allTransactions = _context.CustomerDebtMovements
+                .Where(t => t.CustomerId == _customer.Id)
+                .OrderBy(t => t.MovementDate)
+                .ToList();
+
+            decimal currentBalance = 0;
+
+            // Calculate initial balance before the start date
+            foreach (var transaction in allTransactions.Where(t => t.MovementDate < dtpBaslangic.Value))
+            {
+                if (transaction.MovementType == "Borç")
+                {
+                    currentBalance += transaction.Amount;
+                }
+                else if (transaction.MovementType == "Ödeme" || transaction.MovementType == "İade")
+                {
+                    currentBalance -= transaction.Amount;
+                }
+            }
+
+            dgvBorcDetayi.Rows.Clear();
+            int siraNo = 1;
+            foreach (var transaction in allTransactions.Where(t => t.MovementDate >= dtpBaslangic.Value && t.MovementDate <= dtpBitis.Value))
+            {
+                decimal previousBalance = currentBalance;
+                decimal transactionAmount = transaction.Amount;
+
+                // Update current balance based on transaction type
+                if (transaction.MovementType == "Borç")
+                {
+                    currentBalance += transactionAmount;
+                }
+                else if (transaction.MovementType == "Ödeme" || transaction.MovementType == "İade")
+                {
+                    currentBalance -= transactionAmount;
+                }
+
+                dgvBorcDetayi.Rows.Add(
+                    siraNo++,
+                    transaction.MovementDate.ToShortDateString(),
+                    transaction.MovementType,
+                    previousBalance.ToString("F2"),
+                    transactionAmount.ToString("F2"),
+                    currentBalance.ToString("F2")
+                );
+            }
+            lblVeresiyeBorcMiktari.Text = _customer.Debt.ToString("F2") + " TL"; // This should reflect the actual current debt from the customer object
+            lblKalanTaksitValue.Text = currentBalance.ToString("F2") + " TL"; // Update the total remaining debt label based on filtered transactions
         }
     }
 }

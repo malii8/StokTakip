@@ -233,6 +233,12 @@ namespace StokTakip.Forms
                 return;
             }
 
+            if (paymentMethod == "Veresiye" && _selectedCustomer == null)
+            {
+                MessageBox.Show("Veresiye satış için önce bir müşteri seçmelisiniz!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
                 using (var transaction = _context.Database.BeginTransaction())
@@ -319,20 +325,17 @@ namespace StokTakip.Forms
                     }
                     else // If veresiye, update customer debt
                     {
-                        if (_selectedCustomer != null)
+                        _selectedCustomer.Debt += salesReceipt.Total;
+                        var debtMovement = new CustomerDebtMovement
                         {
-                            _selectedCustomer.Debt += salesReceipt.Total;
-                            var debtMovement = new CustomerDebtMovement
-                            {
-                                CustomerId = _selectedCustomer.Id,
-                                Amount = salesReceipt.Total,
-                                MovementType = "Borç Ekleme",
-                                MovementDate = DateTime.Now,
-                                Description = $"Veresiye satış - Fiş No: {salesReceipt.ReceiptNumber}",
-                                SalesReceiptId = salesReceipt.Id
-                            };
-                            _context.CustomerDebtMovements.Add(debtMovement);
-                        }
+                            CustomerId = _selectedCustomer.Id,
+                            Amount = salesReceipt.Total,
+                            MovementType = "Borç Ekleme",
+                            MovementDate = DateTime.Now,
+                            Description = $"Veresiye satış - Fiş No: {salesReceipt.ReceiptNumber}",
+                            SalesReceiptId = salesReceipt.Id
+                        };
+                        _context.CustomerDebtMovements.Add(debtMovement);
                     }
 
                     _context.SaveChanges(); // Final save for all other changes

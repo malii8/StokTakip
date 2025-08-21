@@ -188,7 +188,7 @@ namespace StokTakip.Forms
             this.btnOnayGreenTick.Name = "btnOnayGreenTick";
             this.btnOnayGreenTick.Size = new System.Drawing.Size(60, 40);
             this.btnOnayGreenTick.TabIndex = 13;
-            this.btnOnayGreenTick.Text = "✓";
+            this.btnOnayGreenTick.Text = "Ekle";
             this.btnOnayGreenTick.UseVisualStyleBackColor = false;
             // 
             // btnVazgecRedX
@@ -200,7 +200,7 @@ namespace StokTakip.Forms
             this.btnVazgecRedX.Name = "btnVazgecRedX";
             this.btnVazgecRedX.Size = new System.Drawing.Size(60, 40);
             this.btnVazgecRedX.TabIndex = 14;
-            this.btnVazgecRedX.Text = "✗";
+            this.btnVazgecRedX.Text = "Vazgeç";
             this.btnVazgecRedX.UseVisualStyleBackColor = false;
             // 
             // HesabaBorcEkleForm

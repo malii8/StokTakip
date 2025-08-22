@@ -96,7 +96,7 @@ namespace StokTakip.Forms
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(1264, 100);
+            this.pnlTop.Size = new System.Drawing.Size(1400, 100);
             this.pnlTop.TabIndex = 0;
             // 
             // btnSatisIptal
@@ -201,7 +201,7 @@ namespace StokTakip.Forms
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMain.Location = new System.Drawing.Point(0, 100);
             this.pnlMain.Name = "pnlMain";
-            this.pnlMain.Size = new System.Drawing.Size(964, 481);
+            this.pnlMain.Size = new System.Drawing.Size(1100, 481);
             this.pnlMain.TabIndex = 1;
             // 
             // dgvSatisListesi
@@ -285,7 +285,7 @@ namespace StokTakip.Forms
             this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlBottom.Location = new System.Drawing.Point(0, 581);
             this.pnlBottom.Name = "pnlBottom";
-            this.pnlBottom.Size = new System.Drawing.Size(1264, 100);
+            this.pnlBottom.Size = new System.Drawing.Size(1400, 100);
             this.pnlBottom.TabIndex = 3;
             // 
             // pnlKasa
@@ -441,9 +441,9 @@ namespace StokTakip.Forms
             this.pnlSatisOnaylama.Controls.Add(this.btnVeresiye);
             this.pnlSatisOnaylama.Controls.Add(this.btnNakit);
             this.pnlSatisOnaylama.Controls.Add(this.lblSatisOnaylama);
-            this.pnlSatisOnaylama.Location = new System.Drawing.Point(12, 6);
+            this.pnlSatisOnaylama.Location = new System.Drawing.Point(20, 6);
             this.pnlSatisOnaylama.Name = "pnlSatisOnaylama";
-            this.pnlSatisOnaylama.Size = new System.Drawing.Size(400, 90);
+            this.pnlSatisOnaylama.Size = new System.Drawing.Size(600, 90);
             this.pnlSatisOnaylama.TabIndex = 0;
             // 
             // btnHavale
@@ -506,7 +506,7 @@ namespace StokTakip.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.ClientSize = new System.Drawing.Size(1400, 700);
             this.Controls.Add(this.pnlMain);
             this.Controls.Add(this.pnlRight);
             this.Controls.Add(this.pnlBottom);

@@ -17,6 +17,10 @@ namespace StokTakip.Forms
             _context = context;
             InitializeComponent();
 
+            // DataGridView ayarları
+            dgvMusteriler.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvMusteriler.MultiSelect = false;
+
             // Event handler'ları bağla
             btnMusteriBorcDetayi.Click += BtnMusteriBorcDetayi_Click;
             btnHesabaBorcEkle.Click += BtnHesabaBorcEkle_Click;
@@ -26,6 +30,7 @@ namespace StokTakip.Forms
             btnMusteriIade.Click += BtnMusteriIade_Click;
             btnMusteriBorcListesi.Click += BtnMusteriBorcListesi_Click;
             dgvMusteriler.CellDoubleClick += dgvMusteriler_CellDoubleClick; // Event handler for double click
+            dgvMusteriler.CellClick += dgvMusteriler_CellClick;
 
             LoadCustomerData(); // Initial load
         }
@@ -37,6 +42,7 @@ namespace StokTakip.Forms
             {
                 var customers = _context.Customers.Where(c => c.IsActive).ToList();
                 int siraNo = 1;
+                decimal totalVeresiye = 0;
                 foreach (var customer in customers)
                 {
                     dgvMusteriler.Rows.Add(
@@ -45,7 +51,10 @@ namespace StokTakip.Forms
                         customer.Debt.ToString("F2"), // colBorcu
                         customer.Id // colId (hidden)
                     );
+                    totalVeresiye += customer.Debt;
                 }
+                lblVeresiyeTopValue.Text = totalVeresiye.ToString("F2") + " TL";
+                lblTaksitTopValue.Text = "0,00 TL";
             }
             catch (Exception ex)
             {
@@ -207,6 +216,32 @@ namespace StokTakip.Forms
                     // txtBelirLenen.Text = customer.CreditLimit.ToString("F2");
                     // txtKalanTakTop.Text = customer.RemainingInstallmentAmount.ToString("F2");
                     // txtToplamBorc.Text = customer.TotalDebt.ToString("F2");
+                }
+            }
+        }
+
+        private void dgvMusteriler_CellClick(object? sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = this.dgvMusteriler.Rows[e.RowIndex];
+                int customerId = Convert.ToInt32(row.Cells["colId"].Value);
+                var customer = _context.Customers.Find(customerId);
+
+                if (customer != null)
+                {
+                    txtAdiSoyadi.Text = customer.Name;
+                    txtTicariUnvani.Text = customer.CompanyName;
+                    txtGsmTelefonu.Text = customer.Phone;
+                    txtVergiDairesi.Text = customer.TaxOffice;
+                    txtVergiNoTCN.Text = customer.TaxNumber;
+                    txtAdres.Text = customer.Address;
+                    txtEmail.Text = customer.Email;
+                    txtOzelNotlar.Text = customer.Notes;
+                    txtVeresiyeTop.Text = customer.Debt.ToString("F2");
+                    txtBelirLenen.Text = customer.CreditLimit == 0 ? "Limitsiz" : customer.CreditLimit.ToString("F2");
+                    txtKalanTakTop.Text = "0,00";
+                    txtToplamBorc.Text = customer.Debt.ToString("F2");
                 }
             }
         }

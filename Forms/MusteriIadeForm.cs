@@ -9,13 +9,41 @@ namespace StokTakip.Forms
     public partial class MusteriIadeForm : Form
     {
         private readonly StokTakipDbContext _context;
+        private readonly IServiceProvider _serviceProvider; // Yeni eklendi
         private Customer? _customer;
 
-        public MusteriIadeForm(StokTakipDbContext context)
+        public MusteriIadeForm(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
             _context = context;
+            _serviceProvider = serviceProvider; // Yeni eklendi
             InitializeComponent();
             SetupEventHandlers();
+            // Designer'daki btnUrunAdiIleAra butonunu ayarla
+            btnUrunAdiIleAra.Click += BtnUrunAdiIleAra_Click;
+            btnUrunAdiIleAra.BackColor = System.Drawing.Color.LightSkyBlue;
+            btnUrunAdiIleAra.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
+
+            // Varsayılan müşteri olarak "Perakende Satış" müşterisini ayarla
+            SetDefaultCustomer();
+        }
+
+        private void SetDefaultCustomer()
+        {
+            // "Perakende Satış" müşterisini bul veya oluştur
+            var perakendeCustomer = _context.Customers.FirstOrDefault(c => c.Name == "Perakende Satış");
+
+            if (perakendeCustomer == null)
+            {
+                perakendeCustomer = new Customer
+                {
+                    Name = "Perakende Satış",
+                    IsActive = true,
+                    CreatedDate = DateTime.Now
+                };
+                _context.Customers.Add(perakendeCustomer);
+                _context.SaveChanges();
+            }
+            SetCustomer(perakendeCustomer);
         }
 
         public void SetCustomer(Customer customer)
@@ -43,7 +71,13 @@ namespace StokTakip.Forms
             // Text changed and selection changed events
             txtMiktar.TextChanged += CalculateTotal; // Assuming txtMiktar is used for quantity
             txtBarkodNo.TextChanged += TxtBarkodNo_TextChanged; // Assuming txtBarkodNo is used for barcode
+            txtUrunAdiIleArama.TextChanged += TxtUrunAdiIleArama_TextChanged; // Yeni eklenen event handler
             dgvUrunler.SelectionChanged += DgvUrunler_SelectionChanged;
+        }
+
+        private void TxtUrunAdiIleArama_TextChanged(object? sender, EventArgs e)
+        {
+            FilterProducts();
         }
 
         private void LoadProducts()
@@ -58,7 +92,7 @@ namespace StokTakip.Forms
                 var salesDetails = _context.SalesReceiptDetails
                     .Include(srd => srd.Product)
                     .Include(srd => srd.SalesReceipt)
-                    .Where(srd => srd.SalesReceipt.CustomerId == _customer.Id && srd.SalesReceipt.Status == "Tamamlandı")
+                    .Where(srd => srd.SalesReceipt.CustomerId == _customer.Id && srd.SalesReceipt.Status == "Tamamlandı" && !srd.IsReturned)
                     .ToList();
 
                 foreach (var detail in salesDetails)
@@ -83,9 +117,15 @@ namespace StokTakip.Forms
 
         private void CalculateTotal(object? sender, EventArgs e)
         {
-            if (decimal.TryParse(txtMiktar.Text, out decimal miktar) &&
-                decimal.TryParse(dgvUrunler.CurrentRow?.Cells["colSatisFiyati"].Value?.ToString(), out decimal birimFiyat))
+            if (dgvUrunler.SelectedRows.Count > 0)
             {
+                var selectedRow = dgvUrunler.SelectedRows[0];
+                decimal miktar = 1;
+                decimal birimFiyat = 0;
+                if (decimal.TryParse(selectedRow.Cells["colMiktar"].Value?.ToString(), out decimal m))
+                    miktar = m;
+                if (decimal.TryParse(selectedRow.Cells["colSatisFiyati"].Value?.ToString(), out decimal bf))
+                    birimFiyat = bf;
                 decimal toplamTutar = birimFiyat * miktar;
                 lblToplamTutar.Text = $"{toplamTutar:F2} TL";
             }
@@ -125,6 +165,17 @@ namespace StokTakip.Forms
             string urunAdi = selectedRow.Cells["colUrunAdi"].Value?.ToString() ?? "";
             decimal birimFiyat = decimal.TryParse(selectedRow.Cells["colSatisFiyati"].Value?.ToString(), out decimal bf) ? bf : 0;
             decimal miktar = decimal.TryParse(txtMiktar.Text, out decimal m) ? m : 0;
+
+            // İlgili SalesReceiptDetail kaydını bul ve IsReturned=true yap
+            var salesDetail = _context.SalesReceiptDetails
+                .Include(srd => srd.Product)
+                .Include(srd => srd.SalesReceipt)
+                .Where(srd => srd.Product.BarcodeNo == barcodeNo && srd.SalesReceipt.CustomerId == _customer.Id && !srd.IsReturned)
+                .FirstOrDefault();
+            if (salesDetail != null)
+            {
+                salesDetail.IsReturned = true;
+            }
 
             if (miktar <= 0)
             {
@@ -204,8 +255,10 @@ namespace StokTakip.Forms
                     _context.SaveChanges();
 
                     MessageBox.Show("Ürün iadesi başarıyla kaydedildi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.DialogResult = DialogResult.OK;
-                    this.Close();
+                    // İade edilen satırı grid'den sil
+                    dgvUrunler.Rows.Remove(selectedRow);
+                    // Toplam tutarı güncelle
+                    CalculateTotal(null, EventArgs.Empty);
                 }
                 catch (Exception ex)
                 {
@@ -228,7 +281,8 @@ namespace StokTakip.Forms
 
         private void FilterProducts()
         {
-            string searchText = txtBarkodNo.Text.ToUpper();
+            string barkodSearchText = txtBarkodNo.Text.ToUpper();
+            string urunAdiSearchText = txtUrunAdiIleArama.Text.ToUpper();
 
             foreach (DataGridViewRow row in dgvUrunler.Rows)
             {
@@ -237,9 +291,8 @@ namespace StokTakip.Forms
                 string barkod = row.Cells["colBarkodNo"].Value?.ToString()?.ToUpper() ?? "";
                 string urunAdi = row.Cells["colUrunAdi"].Value?.ToString()?.ToUpper() ?? "";
 
-                bool visible = string.IsNullOrEmpty(searchText) ||
-                               barkod.Contains(searchText) ||
-                               urunAdi.Contains(searchText);
+                bool visible = (string.IsNullOrEmpty(barkodSearchText) || barkod.Contains(barkodSearchText)) &&
+                               (string.IsNullOrEmpty(urunAdiSearchText) || urunAdi.Contains(urunAdiSearchText));
 
                 row.Visible = visible;
             }
@@ -279,6 +332,46 @@ namespace StokTakip.Forms
 
                 CalculateTotal(null, EventArgs.Empty);
             }
+        }
+
+        private void BtnUrunAdiIleAra_Click(object? sender, EventArgs e)
+        {
+            var urunAramaForm = new UrunAramaForm(_context, _serviceProvider);
+            urunAramaForm.UrunSecildi += UrunAramaForm_UrunSecildi;
+            urunAramaForm.ShowDialog();
+        }
+
+        private void UrunAramaForm_UrunSecildi(object? sender, Product secilenUrun)
+        {
+            // Aynı barkod ve ürün adına sahip satır var mı kontrol et
+            foreach (DataGridViewRow row in dgvUrunler.Rows)
+            {
+                if (!row.IsNewRow &&
+                    row.Cells["colBarkodNo"].Value?.ToString() == secilenUrun.BarcodeNo &&
+                    row.Cells["colUrunAdi"].Value?.ToString() == secilenUrun.Name)
+                {
+                    // Miktarı ve toplamı güncelle
+                    if (decimal.TryParse(row.Cells["colMiktar"].Value?.ToString(), out decimal mevcutMiktar))
+                    {
+                        decimal yeniMiktar = mevcutMiktar + 1;
+                        row.Cells["colMiktar"].Value = yeniMiktar.ToString();
+                        decimal birimFiyat = secilenUrun.SalePrice;
+                        row.Cells["colToplamTutar"].Value = (birimFiyat * yeniMiktar).ToString("F2");
+                    }
+                    return;
+                }
+            }
+            // Yoksa yeni satır ekle
+            dgvUrunler.Rows.Add(
+                secilenUrun.BarcodeNo,
+                secilenUrun.Name,
+                secilenUrun.CurrentStock.ToString(),
+                secilenUrun.MinimumStock.ToString(),
+                secilenUrun.SalePrice.ToString("F2"),
+                "1", // Miktar varsayılan 1
+                secilenUrun.Unit,
+                secilenUrun.SalePrice.ToString("F2")
+            );
         }
     }
 }

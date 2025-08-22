@@ -15,11 +15,14 @@ namespace StokTakip.Forms
 
         public Product? SelectedProduct { get; private set; } // Yeni eklendi
 
+        public event EventHandler<Product>? UrunSecildi;
+
         public UrunAramaForm(StokTakipDbContext context, IServiceProvider serviceProvider)
         {
             _context = context;
             _serviceProvider = serviceProvider; // _serviceProvider'ı başlat
             InitializeComponent();
+            SetupDataGridViewColumns(); // Sütunları bir kez ayarla
             LoadProducts();
             txtUrunAdi.TextChanged += TxtUrunAdi_TextChanged;
             dataGridView1.CellDoubleClick += DataGridView1_CellDoubleClick; // Yeni olay işleyicisi
@@ -34,10 +37,12 @@ namespace StokTakip.Forms
         {
             if (e.RowIndex >= 0)
             {
-                var selectedProduct = dataGridView1.Rows[e.RowIndex].DataBoundItem as Product;
-                if (selectedProduct != null)
+                // DataBoundItem yerine doğrudan hücre değerinden Product ID alınıyor
+                int productId = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["colId"].Value);
+                SelectedProduct = _context.Products.Find(productId);
+                if (SelectedProduct != null)
                 {
-                    SelectedProduct = selectedProduct; // Seçilen ürünü ata
+                    UrunSecildi?.Invoke(this, SelectedProduct);
                     this.DialogResult = DialogResult.OK; // Formu OK sonucuyla kapat
                     this.Close();
                 }
@@ -48,14 +53,14 @@ namespace StokTakip.Forms
         {
             // Event handlers
             txtArama.TextChanged += TxtArama_TextChanged;
-            dataGridView1.CellDoubleClick += DgvUrunler_CellDoubleClick;
+            // DataGridView1_CellDoubleClick zaten yukarıda tanımlı, bu satır kaldırıldı
 
             // DataGridView ayarları
             dataGridView1.AutoGenerateColumns = false;
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;
 
-            SetupDataGridViewColumns();
+            // SetupDataGridViewColumns(); // Constructor'da çağrıldığı için burada tekrar çağrmaya gerek yok
         }
 
         private void SetupDataGridViewColumns()
@@ -132,19 +137,20 @@ namespace StokTakip.Forms
                     .ToList();
 
                 dataGridView1.DataSource = products;
-                dataGridView1.AutoGenerateColumns = false;
-                dataGridView1.Columns.Clear();
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "BarcodeNo", HeaderText = "Barkod No" });
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Name", HeaderText = "Ürün Adı" });
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "StockCode", HeaderText = "Ürün Kodu" });
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "ProductGroup.Name", HeaderText = "Grup" });
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "SalePrice", HeaderText = "Satış Fiyatı" });
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "CurrentStock", HeaderText = "Stok" });
-                foreach (DataGridViewColumn column in dataGridView1.Columns)
-                {
-                    column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                }
-                dataGridView1.Dock = DockStyle.Bottom; // Tabloyu alt satıra sabitle
+                // Sütunları burada tekrar eklemeye gerek yok, SetupDataGridViewColumns() bir kez çağrıldı
+                // dataGridView1.AutoGenerateColumns = false;
+                // dataGridView1.Columns.Clear();
+                // dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "BarcodeNo", HeaderText = "Barkod No" });
+                // dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Name", HeaderText = "Ürün Adı" });
+                // dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "StockCode", HeaderText = "Ürün Kodu" });
+                // dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "ProductGroup.Name", HeaderText = "Grup" });
+                // dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "SalePrice", HeaderText = "Satış Fiyatı" });
+                // dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "CurrentStock", HeaderText = "Stok" });
+                // foreach (DataGridViewColumn column in dataGridView1.Columns)
+                // {
+                //     column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                // }
+                // dataGridView1.Dock = DockStyle.Bottom; // Tabloyu alt satıra sabitle
             }
             catch (Exception ex)
             {

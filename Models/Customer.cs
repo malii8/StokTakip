@@ -37,6 +37,9 @@ namespace StokTakip.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Debt { get; set; } = 0;
 
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal CreditLimit { get; set; } = 0;
+
         [StringLength(1000)]
         public string? Notes { get; set; }
 

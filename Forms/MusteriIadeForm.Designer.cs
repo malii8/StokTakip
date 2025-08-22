@@ -37,6 +37,9 @@ namespace StokTakip.Forms
             this.picUrunAdi = new System.Windows.Forms.PictureBox();
             this.lblUrunAdiIleArama = new System.Windows.Forms.Label();
             this.lblF2 = new System.Windows.Forms.Label();
+            this.txtUrunAdiIleArama = new System.Windows.Forms.TextBox();
+            this.btnUrunAra = new System.Windows.Forms.Button();
+            this.btnUrunAdiIleAra = new System.Windows.Forms.Button();
             this.grpArama = new System.Windows.Forms.GroupBox();
             this.lblMiktar = new System.Windows.Forms.Label();
             this.txtMiktar = new System.Windows.Forms.TextBox();
@@ -91,15 +94,7 @@ namespace StokTakip.Forms
             this.grpBarkodArama.TabIndex = 1;
             this.grpBarkodArama.TabStop = false;
             // 
-            // picBarkod
-            // 
-            this.picBarkod.BackColor = System.Drawing.Color.White;
-            this.picBarkod.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picBarkod.Location = new System.Drawing.Point(115, 25);
-            this.picBarkod.Name = "picBarkod";
-            this.picBarkod.Size = new System.Drawing.Size(40, 40);
-            this.picBarkod.TabIndex = 0;
-            this.picBarkod.TabStop = false;
+
             // 
             // lblBarkodNoIleArama
             // 
@@ -128,21 +123,18 @@ namespace StokTakip.Forms
             this.grpUrunAdiArama.Controls.Add(this.picUrunAdi);
             this.grpUrunAdiArama.Controls.Add(this.lblUrunAdiIleArama);
             this.grpUrunAdiArama.Controls.Add(this.lblF2);
+            this.grpUrunAdiArama.Controls.Add(this.txtUrunAdiIleArama);
+            this.grpUrunAdiArama.Controls.Add(this.btnUrunAra);
+            this.grpUrunAdiArama.Controls.Add(this.btnUrunAdiIleAra);
             this.grpUrunAdiArama.Location = new System.Drawing.Point(510, 40);
             this.grpUrunAdiArama.Name = "grpUrunAdiArama";
-            this.grpUrunAdiArama.Size = new System.Drawing.Size(460, 80);
+            this.grpUrunAdiArama.Size = new System.Drawing.Size(560, 80);
             this.grpUrunAdiArama.TabIndex = 2;
             this.grpUrunAdiArama.TabStop = false;
             // 
-            // picUrunAdi
             // 
-            this.picUrunAdi.BackColor = System.Drawing.Color.White;
-            this.picUrunAdi.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picUrunAdi.Location = new System.Drawing.Point(115, 25);
-            this.picUrunAdi.Name = "picUrunAdi";
-            this.picUrunAdi.Size = new System.Drawing.Size(40, 40);
-            this.picUrunAdi.TabIndex = 0;
-            this.picUrunAdi.TabStop = false;
+            // 
+
             // 
             // lblUrunAdiIleArama
             // 
@@ -165,6 +157,31 @@ namespace StokTakip.Forms
             this.lblF2.Size = new System.Drawing.Size(27, 13);
             this.lblF2.TabIndex = 2;
             this.lblF2.Text = "(F2)";
+            // 
+            // txtUrunAdiIleArama
+            // 
+            this.txtUrunAdiIleArama.Location = new System.Drawing.Point(170, 55);
+            this.txtUrunAdiIleArama.Name = "txtUrunAdiIleArama";
+            this.txtUrunAdiIleArama.Size = new System.Drawing.Size(150, 20);
+            this.txtUrunAdiIleArama.TabIndex = 3;
+            // 
+            // btnUrunAra
+            // 
+            this.btnUrunAra.Location = new System.Drawing.Point(330, 50);
+            this.btnUrunAra.Name = "btnUrunAra";
+            this.btnUrunAra.Size = new System.Drawing.Size(75, 25);
+            this.btnUrunAra.TabIndex = 4;
+            this.btnUrunAra.Text = "Ara";
+            this.btnUrunAra.UseVisualStyleBackColor = true;
+            // 
+            // btnUrunAdiIleAra
+            // 
+            this.btnUrunAdiIleAra.Location = new System.Drawing.Point(415, 50);
+            this.btnUrunAdiIleAra.Name = "btnUrunAdiIleAra";
+            this.btnUrunAdiIleAra.Size = new System.Drawing.Size(120, 30);
+            this.btnUrunAdiIleAra.TabIndex = 5;
+            this.btnUrunAdiIleAra.Text = "Ürün Adı ile Ara";
+            this.btnUrunAdiIleAra.UseVisualStyleBackColor = true;
             // 
             // grpArama
             // 
@@ -367,7 +384,7 @@ namespace StokTakip.Forms
             this.btnMusteriNakitOdendi.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.btnMusteriNakitOdendi.Location = new System.Drawing.Point(380, 30);
             this.btnMusteriNakitOdendi.Name = "btnMusteriNakitOdendi";
-            this.btnMusteriNakitOdendi.Size = new System.Drawing.Size(120, 45);
+            this.btnMusteriNakitOdendi.Size = new System.Drawing.Size(120, 50);
             this.btnMusteriNakitOdendi.TabIndex = 2;
             this.btnMusteriNakitOdendi.Text = "Müşteriye\nNakit Ödendi";
             this.btnMusteriNakitOdendi.UseVisualStyleBackColor = false;
@@ -378,7 +395,7 @@ namespace StokTakip.Forms
             this.btnKrediKartindan.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.btnKrediKartindan.Location = new System.Drawing.Point(520, 30);
             this.btnKrediKartindan.Name = "btnKrediKartindan";
-            this.btnKrediKartindan.Size = new System.Drawing.Size(120, 45);
+            this.btnKrediKartindan.Size = new System.Drawing.Size(120, 50);
             this.btnKrediKartindan.TabIndex = 3;
             this.btnKrediKartindan.Text = "Kredi Kartından\nDüşülecek";
             this.btnKrediKartindan.UseVisualStyleBackColor = false;
@@ -389,7 +406,7 @@ namespace StokTakip.Forms
             this.btnMusteriBorcundan.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.btnMusteriBorcundan.Location = new System.Drawing.Point(660, 30);
             this.btnMusteriBorcundan.Name = "btnMusteriBorcundan";
-            this.btnMusteriBorcundan.Size = new System.Drawing.Size(120, 45);
+            this.btnMusteriBorcundan.Size = new System.Drawing.Size(120, 50);
             this.btnMusteriBorcundan.TabIndex = 4;
             this.btnMusteriBorcundan.Text = "Müşteri\nBorcundan\nDüşülecek";
             this.btnMusteriBorcundan.UseVisualStyleBackColor = false;
@@ -399,7 +416,7 @@ namespace StokTakip.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.ClientSize = new System.Drawing.Size(990, 650);
+            this.ClientSize = new System.Drawing.Size(1100, 650);
             this.Controls.Add(this.grpIadeOnaylama);
             this.Controls.Add(this.dgvUrunler);
             this.Controls.Add(this.grpArama);
@@ -438,6 +455,9 @@ namespace StokTakip.Forms
         private System.Windows.Forms.PictureBox picUrunAdi;
         private System.Windows.Forms.Label lblUrunAdiIleArama;
         private System.Windows.Forms.Label lblF2;
+        private System.Windows.Forms.TextBox txtUrunAdiIleArama;
+        private System.Windows.Forms.Button btnUrunAra;
+        private System.Windows.Forms.Button btnUrunAdiIleAra;
         private System.Windows.Forms.GroupBox grpArama;
         private System.Windows.Forms.Label lblMiktar;
         private System.Windows.Forms.TextBox txtMiktar;

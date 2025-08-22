@@ -41,6 +41,7 @@ namespace StokTakip.Forms
             txtVergiDairesi.Text = _customer.TaxOffice;
             txtVergiNumarasi.Text = _customer.TaxNumber;
             txtOzelNotlar.Text = _customer.Notes;
+            txtLimitBelirle.Text = _customer.CreditLimit == 0 ? "Limitsiz" : _customer.CreditLimit.ToString("F2");
         }
 
         private void BtnKaydet_Click(object? sender, EventArgs e)
@@ -57,6 +58,24 @@ namespace StokTakip.Forms
                 _customer.TaxOffice = txtVergiDairesi.Text;
                 _customer.TaxNumber = txtVergiNumarasi.Text;
                 _customer.Notes = txtOzelNotlar.Text;
+
+                if (txtLimitBelirle.Text == "Limitsiz")
+                {
+                    _customer.CreditLimit = 0;
+                }
+                else
+                {
+                    if (decimal.TryParse(txtLimitBelirle.Text, out decimal creditLimit))
+                    {
+                        _customer.CreditLimit = creditLimit;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Geçerli bir limit değeri giriniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+
                 _customer.UpdatedDate = DateTime.Now;
 
                 _context.Customers.Update(_customer);

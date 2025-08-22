@@ -33,5 +33,6 @@ namespace StokTakip.Models
         public decimal Discount { get; set; } = 0;
 
         public DateTime CreatedDate { get; set; } = new DateTime(2025, 1, 1);
+        public bool IsReturned { get; set; } = false;
     }
 }

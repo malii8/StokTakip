@@ -20,6 +20,25 @@ namespace StokTakip.Forms
         {
             btnKaydet.Click += BtnKaydet_Click;
             btnVazgec.Click += BtnVazgec_Click;
+            btnTemizle.Click += BtnTemizle_Click;
+            txtKrediLimiti.KeyPress += TxtNumeric_KeyPress;
+            txtGsmTelefonu.KeyPress += TxtNumeric_KeyPress;
+            txtVergiNoTCN.KeyPress += TxtNumeric_KeyPress;
+        }
+
+        private void TxtNumeric_KeyPress(object? sender, KeyPressEventArgs e)
+        {
+            // Sadece rakam, virgül ve backspace tuşlarına izin ver
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != ','))
+            {
+                e.Handled = true;
+            }
+
+            // Sadece bir virgül olmasına izin ver
+            if ((e.KeyChar == ',') && ((sender as TextBox)?.Text.IndexOf(',') > -1))
+            {
+                e.Handled = true;
+            }
         }
 
         private void BtnKaydet_Click(object? sender, EventArgs e)
@@ -64,6 +83,22 @@ namespace StokTakip.Forms
             this.Close();
         }
 
+        private void BtnTemizle_Click(object? sender, EventArgs e)
+        {
+            txtAdiSoyadi.Clear();
+            txtTicariUnvani.Clear();
+            txtGsmTelefonu.Clear();
+            txtVergiDairesi.Clear();
+            txtVergiNoTCN.Clear();
+            txtAdres.Clear();
+            // İl / İlçe alanı için varsayılan değer veya temizleme
+            // Ülke alanı için varsayılan değer veya temizleme
+            txtEmail.Clear();
+            txtOzelNotlar.Clear();
+            txtKrediLimiti.Text = "0,00"; // Kredi limiti için varsayılan değer
+            txtAdiSoyadi.Focus();
+        }
+
         private bool ValidateInput()
         {
             if (string.IsNullOrWhiteSpace(txtAdiSoyadi.Text))
@@ -80,7 +115,44 @@ namespace StokTakip.Forms
                 return false;
             }
 
-            // Add more validation as needed
+            if (string.IsNullOrWhiteSpace(txtTicariUnvani.Text))
+            {
+                MessageBox.Show("Ticari Ünvanı boş bırakılamaz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtTicariUnvani.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtVergiDairesi.Text))
+            {
+                MessageBox.Show("Vergi Dairesi boş bırakılamaz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtVergiDairesi.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtVergiNoTCN.Text))
+            {
+                MessageBox.Show("Vergi No/TCN boş bırakılamaz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtVergiNoTCN.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtAdres.Text))
+            {
+                MessageBox.Show("Adres boş bırakılamaz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtAdres.Focus();
+                return false;
+            }
+
+            // Kredi Limiti için sayısal kontrol zaten KeyPress olayında yapılıyor, ancak burada da bir kontrol ekleyebiliriz.
+            if (!string.IsNullOrWhiteSpace(txtKrediLimiti.Text) && txtKrediLimiti.Text != "Limitsiz")
+            {
+                if (!decimal.TryParse(txtKrediLimiti.Text, out _))
+                {
+                    MessageBox.Show("Geçerli bir Kredi Limiti değeri giriniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtKrediLimiti.Focus();
+                    return false;
+                }
+            }
 
             return true;
         }

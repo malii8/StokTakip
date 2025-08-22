@@ -60,6 +60,7 @@ namespace StokTakip.Forms
             this.colMiktari = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colToplamTutari = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colOdemeSekli = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colSalesReceiptId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnTabloExcelAktar = new System.Windows.Forms.Button();
             this.btnTabloExcelAktar2 = new System.Windows.Forms.Button();
             this.btnSeciUrunSatisFisiniGoster = new System.Windows.Forms.Button();
@@ -180,9 +181,9 @@ namespace StokTakip.Forms
             this.lblBorcMiktariValue.ForeColor = System.Drawing.Color.White;
             this.lblBorcMiktariValue.Location = new System.Drawing.Point(520, 80);
             this.lblBorcMiktariValue.Name = "lblBorcMiktariValue";
-            this.lblBorcMiktariValue.Size = new System.Drawing.Size(100, 25);
+            this.lblBorcMiktariValue.Size = new System.Drawing.Size(100, 45);
             this.lblBorcMiktariValue.TabIndex = 11;
-            this.lblBorcMiktariValue.Text = "0,00 TL";
+            this.lblBorcMiktariValue.Text = "";
             this.lblBorcMiktariValue.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblKalanTaksitTutarToplami
@@ -304,7 +305,8 @@ namespace StokTakip.Forms
             this.colBirimFiyati,
             this.colMiktari,
             this.colToplamTutari,
-            this.colOdemeSekli});
+            this.colOdemeSekli,
+            this.colSalesReceiptId});
             this.dgvAlisverisDetayi.Location = new System.Drawing.Point(20, 380);
             this.dgvAlisverisDetayi.Name = "dgvAlisverisDetayi";
             this.dgvAlisverisDetayi.ReadOnly = true;
@@ -353,9 +355,16 @@ namespace StokTakip.Forms
             this.colOdemeSekli.Name = "colOdemeSekli";
             this.colOdemeSekli.ReadOnly = true;
             // 
+            // colSalesReceiptId
+            // 
+            this.colSalesReceiptId.HeaderText = "SalesReceiptId";
+            this.colSalesReceiptId.Name = "colSalesReceiptId";
+            this.colSalesReceiptId.Visible = false; // Gizli sütun
+            this.colSalesReceiptId.ReadOnly = true;
+            // 
             // btnTabloExcelAktar
             // 
-            this.btnTabloExcelAktar.Location = new System.Drawing.Point(670, 280);
+            this.btnTabloExcelAktar.Location = new System.Drawing.Point(670, 220);
             this.btnTabloExcelAktar.Name = "btnTabloExcelAktar";
             this.btnTabloExcelAktar.Size = new System.Drawing.Size(80, 45);
             this.btnTabloExcelAktar.TabIndex = 19;
@@ -490,6 +499,7 @@ namespace StokTakip.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn colMiktari;
         private System.Windows.Forms.DataGridViewTextBoxColumn colToplamTutari;
         private System.Windows.Forms.DataGridViewTextBoxColumn colOdemeSekli;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colSalesReceiptId;
         private System.Windows.Forms.Button btnTabloExcelAktar;
         private System.Windows.Forms.Button btnTabloExcelAktar2;
         private System.Windows.Forms.Button btnSeciUrunSatisFisiniGoster;

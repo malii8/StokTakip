@@ -33,6 +33,114 @@ namespace StokTakip.Forms
             // Event handler'ları bağla
             btnTahsilatYap.Click += BtnTahsilatYap_Click;
             btnHesabaBorcEkle.Click += BtnHesabaBorcEkle_Click;
+            btnTabloExcelAktar.Click += BtnTabloExcelAktar_Click;
+            btnTabloExcelAktar2.Click += BtnTabloExcelAktar2_Click;
+            btnSeciUrunSatisFisiniGoster.Click += BtnSeciUrunSatisFisiniGoster_Click;
+        }
+
+        private void BtnTabloExcelAktar_Click(object? sender, EventArgs e)
+        {
+            ExportDataGridViewToCsv(dgvBorcDetayi, "BorcDetayi");
+        }
+
+        private void BtnTabloExcelAktar2_Click(object? sender, EventArgs e)
+        {
+            ExportDataGridViewToCsv(dgvAlisverisDetayi, "AlisverisDetayi");
+        }
+
+        private void BtnSeciUrunSatisFisiniGoster_Click(object? sender, EventArgs e)
+        {
+            if (dgvAlisverisDetayi.SelectedRows.Count > 0)
+            {
+                DataGridViewRow selectedRow = dgvAlisverisDetayi.SelectedRows[0];
+                int salesReceiptId = Convert.ToInt32(selectedRow.Cells["colSalesReceiptId"].Value);
+
+                var fisDetayiForm = _serviceProvider.GetRequiredService<FisDetayiForm>();
+                fisDetayiForm.SetSalesReceiptId(salesReceiptId);
+                fisDetayiForm.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("Lütfen satış fişini görmek istediğiniz ürünü seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void ExportDataGridViewToCsv(DataGridView dgv, string defaultFileName)
+        {
+            if (dgv.Rows.Count == 0)
+            {
+                MessageBox.Show("Dışa aktarılacak veri bulunmamaktadır.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "CSV Dosyası (*.csv)|*.csv", FileName = defaultFileName + ".csv" })
+            {
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        using (System.IO.StreamWriter sw = new System.IO.StreamWriter(sfd.FileName, false, System.Text.Encoding.UTF8))
+                        {
+                            // Genel Başlık
+                            sw.WriteLine("XXXX Market");
+                            sw.WriteLine();
+
+                            // Müşteri Bilgileri
+                            if (_customer != null)
+                            {
+                                sw.WriteLine($"Müşterinin Adı;{_customer.Name}");
+                                sw.WriteLine($"Adresi;{_customer.Address}");
+                                sw.WriteLine($"Borç Miktarı;{_customer.Debt:F2} TL");
+                                sw.WriteLine();
+                            }
+
+                            // Tablo Başlığı
+                            if (defaultFileName == "BorcDetayi")
+                            {
+                                sw.WriteLine("BORÇ DETAYI");
+                            }
+                            else if (defaultFileName == "AlisverisDetayi")
+                            {
+                                sw.WriteLine("ALIŞVERİŞ DETAYI");
+                            }
+                            sw.WriteLine();
+
+                            // Başlıkları yaz
+                            for (int i = 0; i < dgv.Columns.Count; i++)
+                            {
+                                sw.Write(dgv.Columns[i].HeaderText);
+                                if (i < dgv.Columns.Count - 1)
+                                {
+                                    sw.Write(";");
+                                }
+                            }
+                            sw.WriteLine();
+
+                            // Satırları yaz
+                            foreach (DataGridViewRow row in dgv.Rows)
+                            {
+                                if (!row.IsNewRow)
+                                {
+                                    for (int i = 0; i < dgv.Columns.Count; i++)
+                                    {
+                                        sw.Write(row.Cells[i].Value?.ToString());
+                                        if (i < dgv.Columns.Count - 1)
+                                        {
+                                            sw.Write(";");
+                                        }
+                                    }
+                                    sw.WriteLine();
+                                }
+                            }
+                        }
+                        MessageBox.Show("Veriler başarıyla Excel'e aktarıldı (CSV formatında).", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Veriler aktarılırken bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
 
         public void SetCustomer(Customer customer)
@@ -49,26 +157,23 @@ namespace StokTakip.Forms
 
             txtMusterininAdi.Text = _customer.Name;
             lblBorcMiktariValue.Text = $"{_customer.Debt:F2} TL";
+            lblVeresiyeBorcMiktari.Text = "Veresiye Borç Miktarı"; // Etiketin metnini tekrar ayarla
 
             // Set debt status color
             if (_customer.Debt > 0)
             {
-                lblBorcMiktariValue.ForeColor = System.Drawing.Color.Red;
-                // Assuming lblBorcDurumu exists in designer
-                // lblBorcDurumu.Text = "BORÇLU";
-                // lblBorcDurumu.ForeColor = System.Drawing.Color.Red;
+                lblBorcMiktariValue.BackColor = System.Drawing.Color.Red;
+                lblBorcMiktariValue.ForeColor = System.Drawing.Color.White;
             }
             else if (_customer.Debt < 0)
             {
-                lblBorcMiktariValue.ForeColor = System.Drawing.Color.Green;
-                // lblBorcDurumu.Text = "ALACAKLI";
-                // lblBorcDurumu.ForeColor = System.Drawing.Color.Green;
+                lblBorcMiktariValue.BackColor = System.Drawing.Color.Green;
+                lblBorcMiktariValue.ForeColor = System.Drawing.Color.White;
             }
             else
             {
-                lblBorcMiktariValue.ForeColor = System.Drawing.Color.Black;
-                // lblBorcDurumu.Text = "BORÇ YOK";
-                // lblBorcDurumu.ForeColor = System.Drawing.Color.Black;
+                lblBorcMiktariValue.BackColor = System.Drawing.Color.Gray; // Borç yoksa farklı bir renk
+                lblBorcMiktariValue.ForeColor = System.Drawing.Color.White;
             }
         }
 
@@ -148,7 +253,8 @@ namespace StokTakip.Forms
                             detail.UnitPrice.ToString("F2"),
                             detail.Quantity.ToString("F2"),
                             detail.Total.ToString("F2"),
-                            receipt.PaymentType
+                            receipt.PaymentType,
+                            receipt.Id // colSalesReceiptId sütununa SalesReceiptId değerini ekle
                         );
                         totalProductsAmount += detail.Total; // Her ürünün toplam tutarını ekle
                     }
@@ -251,7 +357,7 @@ namespace StokTakip.Forms
                     currentBalance.ToString("F2")
                 );
             }
-            lblVeresiyeBorcMiktari.Text = _customer.Debt.ToString("F2") + " TL"; // This should reflect the actual current debt from the customer object
+            lblBorcMiktariValue.Text = _customer.Debt.ToString("F2") + " TL"; // This should reflect the actual current debt from the customer object
             lblKalanTaksitValue.Text = currentBalance.ToString("F2") + " TL"; // Update the total remaining debt label based on filtered transactions
         }
     }

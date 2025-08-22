@@ -24,6 +24,21 @@ namespace StokTakip.Forms
             LoadProductData();
         }
 
+        public void SetSalesReceiptId(int salesReceiptId)
+        {
+            var salesReceipt = _context.SalesReceipts
+                .Include(sr => sr.Customer)
+                .FirstOrDefault(sr => sr.Id == salesReceiptId);
+            if (salesReceipt != null)
+            {
+                SetSalesReceipt(salesReceipt);
+            }
+            else
+            {
+                MessageBox.Show($"Satış fişi bulunamadı (ID: {salesReceiptId})", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void LoadFisData()
         {
             if (_salesReceipt == null) return;

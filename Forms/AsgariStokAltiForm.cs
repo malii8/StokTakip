@@ -254,11 +254,11 @@ namespace StokTakip.Forms
                     if (saveFileDialog.ShowDialog() == DialogResult.OK)
                     {
                         ExportToCSV(saveFileDialog.FileName);
-                        MessageBox.Show($"Veriler başarıyla kaydedildi:\n{saveFileDialog.FileName}", 
+                        MessageBox.Show($"Veriler başarıyla kaydedildi:\n{saveFileDialog.FileName}",
                                       "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        
+
                         // Dosyayı açmak isteyip istemediğini sor
-                        if (MessageBox.Show("Kaydedilen dosyayı açmak ister misiniz?", "Dosyayı Aç", 
+                        if (MessageBox.Show("Kaydedilen dosyayı açmak ister misiniz?", "Dosyayı Aç",
                                           MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                         {
                             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
@@ -286,10 +286,10 @@ namespace StokTakip.Forms
                 writer.WriteLine(); // Empty line
 
                 // Headers
-                var headers = new List<string> 
-                { 
-                    "Barkod No", "Ürün Adı", "Asgari Stok", "Mevcut Stok", 
-                    "Ölçü Birimi", "Alış Fiyatı", "Satış Fiyatı", "Ürün Grubu" 
+                var headers = new List<string>
+                {
+                    "Barkod No", "Ürün Adı", "Asgari Stok", "Mevcut Stok",
+                    "Ölçü Birimi", "Alış Fiyatı", "Satış Fiyatı", "Ürün Grubu"
                 };
                 writer.WriteLine(string.Join(",", headers.Select(h => $"\"{h}\"")));
 

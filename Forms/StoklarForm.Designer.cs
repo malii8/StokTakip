@@ -57,6 +57,7 @@ namespace StokTakip.Forms
             this.colSatisFiyati = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colKDVOrani = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colUrunGrubu = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.lblStoklarinAlisFiyatiDegeri = new System.Windows.Forms.Label();
             this.lblAlisFiyatiDegeri = new System.Windows.Forms.Label();
@@ -127,9 +128,9 @@ namespace StokTakip.Forms
             // 
             // btnUrunDuzenle
             // 
-            this.btnUrunDuzenle.Location = new System.Drawing.Point(500, 50);
+            this.btnUrunDuzenle.Location = new System.Drawing.Point(500, 40);
             this.btnUrunDuzenle.Name = "btnUrunDuzenle";
-            this.btnUrunDuzenle.Size = new System.Drawing.Size(50, 50);
+            this.btnUrunDuzenle.Size = new System.Drawing.Size(80, 60);
             this.btnUrunDuzenle.TabIndex = 2;
             this.btnUrunDuzenle.Text = "Ürün Düzenle";
             this.btnUrunDuzenle.UseVisualStyleBackColor = true;
@@ -155,9 +156,9 @@ namespace StokTakip.Forms
             // 
             this.btnUrunSil.BackColor = System.Drawing.Color.Red;
             this.btnUrunSil.ForeColor = System.Drawing.Color.White;
-            this.btnUrunSil.Location = new System.Drawing.Point(560, 50);
+            this.btnUrunSil.Location = new System.Drawing.Point(590, 40);
             this.btnUrunSil.Name = "btnUrunSil";
-            this.btnUrunSil.Size = new System.Drawing.Size(50, 50);
+            this.btnUrunSil.Size = new System.Drawing.Size(80, 60);
             this.btnUrunSil.TabIndex = 5;
             this.btnUrunSil.Text = "Ürün Sil";
             this.btnUrunSil.UseVisualStyleBackColor = false;
@@ -182,9 +183,9 @@ namespace StokTakip.Forms
             // btnUrunEkle
             // 
             this.btnUrunEkle.BackColor = System.Drawing.Color.LightGreen;
-            this.btnUrunEkle.Location = new System.Drawing.Point(640, 50);
+            this.btnUrunEkle.Location = new System.Drawing.Point(680, 40);
             this.btnUrunEkle.Name = "btnUrunEkle";
-            this.btnUrunEkle.Size = new System.Drawing.Size(50, 50);
+            this.btnUrunEkle.Size = new System.Drawing.Size(80, 60);
             this.btnUrunEkle.TabIndex = 8;
             this.btnUrunEkle.Text = "Ürün Ekle";
             this.btnUrunEkle.UseVisualStyleBackColor = false;
@@ -209,9 +210,9 @@ namespace StokTakip.Forms
             // btnTopluUrunSil
             // 
             this.btnTopluUrunSil.BackColor = System.Drawing.Color.Orange;
-            this.btnTopluUrunSil.Location = new System.Drawing.Point(720, 50);
+            this.btnTopluUrunSil.Location = new System.Drawing.Point(770, 40);
             this.btnTopluUrunSil.Name = "btnTopluUrunSil";
-            this.btnTopluUrunSil.Size = new System.Drawing.Size(50, 50);
+            this.btnTopluUrunSil.Size = new System.Drawing.Size(80, 60);
             this.btnTopluUrunSil.TabIndex = 11;
             this.btnTopluUrunSil.Text = "Toplu Ürün Sil";
             this.btnTopluUrunSil.UseVisualStyleBackColor = false;
@@ -236,9 +237,9 @@ namespace StokTakip.Forms
             // btnUrunGruplan
             // 
             this.btnUrunGruplan.BackColor = System.Drawing.Color.Yellow;
-            this.btnUrunGruplan.Location = new System.Drawing.Point(640, 120);
+            this.btnUrunGruplan.Location = new System.Drawing.Point(500, 110);
             this.btnUrunGruplan.Name = "btnUrunGruplan";
-            this.btnUrunGruplan.Size = new System.Drawing.Size(50, 50);
+            this.btnUrunGruplan.Size = new System.Drawing.Size(80, 60);
             this.btnUrunGruplan.TabIndex = 14;
             this.btnUrunGruplan.Text = "Ürün Gruplan";
             this.btnUrunGruplan.UseVisualStyleBackColor = false;
@@ -263,9 +264,9 @@ namespace StokTakip.Forms
             // btnTopluUrunFiyatiDegistirme
             // 
             this.btnTopluUrunFiyatiDegistirme.BackColor = System.Drawing.Color.LightBlue;
-            this.btnTopluUrunFiyatiDegistirme.Location = new System.Drawing.Point(780, 120);
+            this.btnTopluUrunFiyatiDegistirme.Location = new System.Drawing.Point(590, 110);
             this.btnTopluUrunFiyatiDegistirme.Name = "btnTopluUrunFiyatiDegistirme";
-            this.btnTopluUrunFiyatiDegistirme.Size = new System.Drawing.Size(50, 50);
+            this.btnTopluUrunFiyatiDegistirme.Size = new System.Drawing.Size(80, 60);
             this.btnTopluUrunFiyatiDegistirme.TabIndex = 17;
             this.btnTopluUrunFiyatiDegistirme.Text = "Toplu Ürün Fiyatı Değiştirme";
             this.btnTopluUrunFiyatiDegistirme.UseVisualStyleBackColor = false;
@@ -290,18 +291,18 @@ namespace StokTakip.Forms
             // btnUrunDetayi
             // 
             this.btnUrunDetayi.BackColor = System.Drawing.Color.LightGray;
-            this.btnUrunDetayi.Location = new System.Drawing.Point(640, 190);
+            this.btnUrunDetayi.Location = new System.Drawing.Point(680, 110);
             this.btnUrunDetayi.Name = "btnUrunDetayi";
-            this.btnUrunDetayi.Size = new System.Drawing.Size(50, 50);
+            this.btnUrunDetayi.Size = new System.Drawing.Size(80, 60);
             this.btnUrunDetayi.TabIndex = 20;
             this.btnUrunDetayi.Text = "Ürün Detayı";
             this.btnUrunDetayi.UseVisualStyleBackColor = false;
             // 
             // btnBarkodYazdir
             // 
-            this.btnBarkodYazdir.Location = new System.Drawing.Point(780, 190);
+            this.btnBarkodYazdir.Location = new System.Drawing.Point(770, 110);
             this.btnBarkodYazdir.Name = "btnBarkodYazdir";
-            this.btnBarkodYazdir.Size = new System.Drawing.Size(50, 50);
+            this.btnBarkodYazdir.Size = new System.Drawing.Size(80, 60);
             this.btnBarkodYazdir.TabIndex = 21;
             this.btnBarkodYazdir.Text = "Barkod Yazdır";
             this.btnBarkodYazdir.UseVisualStyleBackColor = true;
@@ -309,9 +310,9 @@ namespace StokTakip.Forms
             // btnSayim
             // 
             this.btnSayim.BackColor = System.Drawing.Color.LightGreen;
-            this.btnSayim.Location = new System.Drawing.Point(640, 250);
+            this.btnSayim.Location = new System.Drawing.Point(500, 180);
             this.btnSayim.Name = "btnSayim";
-            this.btnSayim.Size = new System.Drawing.Size(50, 50);
+            this.btnSayim.Size = new System.Drawing.Size(80, 60);
             this.btnSayim.TabIndex = 22;
             this.btnSayim.Text = "Sayım";
             this.btnSayim.UseVisualStyleBackColor = false;
@@ -319,9 +320,9 @@ namespace StokTakip.Forms
             // btnAsgariStokAlti
             // 
             this.btnAsgariStokAlti.BackColor = System.Drawing.Color.Yellow;
-            this.btnAsgariStokAlti.Location = new System.Drawing.Point(780, 250);
+            this.btnAsgariStokAlti.Location = new System.Drawing.Point(590, 180);
             this.btnAsgariStokAlti.Name = "btnAsgariStokAlti";
-            this.btnAsgariStokAlti.Size = new System.Drawing.Size(50, 50);
+            this.btnAsgariStokAlti.Size = new System.Drawing.Size(80, 60);
             this.btnAsgariStokAlti.TabIndex = 23;
             this.btnAsgariStokAlti.Text = "Asgari Stok Altında Olan Ürünler";
             this.btnAsgariStokAlti.UseVisualStyleBackColor = false;
@@ -371,6 +372,7 @@ namespace StokTakip.Forms
             this.cmbUrunGrubu.Size = new System.Drawing.Size(120, 21);
             this.cmbUrunGrubu.TabIndex = 2;
             this.cmbUrunGrubu.Text = "Ürün Grubu";
+            this.cmbUrunGrubu.SelectedIndexChanged += new System.EventHandler(this.cmbUrunGrubu_SelectedIndexChanged);
             // 
             // lblSiralamaOlcutu
             // 
@@ -394,6 +396,7 @@ namespace StokTakip.Forms
             this.cmbSiralamaOlcutu.Size = new System.Drawing.Size(100, 21);
             this.cmbSiralamaOlcutu.TabIndex = 4;
             this.cmbSiralamaOlcutu.Text = "AD";
+            this.cmbSiralamaOlcutu.SelectedIndexChanged += new System.EventHandler(this.cmbSiralamaOlcutu_SelectedIndexChanged);
             // 
             // dgvUrunler
             // 
@@ -410,7 +413,8 @@ namespace StokTakip.Forms
             this.colAlisFiyati,
             this.colSatisFiyati,
             this.colKDVOrani,
-            this.colUrunGrubu});
+            this.colUrunGrubu,
+            this.colId});
             this.dgvUrunler.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvUrunler.Location = new System.Drawing.Point(0, 360);
             this.dgvUrunler.MultiSelect = false;
@@ -420,6 +424,7 @@ namespace StokTakip.Forms
             this.dgvUrunler.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvUrunler.Size = new System.Drawing.Size(1024, 200);
             this.dgvUrunler.TabIndex = 2;
+            this.dgvUrunler.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUrunler_CellClick);
             // 
             // colBarkodNo
             // 
@@ -491,6 +496,14 @@ namespace StokTakip.Forms
             this.colUrunGrubu.ReadOnly = true;
             this.colUrunGrubu.Width = 120;
             // 
+            // colId
+            // 
+            this.colId.HeaderText = "Id";
+            this.colId.Name = "colId";
+            this.colId.ReadOnly = true;
+            this.colId.Visible = false;
+            this.colId.Width = 50;
+            // 
             // pnlBottom
             // 
             this.pnlBottom.BackColor = System.Drawing.Color.LightGray;
@@ -515,7 +528,7 @@ namespace StokTakip.Forms
             // 
             this.lblStoklarinAlisFiyatiDegeri.AutoSize = true;
             this.lblStoklarinAlisFiyatiDegeri.ForeColor = System.Drawing.Color.Blue;
-            this.lblStoklarinAlisFiyatiDegeri.Location = new System.Drawing.Point(160, 20);
+            this.lblStoklarinAlisFiyatiDegeri.Location = new System.Drawing.Point(10, 20);
             this.lblStoklarinAlisFiyatiDegeri.Name = "lblStoklarinAlisFiyatiDegeri";
             this.lblStoklarinAlisFiyatiDegeri.Size = new System.Drawing.Size(133, 13);
             this.lblStoklarinAlisFiyatiDegeri.TabIndex = 0;
@@ -525,7 +538,7 @@ namespace StokTakip.Forms
             // 
             this.lblAlisFiyatiDegeri.BackColor = System.Drawing.Color.Turquoise;
             this.lblAlisFiyatiDegeri.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblAlisFiyatiDegeri.Location = new System.Drawing.Point(300, 15);
+            this.lblAlisFiyatiDegeri.Location = new System.Drawing.Point(150, 15);
             this.lblAlisFiyatiDegeri.Name = "lblAlisFiyatiDegeri";
             this.lblAlisFiyatiDegeri.Size = new System.Drawing.Size(120, 25);
             this.lblAlisFiyatiDegeri.TabIndex = 1;
@@ -536,7 +549,7 @@ namespace StokTakip.Forms
             // 
             this.lblListelenenKayitSayisi.AutoSize = true;
             this.lblListelenenKayitSayisi.ForeColor = System.Drawing.Color.Blue;
-            this.lblListelenenKayitSayisi.Location = new System.Drawing.Point(830, 20);
+            this.lblListelenenKayitSayisi.Location = new System.Drawing.Point(850, 20);
             this.lblListelenenKayitSayisi.Name = "lblListelenenKayitSayisi";
             this.lblListelenenKayitSayisi.Size = new System.Drawing.Size(126, 13);
             this.lblListelenenKayitSayisi.TabIndex = 2;
@@ -557,7 +570,7 @@ namespace StokTakip.Forms
             // 
             this.lblStoklarinSatisFiyatiDegeri.AutoSize = true;
             this.lblStoklarinSatisFiyatiDegeri.ForeColor = System.Drawing.Color.Blue;
-            this.lblStoklarinSatisFiyatiDegeri.Location = new System.Drawing.Point(160, 50);
+            this.lblStoklarinSatisFiyatiDegeri.Location = new System.Drawing.Point(10, 50);
             this.lblStoklarinSatisFiyatiDegeri.Name = "lblStoklarinSatisFiyatiDegeri";
             this.lblStoklarinSatisFiyatiDegeri.Size = new System.Drawing.Size(138, 13);
             this.lblStoklarinSatisFiyatiDegeri.TabIndex = 4;
@@ -567,7 +580,7 @@ namespace StokTakip.Forms
             // 
             this.lblSatisFiyatiDegeri.BackColor = System.Drawing.Color.Turquoise;
             this.lblSatisFiyatiDegeri.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblSatisFiyatiDegeri.Location = new System.Drawing.Point(300, 45);
+            this.lblSatisFiyatiDegeri.Location = new System.Drawing.Point(150, 45);
             this.lblSatisFiyatiDegeri.Name = "lblSatisFiyatiDegeri";
             this.lblSatisFiyatiDegeri.Size = new System.Drawing.Size(120, 25);
             this.lblSatisFiyatiDegeri.TabIndex = 5;
@@ -578,7 +591,7 @@ namespace StokTakip.Forms
             // 
             this.btnTerazye.Location = new System.Drawing.Point(550, 20);
             this.btnTerazye.Name = "btnTerazye";
-            this.btnTerazye.Size = new System.Drawing.Size(60, 50);
+            this.btnTerazye.Size = new System.Drawing.Size(90, 60);
             this.btnTerazye.TabIndex = 6;
             this.btnTerazye.Text = "Teraziye Aktar";
             this.btnTerazye.UseVisualStyleBackColor = true;
@@ -587,7 +600,7 @@ namespace StokTakip.Forms
             // 
             this.lblToplamStokAdedi.BackColor = System.Drawing.Color.Turquoise;
             this.lblToplamStokAdedi.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblToplamStokAdedi.Location = new System.Drawing.Point(300, 75);
+            this.lblToplamStokAdedi.Location = new System.Drawing.Point(150, 75);
             this.lblToplamStokAdedi.Name = "lblToplamStokAdedi";
             this.lblToplamStokAdedi.Size = new System.Drawing.Size(120, 25);
             this.lblToplamStokAdedi.TabIndex = 7;
@@ -598,7 +611,7 @@ namespace StokTakip.Forms
             // 
             this.lblToplamStok.AutoSize = true;
             this.lblToplamStok.ForeColor = System.Drawing.Color.Blue;
-            this.lblToplamStok.Location = new System.Drawing.Point(160, 80);
+            this.lblToplamStok.Location = new System.Drawing.Point(10, 80);
             this.lblToplamStok.Name = "lblToplamStok";
             this.lblToplamStok.Size = new System.Drawing.Size(90, 13);
             this.lblToplamStok.TabIndex = 8;
@@ -608,7 +621,7 @@ namespace StokTakip.Forms
             // 
             this.btnExcelKayitAl.Location = new System.Drawing.Point(650, 20);
             this.btnExcelKayitAl.Name = "btnExcelKayitAl";
-            this.btnExcelKayitAl.Size = new System.Drawing.Size(60, 50);
+            this.btnExcelKayitAl.Size = new System.Drawing.Size(90, 60);
             this.btnExcelKayitAl.TabIndex = 9;
             this.btnExcelKayitAl.Text = "Excel\'den Kayıt Al";
             this.btnExcelKayitAl.UseVisualStyleBackColor = true;
@@ -617,7 +630,7 @@ namespace StokTakip.Forms
             // 
             this.btnExcelKayitVer.Location = new System.Drawing.Point(750, 20);
             this.btnExcelKayitVer.Name = "btnExcelKayitVer";
-            this.btnExcelKayitVer.Size = new System.Drawing.Size(60, 50);
+            this.btnExcelKayitVer.Size = new System.Drawing.Size(90, 60);
             this.btnExcelKayitVer.TabIndex = 10;
             this.btnExcelKayitVer.Text = "Excel\'e Kayıt Ver";
             this.btnExcelKayitVer.UseVisualStyleBackColor = true;
@@ -635,7 +648,7 @@ namespace StokTakip.Forms
             this.Name = "StoklarForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "STOKLAR";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.WindowState = System.Windows.Forms.FormWindowState.Normal;
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
             this.pnlSearch.ResumeLayout(false);
@@ -645,6 +658,8 @@ namespace StokTakip.Forms
             this.pnlBottom.PerformLayout();
             this.ResumeLayout(false);
         }
+
+
 
         private System.Windows.Forms.Panel pnlTop;
         private System.Windows.Forms.Label lblBarkodNo;
@@ -688,6 +703,7 @@ namespace StokTakip.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn colSatisFiyati;
         private System.Windows.Forms.DataGridViewTextBoxColumn colKDVOrani;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUrunGrubu;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colId;
         private System.Windows.Forms.Panel pnlBottom;
         private System.Windows.Forms.Label lblStoklarinAlisFiyatiDegeri;
         private System.Windows.Forms.Label lblAlisFiyatiDegeri;

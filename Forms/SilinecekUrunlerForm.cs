@@ -31,6 +31,9 @@ namespace StokTakip.Forms
 
             // Checkbox event
             chkSadeceStokMiktari.CheckedChanged += ChkSadeceStokMiktari_CheckedChanged;
+
+            // Combo box event
+            cmbUrunGrubu.SelectedIndexChanged += CmbUrunGrubu_SelectedIndexChanged;
         }
 
         private void LoadProducts()
@@ -55,7 +58,24 @@ namespace StokTakip.Forms
             }
         }
 
+        private void LoadComboBoxes()
+        {
+            cmbUrunGrubu.Items.Clear();
+            cmbUrunGrubu.Items.Add("Tümü");
+            var productGroups = _context.ProductGroups.Select(g => g.Name).ToList();
+            foreach (var groupName in productGroups)
+            {
+                cmbUrunGrubu.Items.Add(groupName);
+            }
+            cmbUrunGrubu.SelectedIndex = 0; // Select "Tümü" by default
+        }
+
         private void TxtUrunAdi_TextChanged(object? sender, EventArgs e)
+        {
+            FilterProducts();
+        }
+
+        private void CmbUrunGrubu_SelectedIndexChanged(object? sender, EventArgs e)
         {
             FilterProducts();
         }
@@ -63,6 +83,7 @@ namespace StokTakip.Forms
         private void FilterProducts()
         {
             string searchText = txtUrunAdi.Text.ToLower();
+            string selectedGroup = cmbUrunGrubu.SelectedItem?.ToString() ?? "Tümü";
 
             foreach (DataGridViewRow row in dgvUrunler.Rows)
             {
@@ -70,8 +91,15 @@ namespace StokTakip.Forms
 
                 string productName = row.Cells["colUrunAdi"].Value?.ToString()?.ToLower() ?? "";
                 string barcodeNo = row.Cells["colBarkodNo"].Value?.ToString()?.ToLower() ?? "";
+                string urunGrubu = _context.Products.Find(Convert.ToInt32(row.Cells["colId"].Value))?.ProductGroup?.Name?.ToLower() ?? "belirtilmedi";
 
-                bool visible = productName.Contains(searchText) || barcodeNo.Contains(searchText);
+                bool visible = (productName.Contains(searchText) || barcodeNo.Contains(searchText));
+
+                // Apply product group filter
+                if (selectedGroup != "Tümü" && urunGrubu != selectedGroup.ToLower())
+                {
+                    visible = false;
+                }
 
                 // Apply stock filter if checkbox is checked
                 if (chkSadeceStokMiktari.Checked)
@@ -111,7 +139,7 @@ namespace StokTakip.Forms
 
                     if (!alreadyAdded)
                     {
-                        dgvSilinecekler.Rows.Add(productId, barcodeNo, urunAdi, mevcutStok);
+                        dgvSilinecekler.Rows.Add(barcodeNo, urunAdi, productId);
                     }
                 }
             }

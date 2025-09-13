@@ -177,3 +177,11 @@ c:\Users\olum1\OneDrive\Masaüstü\StokTakip\bin\Debug\net8.0-windows\MetroFrame
 c:\Users\olum1\OneDrive\Masaüstü\StokTakip\bin\Debug\net8.0-windows\MetroFramework.dll
 c:\Users\olum1\OneDrive\Masaüstü\StokTakip\obj\Debug\net8.0-windows\StokTakip.Properties.Resources.resources
 c:\Users\olum1\OneDrive\Masaüstü\StokTakip\obj\Debug\net8.0-windows\StokTakip.csproj.GenerateResource.cache
+C:\Users\olum1\OneDrive\Masaüstü\StokTakip\bin\Debug\net8.0-windows\ClosedXML.dll
+C:\Users\olum1\OneDrive\Masaüstü\StokTakip\bin\Debug\net8.0-windows\ClosedXML.Parser.dll
+C:\Users\olum1\OneDrive\Masaüstü\StokTakip\bin\Debug\net8.0-windows\DocumentFormat.OpenXml.dll
+C:\Users\olum1\OneDrive\Masaüstü\StokTakip\bin\Debug\net8.0-windows\DocumentFormat.OpenXml.Framework.dll
+C:\Users\olum1\OneDrive\Masaüstü\StokTakip\bin\Debug\net8.0-windows\ExcelNumberFormat.dll
+C:\Users\olum1\OneDrive\Masaüstü\StokTakip\bin\Debug\net8.0-windows\RBush.dll
+C:\Users\olum1\OneDrive\Masaüstü\StokTakip\bin\Debug\net8.0-windows\SixLabors.Fonts.dll
+C:\Users\olum1\OneDrive\Masaüstü\StokTakip\bin\Debug\net8.0-windows\System.IO.Packaging.dll

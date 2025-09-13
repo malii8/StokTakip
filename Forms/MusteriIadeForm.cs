@@ -122,7 +122,7 @@ namespace StokTakip.Forms
                 var selectedRow = dgvUrunler.SelectedRows[0];
                 decimal miktar = 1;
                 decimal birimFiyat = 0;
-                if (decimal.TryParse(selectedRow.Cells["colMiktar"].Value?.ToString(), out decimal m))
+                if (decimal.TryParse(txtMiktar.Text, out decimal m))
                     miktar = m;
                 if (decimal.TryParse(selectedRow.Cells["colSatisFiyati"].Value?.ToString(), out decimal bf))
                     birimFiyat = bf;
@@ -231,6 +231,8 @@ namespace StokTakip.Forms
                             ProductId = productToUpdate.Id,
                             MovementType = "Giriş", // İade olduğu için giriş
                             Quantity = miktar,
+                            UnitPrice = productToUpdate.SalePrice, // Use current sale price
+                            Total = miktar * productToUpdate.SalePrice, // Calculate total
                             MovementDate = DateTime.Now,
                             Notes = $"Müşteriden iade alınan ürün: {productToUpdate.Name}",
                             SalesReceiptId = null // No specific sales receipt for return
@@ -330,6 +332,11 @@ namespace StokTakip.Forms
                 //     lblMevcutStok.Text = $"Mevcut Stok: {mevcutMevcutMiktar} adet";
                 // }
 
+                if (decimal.TryParse(selectedRow.Cells["colMiktar"].Value?.ToString(), out decimal mevcutMiktar))
+                {
+                    txtMiktar.Text = mevcutMiktar.ToString(); // Update txtMiktar with the selected row's quantity
+                }
+
                 CalculateTotal(null, EventArgs.Empty);
             }
         }
@@ -357,6 +364,7 @@ namespace StokTakip.Forms
                         row.Cells["colMiktar"].Value = yeniMiktar.ToString();
                         decimal birimFiyat = secilenUrun.SalePrice;
                         row.Cells["colToplamTutar"].Value = (birimFiyat * yeniMiktar).ToString("F2");
+                        txtMiktar.Text = yeniMiktar.ToString(); // Update txtMiktar
                     }
                     return;
                 }
@@ -372,6 +380,7 @@ namespace StokTakip.Forms
                 secilenUrun.Unit,
                 secilenUrun.SalePrice.ToString("F2")
             );
+            txtMiktar.Text = "1"; // Set txtMiktar to 1 for new product
         }
     }
 }

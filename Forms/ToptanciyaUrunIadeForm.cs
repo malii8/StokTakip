@@ -272,6 +272,8 @@ namespace StokTakip.Forms
                         ProductId = productToUpdate.Id,
                         MovementType = "Giriş", // İade olduğu için giriş
                         Quantity = IadeEdilecekMiktar,
+                        UnitPrice = productToUpdate.PurchasePrice, // Use current purchase price
+                        Total = IadeEdilecekMiktar * productToUpdate.PurchasePrice, // Calculate total
                         MovementDate = dtpIadeTarihi.Value.Date,
                         Notes = $"Toptancıdan iade alınan ürün: {productToUpdate.Name}",
                         WholesalerId = _wholesaler.Id

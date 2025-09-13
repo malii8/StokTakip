@@ -102,10 +102,58 @@ namespace StokTakip
                 {
                     context.Database.Migrate();
                 }
+
+                // Update existing return movements with missing prices (one-time fix)
+                UpdateReturnMovementPrices(context);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Veritabanı bağlantısı kurulamadı: {ex.Message}", "Hata",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static void UpdateReturnMovementPrices(StokTakipDbContext context)
+        {
+            try
+            {
+                // Find return movements with missing prices
+                var returnMovements = context.StockMovements
+                    .Include(sm => sm.Product)
+                    .Where(sm => sm.Notes != null && 
+                                 (sm.Notes.Contains("Müşteriden iade alınan") || sm.Notes.Contains("Toptancıdan iade alınan")) &&
+                                 (sm.UnitPrice == 0 || sm.Total == 0))
+                    .ToList();
+
+                if (returnMovements.Any())
+                {
+                    foreach (var movement in returnMovements)
+                    {
+                        if (movement.Product != null && !string.IsNullOrEmpty(movement.Notes))
+                        {
+                            if (movement.Notes.Contains("Müşteriden iade alınan"))
+                            {
+                                // Use sale price for customer returns
+                                movement.UnitPrice = movement.Product.SalePrice;
+                                movement.Total = movement.Quantity * movement.Product.SalePrice;
+                            }
+                            else if (movement.Notes.Contains("Toptancıdan iade alınan"))
+                            {
+                                // Use purchase price for supplier returns
+                                movement.UnitPrice = movement.Product.PurchasePrice;
+                                movement.Total = movement.Quantity * movement.Product.PurchasePrice;
+                            }
+                        }
+                    }
+
+                    context.SaveChanges();
+                    MessageBox.Show($"{returnMovements.Count} adet iade kaydının fiyat bilgisi güncellendi.", "Bilgi", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"İade kayıtları güncellenirken hata oluştu: {ex.Message}", "Hata",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

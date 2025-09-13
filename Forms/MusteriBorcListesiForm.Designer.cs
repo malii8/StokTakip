@@ -227,7 +227,7 @@ namespace StokTakip.Forms
             this.btnTabloExcel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.btnTabloExcel.Location = new System.Drawing.Point(420, 526);
             this.btnTabloExcel.Name = "btnTabloExcel";
-            this.btnTabloExcel.Size = new System.Drawing.Size(100, 30);
+            this.btnTabloExcel.Size = new System.Drawing.Size(100, 45);
             this.btnTabloExcel.TabIndex = 5;
             this.btnTabloExcel.Text = "Tabloyu\nExcel'e Aktar";
             this.btnTabloExcel.UseVisualStyleBackColor = false;
@@ -250,9 +250,9 @@ namespace StokTakip.Forms
             this.lblToplamTutar.ForeColor = System.Drawing.Color.White;
             this.lblToplamTutar.Location = new System.Drawing.Point(890, 526);
             this.lblToplamTutar.Name = "lblToplamTutar";
-            this.lblToplamTutar.Size = new System.Drawing.Size(100, 30);
+            this.lblToplamTutar.Size = new System.Drawing.Size(100, 40);
             this.lblToplamTutar.TabIndex = 7;
-            this.lblToplamTutar.Text = "39,00 TL";
+            this.lblToplamTutar.Text = "00,00 TL";
             this.lblToplamTutar.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MusteriBorcListesiForm

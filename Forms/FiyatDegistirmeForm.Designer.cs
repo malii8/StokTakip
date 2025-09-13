@@ -32,10 +32,12 @@ namespace StokTakip.Forms
             this.btnOzelFiyatUygula = new System.Windows.Forms.Button();
             this.dgvUrunFiyatlari = new System.Windows.Forms.DataGridView();
             this.colSecim = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colBarkod = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colUrunAdi = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colAlisFiyati = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colSatisFiyati = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colUrunGrubu = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnKaydet = new System.Windows.Forms.Button();
             this.btnVazgec = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUrunFiyatlari)).BeginInit();
@@ -204,16 +206,25 @@ namespace StokTakip.Forms
             this.dgvUrunFiyatlari.BackgroundColor = System.Drawing.Color.White;
             this.dgvUrunFiyatlari.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colSecim,
+            this.colId,
             this.colBarkod,
             this.colUrunAdi,
             this.colAlisFiyati,
-            this.colSatisFiyati});
+            this.colSatisFiyati,
+            this.colUrunGrubu});
             this.dgvUrunFiyatlari.Location = new System.Drawing.Point(20, 160);
             this.dgvUrunFiyatlari.Name = "dgvUrunFiyatlari";
             this.dgvUrunFiyatlari.RowHeadersVisible = false;
             this.dgvUrunFiyatlari.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvUrunFiyatlari.Size = new System.Drawing.Size(750, 300);
             this.dgvUrunFiyatlari.TabIndex = 15;
+            // 
+            // colId
+            // 
+            this.colId.HeaderText = "Id";
+            this.colId.Name = "colId";
+            this.colId.Visible = false;
+            this.colId.ReadOnly = true;
             // 
             // colSecim
             // 
@@ -246,6 +257,13 @@ namespace StokTakip.Forms
             this.colSatisFiyati.HeaderText = "Satış Fiyatı";
             this.colSatisFiyati.Name = "colSatisFiyati";
             this.colSatisFiyati.Width = 100;
+            // 
+            // colUrunGrubu
+            // 
+            this.colUrunGrubu.HeaderText = "Ürün Grubu";
+            this.colUrunGrubu.Name = "colUrunGrubu";
+            this.colUrunGrubu.ReadOnly = true;
+            this.colUrunGrubu.Width = 120;
             // 
             // btnKaydet
             // 
@@ -322,10 +340,12 @@ namespace StokTakip.Forms
         private System.Windows.Forms.Button btnOzelFiyatUygula;
         private System.Windows.Forms.DataGridView dgvUrunFiyatlari;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colSecim;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colId;
         private System.Windows.Forms.DataGridViewTextBoxColumn colBarkod;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUrunAdi;
         private System.Windows.Forms.DataGridViewTextBoxColumn colAlisFiyati;
         private System.Windows.Forms.DataGridViewTextBoxColumn colSatisFiyati;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colUrunGrubu;
         private System.Windows.Forms.Button btnKaydet;
         private System.Windows.Forms.Button btnVazgec;
     }

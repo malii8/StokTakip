@@ -300,7 +300,57 @@ namespace StokTakip.Forms
 
         private void BtnExcel_Click(object? sender, EventArgs e)
         {
-            MessageBox.Show("Fiş listesi Excel'e aktarılıyor...", "Excel Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (dgvEskiFisler.Rows.Count == 0)
+            {
+                MessageBox.Show("Dışa aktarılacak veri bulunmamaktadır.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Excel Dosyası (*.csv)|*.csv";
+            saveFileDialog.Title = "Excel'e Aktar";
+            saveFileDialog.FileName = "EskiFisler_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv";
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(saveFileDialog.FileName, false, System.Text.Encoding.UTF8))
+                    {
+                        // Başlıkları yaz
+                        for (int i = 0; i < dgvEskiFisler.Columns.Count; i++)
+                        {
+                            sw.Write(dgvEskiFisler.Columns[i].HeaderText);
+                            if (i < dgvEskiFisler.Columns.Count - 1)
+                            {
+                                sw.Write(";");
+                            }
+                        }
+                        sw.WriteLine();
+
+                        // Satırları yaz
+                        foreach (DataGridViewRow row in dgvEskiFisler.Rows)
+                        {
+                            if (row.IsNewRow) continue;
+
+                            for (int i = 0; i < dgvEskiFisler.Columns.Count; i++)
+                            {
+                                sw.Write(row.Cells[i].Value?.ToString() ?? "");
+                                if (i < dgvEskiFisler.Columns.Count - 1)
+                                {
+                                    sw.Write(";");
+                                }
+                            }
+                            sw.WriteLine();
+                        }
+                    }
+                    MessageBox.Show("Veriler Excel'e başarıyla aktarıldı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Veriler Excel'e aktarılırken bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         private void DgvEskiFisler_SelectionChanged(object? sender, EventArgs e)

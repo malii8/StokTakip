@@ -25,12 +25,14 @@ namespace StokTakip.Forms
             this.colBarkodNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colUrunAdi = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMevcutStok = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblUyari = new System.Windows.Forms.Label();
             this.pnlRight = new System.Windows.Forms.Panel();
             this.lblSilinecekUrunlerListesi = new System.Windows.Forms.Label();
             this.dgvSilinecekler = new System.Windows.Forms.DataGridView();
             this.colSilinecekBarkodNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colSilinecekUrunAdi = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colSilId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlButtons = new System.Windows.Forms.Panel();
             this.btnSilineceklerTablosuna = new System.Windows.Forms.Button();
             this.btnSilinecekleriTemizle = new System.Windows.Forms.Button();
@@ -117,7 +119,8 @@ namespace StokTakip.Forms
             this.dgvUrunler.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colBarkodNo,
             this.colUrunAdi,
-            this.colMevcutStok});
+            this.colMevcutStok,
+            this.colId});
             this.dgvUrunler.Location = new System.Drawing.Point(25, 170);
             this.dgvUrunler.Name = "dgvUrunler";
             this.dgvUrunler.ReadOnly = true;
@@ -147,18 +150,17 @@ namespace StokTakip.Forms
             this.colMevcutStok.ReadOnly = true;
             this.colMevcutStok.Width = 80;
             // 
+            // colId
+            // 
+            this.colId.HeaderText = "Id";
+            this.colId.Name = "colId";
+            this.colId.ReadOnly = true;
+            this.colId.Visible = false;
+            this.colId.Width = 50;
+            // 
             // lblUyari
             // 
-            this.lblUyari.BackColor = System.Drawing.Color.Red;
-            this.lblUyari.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.lblUyari.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblUyari.ForeColor = System.Drawing.Color.White;
-            this.lblUyari.Location = new System.Drawing.Point(0, 570);
-            this.lblUyari.Name = "lblUyari";
-            this.lblUyari.Size = new System.Drawing.Size(500, 30);
-            this.lblUyari.TabIndex = 6;
-            this.lblUyari.Text = "Silinecek Ürünün üzerinde Çift Tıklayın";
-            this.lblUyari.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+          
             // 
             // pnlRight
             // 
@@ -190,7 +192,8 @@ namespace StokTakip.Forms
             this.dgvSilinecekler.BackgroundColor = System.Drawing.Color.LightCoral;
             this.dgvSilinecekler.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colSilinecekBarkodNo,
-            this.colSilinecekUrunAdi});
+            this.colSilinecekUrunAdi,
+            this.colSilId});
             this.dgvSilinecekler.Location = new System.Drawing.Point(20, 80);
             this.dgvSilinecekler.Name = "dgvSilinecekler";
             this.dgvSilinecekler.ReadOnly = true;
@@ -212,6 +215,14 @@ namespace StokTakip.Forms
             this.colSilinecekUrunAdi.Name = "colSilinecekUrunAdi";
             this.colSilinecekUrunAdi.ReadOnly = true;
             this.colSilinecekUrunAdi.Width = 240;
+            // 
+            // colSilId
+            // 
+            this.colSilId.HeaderText = "Id";
+            this.colSilId.Name = "colSilId";
+            this.colSilId.ReadOnly = true;
+            this.colSilId.Visible = false;
+            this.colSilId.Width = 50;
             // 
             // pnlButtons
             // 
@@ -252,9 +263,9 @@ namespace StokTakip.Forms
             this.btnTablodakiUrunleriSil.BackColor = System.Drawing.Color.Red;
             this.btnTablodakiUrunleriSil.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.btnTablodakiUrunleriSil.ForeColor = System.Drawing.Color.White;
-            this.btnTablodakiUrunleriSil.Location = new System.Drawing.Point(650, 500);
+            this.btnTablodakiUrunleriSil.Location = new System.Drawing.Point(20, 380);
             this.btnTablodakiUrunleriSil.Name = "btnTablodakiUrunleriSil";
-            this.btnTablodakiUrunleriSil.Size = new System.Drawing.Size(120, 50);
+            this.btnTablodakiUrunleriSil.Size = new System.Drawing.Size(110, 70);
             this.btnTablodakiUrunleriSil.TabIndex = 2;
             this.btnTablodakiUrunleriSil.Text = "Tablodaki Ürünleri Sil";
             this.btnTablodakiUrunleriSil.UseVisualStyleBackColor = false;
@@ -292,12 +303,14 @@ namespace StokTakip.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn colBarkodNo;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUrunAdi;
         private System.Windows.Forms.DataGridViewTextBoxColumn colMevcutStok;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colId;
         private System.Windows.Forms.Label lblUyari;
         private System.Windows.Forms.Panel pnlRight;
         private System.Windows.Forms.Label lblSilinecekUrunlerListesi;
         private System.Windows.Forms.DataGridView dgvSilinecekler;
         private System.Windows.Forms.DataGridViewTextBoxColumn colSilinecekBarkodNo;
         private System.Windows.Forms.DataGridViewTextBoxColumn colSilinecekUrunAdi;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colSilId;
         private System.Windows.Forms.Panel pnlButtons;
         private System.Windows.Forms.Button btnSilineceklerTablosuna;
         private System.Windows.Forms.Button btnSilinecekleriTemizle;

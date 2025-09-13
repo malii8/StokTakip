@@ -47,6 +47,7 @@ namespace StokTakip.Models
 
         public DateTime CreatedDate { get; set; } = new DateTime(2025, 1, 1);
         public DateTime? UpdatedDate { get; set; }
+        public DateTime? LastTransactionDate { get; set; }
 
         // Navigation properties
         public virtual ICollection<SalesReceipt> SalesReceipts { get; set; } = new List<SalesReceipt>();

@@ -310,10 +310,139 @@ namespace StokTakip.Forms
 
             this.btnBankaKarti.BackColor = System.Drawing.Color.Blue;
             this.btnBankaKarti.ForeColor = System.Drawing.Color.White;
-            this.btnBankaKarti.Location = new System.Drawing.Point(480, 120);
-            this.btnBankaKarti.Size = new System.Drawing.Size(60, 40);
+            this.btnBankaKarti.Location = new System.Drawing.Point(470, 120);
+            this.btnBankaKarti.Size = new System.Drawing.Size(60, 60);
             this.btnBankaKarti.Text = "Banka Kartı Hesapları";
             this.btnBankaKarti.UseVisualStyleBackColor = false;
+
+            // 
+            // gbToplamlar
+            // 
+            this.gbToplamlar.BackColor = System.Drawing.Color.LightBlue;
+            this.gbToplamlar.Controls.Add(this.lblSatisToplami);
+            this.gbToplamlar.Controls.Add(this.lblSatisToplamText);
+            this.gbToplamlar.Controls.Add(this.lblUrunGirisi);
+            this.gbToplamlar.Controls.Add(this.lblUrunGirisText);
+            this.gbToplamlar.Controls.Add(this.lblIadeEdToplami);
+            this.gbToplamlar.Controls.Add(this.lblIadeEdToplamText);
+            this.gbToplamlar.Controls.Add(this.lblIadeAlinanToplami);
+            this.gbToplamlar.Controls.Add(this.lblIadeAlinanToplamText);
+            this.gbToplamlar.Controls.Add(this.lblMusteriOdemesi);
+            this.gbToplamlar.Controls.Add(this.lblMusteriOdemesiText);
+            this.gbToplamlar.Controls.Add(this.lblToptanciyaOdeme);
+            this.gbToplamlar.Controls.Add(this.lblToptanciyaOdemeText);
+            this.gbToplamlar.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.gbToplamlar.Location = new System.Drawing.Point(20, 240);
+            this.gbToplamlar.Name = "gbToplamlar";
+            this.gbToplamlar.Size = new System.Drawing.Size(480, 130);
+            this.gbToplamlar.TabIndex = 0;
+            this.gbToplamlar.TabStop = false;
+            this.gbToplamlar.Text = "TOPLAMLAR";
+
+            // Setup TOPLAMLAR labels
+            this.lblSatisToplamText.AutoSize = true;
+            this.lblSatisToplamText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblSatisToplamText.ForeColor = System.Drawing.Color.Blue;
+            this.lblSatisToplamText.Location = new System.Drawing.Point(10, 20);
+            this.lblSatisToplamText.Text = "Satış Toplamı";
+
+            this.lblSatisToplami.AutoSize = true;
+            this.lblSatisToplami.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblSatisToplami.ForeColor = System.Drawing.Color.Green;
+            this.lblSatisToplami.Location = new System.Drawing.Point(120, 20);
+            this.lblSatisToplami.Text = "120,00 TL";
+
+            this.lblUrunGirisText.AutoSize = true;
+            this.lblUrunGirisText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblUrunGirisText.ForeColor = System.Drawing.Color.Blue;
+            this.lblUrunGirisText.Location = new System.Drawing.Point(250, 20);
+            this.lblUrunGirisText.Text = "Ürün Girişi";
+
+            this.lblUrunGirisi.AutoSize = true;
+            this.lblUrunGirisi.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblUrunGirisi.ForeColor = System.Drawing.Color.Cyan;
+            this.lblUrunGirisi.Location = new System.Drawing.Point(360, 20);
+            this.lblUrunGirisi.Text = "0,00 TL";
+
+            this.lblIadeEdToplamText.AutoSize = true;
+            this.lblIadeEdToplamText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblIadeEdToplamText.ForeColor = System.Drawing.Color.Blue;
+            this.lblIadeEdToplamText.Location = new System.Drawing.Point(10, 45);
+            this.lblIadeEdToplamText.Text = "İade Ed. Toplamı";
+
+            this.lblIadeEdToplami.AutoSize = true;
+            this.lblIadeEdToplami.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblIadeEdToplami.ForeColor = System.Drawing.Color.Cyan;
+            this.lblIadeEdToplami.Location = new System.Drawing.Point(120, 45);
+            this.lblIadeEdToplami.Text = "0,00 TL";
+
+            this.lblIadeAlinanToplamText.AutoSize = true;
+            this.lblIadeAlinanToplamText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblIadeAlinanToplamText.ForeColor = System.Drawing.Color.Blue;
+            this.lblIadeAlinanToplamText.Location = new System.Drawing.Point(250, 45);
+            this.lblIadeAlinanToplamText.Text = "İade Alınan Toplamı";
+
+            this.lblIadeAlinanToplami.AutoSize = true;
+            this.lblIadeAlinanToplami.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblIadeAlinanToplami.ForeColor = System.Drawing.Color.Cyan;
+            this.lblIadeAlinanToplami.Location = new System.Drawing.Point(360, 45);
+            this.lblIadeAlinanToplami.Text = "0,00 TL";
+
+            this.lblMusteriOdemesiText.AutoSize = true;
+            this.lblMusteriOdemesiText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblMusteriOdemesiText.ForeColor = System.Drawing.Color.Blue;
+            this.lblMusteriOdemesiText.Location = new System.Drawing.Point(10, 70);
+            this.lblMusteriOdemesiText.Text = "Müşteri Ödemesi";
+
+            this.lblMusteriOdemesi.AutoSize = true;
+            this.lblMusteriOdemesi.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblMusteriOdemesi.ForeColor = System.Drawing.Color.Cyan;
+            this.lblMusteriOdemesi.Location = new System.Drawing.Point(120, 70);
+            this.lblMusteriOdemesi.Text = "0,00 TL";
+
+            this.lblToptanciyaOdemeText.AutoSize = true;
+            this.lblToptanciyaOdemeText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblToptanciyaOdemeText.ForeColor = System.Drawing.Color.Blue;
+            this.lblToptanciyaOdemeText.Location = new System.Drawing.Point(250, 70);
+            this.lblToptanciyaOdemeText.Text = "Toptancıya Ödeme";
+
+            this.lblToptanciyaOdeme.AutoSize = true;
+            this.lblToptanciyaOdeme.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblToptanciyaOdeme.ForeColor = System.Drawing.Color.Cyan;
+            this.lblToptanciyaOdeme.Location = new System.Drawing.Point(360, 70);
+            this.lblToptanciyaOdeme.Text = "0,00 TL";
+
+            // DİĞER GELİRLER ve DİĞER GİDERLER
+            this.gbDigerGelirler.BackColor = System.Drawing.Color.Cyan;
+            this.gbDigerGelirler.Controls.Add(this.lblDigerGelirlerTutar);
+            this.gbDigerGelirler.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.gbDigerGelirler.Location = new System.Drawing.Point(80, 310);
+            this.gbDigerGelirler.Name = "gbDigerGelirler";
+            this.gbDigerGelirler.Size = new System.Drawing.Size(120, 50);
+            this.gbDigerGelirler.TabIndex = 0;
+            this.gbDigerGelirler.TabStop = false;
+            this.gbDigerGelirler.Text = "DİĞER GELİRLER";
+
+            this.lblDigerGelirlerTutar.AutoSize = true;
+            this.lblDigerGelirlerTutar.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblDigerGelirlerTutar.Location = new System.Drawing.Point(20, 20);
+            this.lblDigerGelirlerTutar.Text = "0,00 TL";
+
+            this.gbDigerGiderler.BackColor = System.Drawing.Color.Red;
+            this.gbDigerGiderler.Controls.Add(this.lblDigerGiderlerTutar);
+            this.gbDigerGiderler.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.gbDigerGiderler.Location = new System.Drawing.Point(300, 310);
+            this.gbDigerGiderler.Name = "gbDigerGiderler";
+            this.gbDigerGiderler.Size = new System.Drawing.Size(120, 50);
+            this.gbDigerGiderler.TabIndex = 0;
+            this.gbDigerGiderler.TabStop = false;
+            this.gbDigerGiderler.Text = "DİĞER GİDERLER";
+
+            this.lblDigerGiderlerTutar.AutoSize = true;
+            this.lblDigerGiderlerTutar.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblDigerGiderlerTutar.ForeColor = System.Drawing.Color.White;
+            this.lblDigerGiderlerTutar.Location = new System.Drawing.Point(20, 20);
+            this.lblDigerGiderlerTutar.Text = "0,00 TL";
 
             // 
             // dgvRaporlar
@@ -329,38 +458,57 @@ namespace StokTakip.Forms
             this.dgvRaporlar.Name = "dgvRaporlar";
             this.dgvRaporlar.ReadOnly = true;
             this.dgvRaporlar.RowHeadersVisible = false;
-            this.dgvRaporlar.Size = new System.Drawing.Size(1150, 200);
+            this.dgvRaporlar.Size = new System.Drawing.Size(1150, 250);
+            this.dgvRaporlar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvRaporlar.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
 
-            // Setup columns
+            // Setup columns - resme göre doğru sıralama
             this.colSNo.HeaderText = "S.No";
+            this.colSNo.Name = "colSNo";
             this.colSNo.Width = 50;
             this.colHareketTuru.HeaderText = "Hareket Türü";
+            this.colHareketTuru.Name = "colHareketTuru";
             this.colHareketTuru.Width = 80;
             this.colTarih.HeaderText = "Tarih";
-            this.colTarih.Width = 70;
+            this.colTarih.Name = "colTarih";
+            this.colTarih.Width = 75;
             this.colSaat.HeaderText = "Saat";
-            this.colSaat.Width = 50;
+            this.colSaat.Name = "colSaat";
+            this.colSaat.Width = 55;
             this.colBarkodNo.HeaderText = "Barkod No";
-            this.colBarkodNo.Width = 90;
+            this.colBarkodNo.Name = "colBarkodNo";
+            this.colBarkodNo.Width = 100;
             this.colUrunAdi.HeaderText = "Ürün Adı";
-            this.colUrunAdi.Width = 200;
+            this.colUrunAdi.Name = "colUrunAdi";
+            this.colUrunAdi.Width = 120;
             this.colAlisFiyati.HeaderText = "Alış Fiyatı";
-            this.colAlisFiyati.Width = 70;
+            this.colAlisFiyati.Name = "colAlisFiyati";
+            this.colAlisFiyati.Width = 75;
             this.colSatisFiyati.HeaderText = "Satış Fiyatı";
-            this.colSatisFiyati.Width = 70;
+            this.colSatisFiyati.Name = "colSatisFiyati";
+            this.colSatisFiyati.Width = 75;
             this.colMiktar.HeaderText = "Miktar";
-            this.colMiktar.Width = 60;
-            this.colKar.HeaderText = "Kar";
-            this.colKar.Width = 60;
+            this.colMiktar.Name = "colMiktar";
+            this.colMiktar.Width = 55;
+            this.colKar.HeaderText = "KAR";
+            this.colKar.Name = "colKar";
+            this.colKar.Width = 55;
             this.colKDV.HeaderText = "KDV";
-            this.colKDV.Width = 50;
+            this.colKDV.Name = "colKDV";
+            this.colKDV.Width = 45;
             this.colDurum.HeaderText = "Durum";
-            this.colDurum.Width = 70;
-            this.colToplamTutar.HeaderText = "Toplam Tutar";
-            this.colToplamTutar.Width = 80;
+            this.colDurum.Name = "colDurum";
+            this.colDurum.Width = 55;
+            this.colToplamTutar.HeaderText = "Toplam";
+            this.colToplamTutar.Name = "colToplamTutar";
+            this.colToplamTutar.Width = 75;
             this.colCariHesapAdi.HeaderText = "Cari Hesap Adı";
-            this.colCariHesapAdi.Width = 120;
+            this.colCariHesapAdi.Name = "colCariHesapAdi";
+            this.colCariHesapAdi.Width = 100;
             this.colIslemYapan.HeaderText = "İşlem Yapan";
+            this.colIslemYapan.Name = "colIslemYapan";
             this.colIslemYapan.Width = 80;
 
             // Export buttons
@@ -383,8 +531,8 @@ namespace StokTakip.Forms
             this.btnExcelBirlestirilmisKayit.UseVisualStyleBackColor = false;
 
             // Bottom right counters
-            this.SetupSummaryPanel(this.pnlUrunAdetSayisi, this.lblUrunAdetSayisiText, this.lblUrunAdetSayisi, "ÜRÜN ADET SAYISI", "0", 1000, 720, System.Drawing.Color.Green);
-            this.SetupSummaryPanel(this.pnlSatisFisiSayisi, this.lblSatisFisiSayisiText, this.lblSatisFisiSayisi, "SATIŞ FİŞİ SAYISI", "0", 1000, 760, System.Drawing.Color.Green);
+            this.SetupSummaryPanel(this.pnlUrunAdetSayisi, this.lblUrunAdetSayisiText, this.lblUrunAdetSayisi, "ÜRÜN ADET SAYISI", "0", 900, 720, System.Drawing.Color.Green);
+            this.SetupSummaryPanel(this.pnlSatisFisiSayisi, this.lblSatisFisiSayisiText, this.lblSatisFisiSayisi, "SATIŞ FİŞİ SAYISI", "0", 900, 760, System.Drawing.Color.Green);
 
             // 
             // RaporlarForm
@@ -392,7 +540,7 @@ namespace StokTakip.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Orange;
-            this.ClientSize = new System.Drawing.Size(1180, 800);
+            this.ClientSize = new System.Drawing.Size(1200, 850);
             this.Controls.Add(this.lblTarihAraliklari);
             this.Controls.Add(this.dtpBaslangic);
             this.Controls.Add(this.dtpBitis);
@@ -411,6 +559,9 @@ namespace StokTakip.Forms
             this.Controls.Add(this.btnAktifKaydi);
             this.Controls.Add(this.btnSayfayiYenile);
             this.Controls.Add(this.btnBankaKarti);
+            this.Controls.Add(this.gbToplamlar);
+            this.Controls.Add(this.gbDigerGelirler);
+            this.Controls.Add(this.gbDigerGiderler);
             this.Controls.Add(this.dgvRaporlar);
             this.Controls.Add(this.btnOzetRaporYazdir);
             this.Controls.Add(this.btnExcelTekTekUrun);
